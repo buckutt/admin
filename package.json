@@ -1,0 +1,44 @@
+{
+  "name": "buckless-admin",
+  "version": "1.0.0",
+  "authors": [
+    "Gabriel Juchault <gabriel.juchault@gmail.com>"
+  ],
+  "description": "Buckless Administration Tool",
+  "license": "MIT",
+  "scripts": {
+    "dev": "webpack-dev-server --inline --hot --port 8082",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "lint": "eslint . --ignore-pattern public",
+    "lintfix": "eslint . --ignore-pattern public --fix"
+  },
+  "devDependencies": {
+    "babel-core": "^6.0.0",
+    "babel-loader": "^6.0.0",
+    "babel-plugin-transform-runtime": "^6.0.0",
+    "babel-preset-es2015": "^6.0.0",
+    "babel-preset-stage-2": "^6.0.0",
+    "babel-runtime": "^6.3.19",
+    "cross-env": "^1.0.6",
+    "css-loader": "^0.23.0",
+    "file-loader": "^0.8.4",
+    "json-loader": "^0.5.4",
+    "node-sass": "^3.4.2",
+    "sass-loader": "^3.1.2",
+    "style-loader": "^0.13.0",
+    "url-loader": "^0.5.7",
+    "vue-hot-reload-api": "^1.2.0",
+    "vue-html-loader": "^1.0.0",
+    "vue-loader": "^8.0.0",
+    "vue-style-loader": "^1.0.0",
+    "webpack": "^1.12.12",
+    "webpack-dev-server": "^1.12.0"
+  },
+  "dependencies": {
+    "chart.js": "^1.0.2",
+    "getmdl-select": "^1.0.0",
+    "material-design-lite": "^1.0.6",
+    "vue": "^1.0.0",
+    "vue-router": "^0.7.10"
+  }
+}
