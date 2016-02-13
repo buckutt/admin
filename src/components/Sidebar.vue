@@ -41,9 +41,26 @@
                 </li>
             </ul>
         </div>
-        <router-view></router-view>
+        <router-view
+            :points="points"
+            :devices="devices"
+            :periods="periods"
+            :articles="articles"></router-view>
     </main>
 </template>
+
+<script>
+export default {
+    data () {
+        return {
+            points  : [],
+            devices : [],
+            periods : [],
+            articles: [],
+        };
+    }
+}
+</script>
 
 <style lang="sass">
     @import '../main.scss';

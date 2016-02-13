@@ -41,10 +41,20 @@ export default {
             bezierCurve: false
         });
 
+        let es = new EventSource("https://localhost:3000/changes?model=purchases", {
+            withCredentials: true,
+        });
+        es.onmessage = function (event) {
+            console.log(event.data);
+        };
+        es.onerror = function (l) {
+            console.log(l);
+        };
+
         setInterval(() => {
             this.chart.datasets[0].points[2].value = parseInt(Math.random() * 50);
             this.chart.update();
-        }, 100);
+        }, 1000);
     }
 }
 </script>

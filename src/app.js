@@ -19,7 +19,6 @@ import Items from './components/Items.vue';
 import Treasury from './components/Treasury.vue';
 import Rights from './components/Rights.vue';
 import Periods from './components/Periods.vue';
-import { get } from './lib/fetch';
 
 const router = new VueRouter();
 
@@ -46,9 +45,9 @@ router.map({
 
 router.start(Sidebar, '#app');
 
-window.Periods = Periods
-get('articles').then(articles => router.app.$set('articles', articles));
-get('devices').then(devices => router.app.$set('devices', devices));
-get('points').then(points => router.app.$set('points', points));
+require('./lib/fetch').get('points').then(points => router.app.$set('points', points));
+require('./lib/fetch').get('devices').then(devices => router.app.$set('devices', devices));
+require('./lib/fetch').get('periods').then(periods => router.app.$set('periods', periods));
+require('./lib/fetch').get('articles').then(articles => router.app.$set('articles', articles));
 
 window.router = router;

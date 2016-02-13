@@ -1,3 +1,4 @@
+const path    = require('path');
 const webpack = require('webpack');
 
 module.exports = {
@@ -8,7 +9,7 @@ module.exports = {
     ],
 
     output: {
-        path      : __dirname + '/public',
+        path      : path.join(__dirname, '/public'),
         publicPath: '/',
         filename  : 'bundle.js'
     },
@@ -18,14 +19,14 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.vue$/,
+                test  : /\.vue$/,
                 loader: 'vue'
             },
             {
-                test: /\.js$/,
-                loader: 'babel',
+                test   : /\.js$/,
+                loader : 'babel',
                 exclude: /node_modules/,
-                query: {
+                query  : {
                     presets: ['es2015']
                 }
             },
@@ -37,7 +38,7 @@ module.exports = {
     },
 
     resolveLoader: {
-        root: __dirname + '/node_modules',
+        root: path.join(__dirname, '/node_modules'),
     },
 
     resolve: {
@@ -46,11 +47,11 @@ module.exports = {
 
     devServer: {
         contentBase: './public',
-        hot: true
+        hot        : true
     },
 
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.optimize.DedupePlugin()
     ]
-}
+};
