@@ -32,6 +32,7 @@
     "no-caller": 2,
     "no-case-declarations": 2,
     "no-else-return": 1,
+    "no-empty-label": 2,
     "no-empty-pattern": 2,
     "no-eq-null": 2,
     "no-eval": 2,
@@ -106,14 +107,18 @@
     }],
     "semi-spacing": 1,
     "semi": 1,
+    "space-after-keywords": 1,
     "space-before-blocks": 1,
     "space-before-function-paren": 1,
+    "space-before-keywords": [1, "always"],
     "space-in-parens": 1,
     "jsx-quotes": [1, "prefer-double"],
     "space-infix-ops": 1,
+    "space-return-throw-case": 1,
     "spaced-comment": 1,
     "arrow-spacing": 1,
     "constructor-super": 1,
+    "no-arrow-condition": 2,
     "no-class-assign": 1,
     "no-dupe-class-members": 1,
     "no-const-assign": 1,
@@ -123,8 +128,7 @@
     "prefer-arrow-callback": 1,
     "prefer-const": 1,
     "prefer-spread": 1,
-    "prefer-template": 1,
-    "keyword-spacing": 1
+    "prefer-template": 1
   },
   "ecmaFeatures": {
     "arrowFunctions": true,
@@ -142,9 +146,6 @@
     "superInFunctions": true,
     "templateStrings": true,
     "jsx": true
-  },
-  "parserOptions": {
-    "sourceType": "module"
   },
   "env": {
     "browser": true,
