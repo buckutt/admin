@@ -1,64 +1,49 @@
 <template>
-    <main>
-        <div class="sidebar">
-            <h1>Buckutt</h1>
-            <ul>
-                <li>
-                    <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/' }">
-                        <i class="material-icons">insert_chart</i>
-                        Accueil
-                    </a>
-                </li>
-                <li>
-                    <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/devices' }">
-                        <i class="material-icons">devices</i>
-                        Équipements
-                    </a>
-                </li>
-                <li>
-                    <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/items' }">
-                        <i class="material-icons">view_module</i>
-                        Articles
-                    </a>
-                </li>
-                <li>
-                    <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/treasury' }">
-                        <i class="material-icons">attach_money</i>
-                        Trésorerie
-                    </a>
-                </li>
-                <li>
-                    <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/rights' }">
-                        <i class="material-icons">people</i>
-                        Droits
-                    </a>
-                </li>
-                <li>
-                    <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/periods' }">
-                        <i class="material-icons">alarm</i>
-                        Périodes
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <router-view
-            :points="points"
-            :devices="devices"
-            :periods="periods"
-            :articles="articles"></router-view>
-    </main>
+    <div class="sidebar">
+        <h1>Buckutt</h1>
+        <ul>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/' }">
+                    <i class="material-icons">insert_chart</i>
+                    Accueil
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/devices' }">
+                    <i class="material-icons">devices</i>
+                    Équipements
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/items' }">
+                    <i class="material-icons">view_module</i>
+                    Articles
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/treasury' }">
+                    <i class="material-icons">attach_money</i>
+                    Trésorerie
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/rights' }">
+                    <i class="material-icons">people</i>
+                    Droits
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/periods' }">
+                    <i class="material-icons">alarm</i>
+                    Périodes
+                </a>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script>
 export default {
-    data () {
-        return {
-            points  : [],
-            devices : [],
-            periods : [],
-            articles: [],
-        };
-    }
 }
 </script>
 
@@ -85,6 +70,7 @@ export default {
 
             > li {
                 > a {
+                    box-sizing: border-box;
                     color: $sidebarColor !important;
                     display: inline-block;
                     height: $sidebarLinkHeight;

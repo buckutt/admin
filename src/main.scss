@@ -1,4 +1,5 @@
 @import './variables.scss';
+@import './mixins.scss';
 
 * {
     box-sizing: border-box;
@@ -10,6 +11,10 @@ html, body, main {
     height: 100%;
     margin: 0;
     width: 100%;
+}
+
+#app {
+    height: 100%;
 }
 
 .material-icons {
@@ -28,3 +33,9 @@ html, body, main {
     text-rendering: optimizeLegibility;
     font-feature-settings: 'liga';
 }
+
+// AnyTime Picker
+.anytime-picker { display: none; position: absolute; top: 0; left: 0; }
+.anytime-picker--is-visible { display: block; }
+.anytime-picker__dates { width: 200px; }
+.anytime-picker__dates > * { box-sizing: border-box; width: 14.28%; display: inline-block; }
