@@ -51,21 +51,21 @@ export default {
 
             if (this.$data.point !== '0') {
                 q.push(JSON.stringify({
-                    field: 'pointId',
+                    field: 'Point_id',
                     eq: this.$data.point
                 }));
             }
 
             if (this.$data.fundation !== '0') {
                 q.push(JSON.stringify({
-                    field: 'fundationId',
+                    field: 'Fundation_id',
                     eq: this.$data.fundation
                 }));
             }
 
             if (this.$data.period !== '0') {
                 q.push(JSON.stringify({
-                    field: 'periodId',
+                    field: 'Period_id',
                     eq: this.$data.period
                 }));
             }
