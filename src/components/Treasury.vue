@@ -37,7 +37,7 @@
                         <td class="mdl-data-table__cell--non-numeric">{{ purchase.article.name }}</td>
                         <td class="mdl-data-table__cell--non-numeric">{{ purchase.point.name }}</td>
                         <td class="mdl-data-table__cell--non-numeric">{{ purchase.fundation.name }}</td>
-                        <td>$2.90</td>
+                        <td>{{ purchase.price.amount | price }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -53,12 +53,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td>$2.90</td>
+                    <tr v-for="reload in reloads">
+                        <td class="mdl-data-table__cell--non-numeric">{{ reload.seller.firstname }} {{ reload.seller.lastname }}</td>
+                        <td class="mdl-data-table__cell--non-numeric">{{ reload.buyer.firstname }} {{ reload.buyer.lastname }}</td>
+                        <td class="mdl-data-table__cell--non-numeric">{{ reload.trace }}</td>
+                        <td class="mdl-data-table__cell--non-numeric">{{ reload.point.name }}</td>
+                        <td>{{ reload.credit | price }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -72,40 +72,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td>$2.90</td>
-                    </tr>
-                    <tr>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td>$2.90</td>
-                    </tr>
-                    <tr>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td>$2.90</td>
-                    </tr>
-                    <tr>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td>$2.90</td>
-                    </tr>
-                    <tr>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td>$2.90</td>
-                    </tr>
-                    <tr>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td>$2.90</td>
-                    </tr>
-                    <tr>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td class="mdl-data-table__cell--non-numeric">Acrylic (Transparent)</td>
-                        <td>$2.90</td>
+                    <tr v-for="transfer in transfers">
+                        <td class="mdl-data-table__cell--non-numeric">{{ transfer.sender.firstname }} {{ transfer.sender.lastname }}</td>
+                        <td class="mdl-data-table__cell--non-numeric">{{ transfer.reciever.firstname }} {{ transfer.reciever.lastname }}</td>
+                        <td>{{ transfer.amount | price }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -148,10 +118,10 @@ export default {
             return this.purchases.reduce((a, b) => a.price.amount + b.price.amount, 0)
         },
         totalReload() {
-            return this.reloads.reduce((a, b) => a.price.amount + b.price.amount, 0)
+            return this.reloads.reduce((a, b) => a.credit + b.credit, 0)
         },
         totalTransfer() {
-            return this.transfers.reduce((a, b) => a.price.amount + b.price.amount, 0)
+            return this.transfers.reduce((a, b) => a.amount + b.amount, 0)
         }
     },
 
@@ -214,7 +184,7 @@ export default {
                 .map(o => encodeURIComponent(o))
                 .join('&q[]=');
 
-            const embed = encodeURIComponent(JSON.stringify({
+            const embedPurchases = encodeURIComponent(JSON.stringify({
                 articles : true,
                 price    : true,
                 buyer    : true,
@@ -223,9 +193,30 @@ export default {
                 fundation: true
             }));
 
-            get(`purchases/search?q=${orQ}&embed=${embed}`)
+            const embedReloads = encodeURIComponent(JSON.stringify({
+                point : true,
+                buyer : true,
+                seller: true
+            }));
+
+            const embedTransfers = encodeURIComponent(JSON.stringify({
+                sender  : true,
+                reciever: true
+            }));
+
+            get(`purchases/search?q=${orQ}&embed=${embedPurchases}`)
                 .then(purchases => {
                     this.purchases = purchases;
+
+                    return get(`reloads/search?q=${orQ}&embed=${embedReloads}`);
+                })
+                .then(reloads => {
+                    this.reloads = reloads;
+
+                    return get(`transfers/search?q=${orQ}&embed=${embedTransfers}`);
+                })
+                .then(transfers => {
+                    this.transfers = transfers;
                 });
         }
     },
