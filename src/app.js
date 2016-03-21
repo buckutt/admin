@@ -19,9 +19,9 @@ import Items     from './components/Items.vue';
 import Treasury  from './components/Treasury.vue';
 import Rights    from './components/Rights.vue';
 import Periods   from './components/Periods.vue';
-import { get }   from './lib/fetch';
+import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations } from './store/actions';
 
-import store from './store';
+import store from './store/index';
 
 window.jQuery = jQuery;
 window.Chart  = Chart;
@@ -58,20 +58,10 @@ router.map({
 
 router.start(App, '#app');
 
-get('points').then(points => {
-    router.app.$store.dispatch('SETPOINTS', points);
-});
-get('devices').then(devices => {
-    router.app.$store.dispatch('SETDEVICES', devices);
-});
-get('periods').then(periods => {
-    router.app.$store.dispatch('SETPERIODS', periods);
-});
-get('articles').then(articles => {
-    router.app.$store.dispatch('SETARTICLES', articles);
-});
-get('fundations').then(fundations => {
-    router.app.$store.dispatch('SETFUNDATIONS', fundations);
-});
+fetchPoints(router.app.$store);
+fetchDevices(router.app.$store);
+fetchPeriods(router.app.$store);
+fetchArticles(router.app.$store);
+fetchFundations(router.app.$store);
 
 window.router = router;

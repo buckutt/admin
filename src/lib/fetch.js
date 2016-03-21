@@ -55,3 +55,18 @@ export function put (url, data, opts_) {
     return fetch(`https://localhost:3000/${url}`, opts)
         .then(res => res.json());
 }
+
+/**
+ * Delete a ressource from the API
+ * @param  {String} url   The base URL
+ * @param  {Object} opts_ Options to pass to fetch (headers are already there)
+ * @return {Promise} The result as JSON
+ */
+export function del (url, opts_) {
+    const opts = Object.assign(authData, {
+        method: 'DELETE'
+    }, opts_);
+
+    return fetch(`https://localhost:3000/${url}`, opts)
+        .then(res => res.json());
+}
