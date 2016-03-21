@@ -34,9 +34,9 @@
                     <tr v-for="purchase in purchases">
                         <td class="mdl-data-table__cell--non-numeric">{{ purchase.seller.firstname }} {{ purchase.seller.lastname }}</td>
                         <td class="mdl-data-table__cell--non-numeric">{{ purchase.buyer.firstname }} {{ purchase.buyer.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.article.firstname }}</td>
+                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.article.name }}</td>
                         <td class="mdl-data-table__cell--non-numeric">{{ purchase.point.name }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.price }}</td>
+                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.fundation.name }}</td>
                         <td>$2.90</td>
                     </tr>
                 </tbody>
@@ -124,9 +124,9 @@ import { get } from '../lib/fetch';
 export default {
     vuex: {
         getters: {
-            points: state => state.points,
-            fundations: state => state.fundations,
-            periods: state => state.periods
+            points: state => state.app.points,
+            fundations: state => state.app.fundations,
+            periods: state => state.app.periods
         }
     },
 
@@ -215,11 +215,12 @@ export default {
                 .join('&q[]=');
 
             const embed = encodeURIComponent(JSON.stringify({
-                articles: true,
-                price   : true,
-                buyer   : true,
-                seller  : true,
-                point   : true
+                articles : true,
+                price    : true,
+                buyer    : true,
+                seller   : true,
+                point    : true,
+                fundation: true
             }));
 
             get(`purchases/search?q=${orQ}&embed=${embed}`)
