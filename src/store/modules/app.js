@@ -1,8 +1,3 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-
-Vue.use(Vuex);
-
 const state = {
     points    : [],
     devices   : [],
@@ -11,29 +6,26 @@ const state = {
     fundations: []
 };
 
+// mutations
 const mutations = {
-    SETPOINTS: function (state, points) {
+    ADDPOINTS: function (state, points) {
         state.points.push(...points);
     },
-    SETDEVICES: function (state, devices) {
+    ADDDEVICES: function (state, devices) {
         state.devices.push(...devices);
     },
-    SETPERIODS: function (state, periods) {
+    ADDPERIODS: function (state, periods) {
         state.periods.push(...periods);
     },
-    SETARTICLES: function (state, articles) {
+    ADDARTICLES: function (state, articles) {
         state.articles.push(...articles);
     },
-    SETFUNDATIONS: function (state, fundations) {
+    ADDFUNDATIONS: function (state, fundations) {
         state.fundations.push(...fundations);
     }
 };
 
-const actions = {
+export default {
+  state,
+  mutations
 };
-
-export default new Vuex.Store({
-    state,
-    actions,
-    mutations
-});
