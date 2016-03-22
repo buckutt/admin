@@ -29,3 +29,21 @@ export function fetchFundations({ dispatch }) {
         dispatch('ADDFUNDATIONS', fundations);
     });
 }
+
+export function createPeriod({ dispatch }, period) {
+    post('periods', period).then(periods => {
+        dispatch('ADDPERIODS', [period]);
+    });
+}
+
+export function updatePeriod({ dispatch }, period, data) {
+    put(`periods/${period.id}`, data).then(periods => {
+        dispatch('UPDATEPERIOD', period, data);
+    });
+}
+
+export function removePeriod({ dispatch }, period) {
+    put(`periods/${period.id}`, {isRemoved: true}).then(periods => {
+        dispatch('DELETEPERIOD', period);
+    });
+}
