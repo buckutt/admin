@@ -18,7 +18,7 @@
             <input type="text" v-el:datein>
             <input type="text" v-el:dateout>
             <button @click="filter()">Rechercher</button>
-            <h4>Ventes <span class="small">(total: {{ totalSell | price }})</span></h4>
+            <h4>Ventes <span class="small">(total: {{ totalSell | price true }})</span></h4>
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                 <thead>
                     <tr>
@@ -34,14 +34,14 @@
                     <tr v-for="purchase in purchases">
                         <td class="mdl-data-table__cell--non-numeric">{{ purchase.seller.firstname }} {{ purchase.seller.lastname }}</td>
                         <td class="mdl-data-table__cell--non-numeric">{{ purchase.buyer.firstname }} {{ purchase.buyer.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.article.name }}</td>
+                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.articleName }}</td>
                         <td class="mdl-data-table__cell--non-numeric">{{ purchase.point.name }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.fundation.name }}</td>
-                        <td>{{ purchase.price.amount | price }}</td>
+                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.price.fundation.name }}</td>
+                        <td>{{ purchase.price.amount | price true }}</td>
                     </tr>
                 </tbody>
             </table>
-            <h4>Rechargements <span class="small">(total: {{ totalReload | price }})</span></h4>
+            <h4>Rechargements <span class="small">(total: {{ totalReload | price true }})</span></h4>
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                 <thead>
                     <tr>
@@ -58,11 +58,11 @@
                         <td class="mdl-data-table__cell--non-numeric">{{ reload.buyer.firstname }} {{ reload.buyer.lastname }}</td>
                         <td class="mdl-data-table__cell--non-numeric">{{ reload.trace }}</td>
                         <td class="mdl-data-table__cell--non-numeric">{{ reload.point.name }}</td>
-                        <td>{{ reload.credit | price }}</td>
+                        <td>{{ reload.credit | price true }}</td>
                     </tr>
                 </tbody>
             </table>
-            <h4>Transfers <span class="small">(total: {{ totalTransfer | price }})</span></h4>
+            <h4>Transfers <span class="small">(total: {{ totalTransfer | price true }})</span></h4>
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                 <thead>
                     <tr>
@@ -75,7 +75,7 @@
                     <tr v-for="transfer in transfers">
                         <td class="mdl-data-table__cell--non-numeric">{{ transfer.sender.firstname }} {{ transfer.sender.lastname }}</td>
                         <td class="mdl-data-table__cell--non-numeric">{{ transfer.reciever.firstname }} {{ transfer.reciever.lastname }}</td>
-                        <td>{{ transfer.amount | price }}</td>
+                        <td>{{ transfer.amount | price true }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -115,13 +115,53 @@ export default {
 
     computed: {
         totalSell() {
-            return this.purchases.reduce((a, b) => a.price.amount + b.price.amount, 0)
+            let sum = 0;
+
+            for (const purchase of this.purchases) {
+                sum += purchase.price.amount;
+            }
+
+            return sum;
         },
         totalReload() {
-            return this.reloads.reduce((a, b) => a.credit + b.credit, 0)
+            let sum = 0;
+
+            for (const reload of this.reloads) {
+                sum += reload.credit;
+            }
+
+            return sum;
         },
         totalTransfer() {
-            return this.transfers.reduce((a, b) => a.amount + b.amount, 0)
+            let sum = 0;
+
+            for (const transfer of this.transfers) {
+                sum += transfer.amount;
+            }
+
+            return sum;
+        }
+    },
+
+    watch: {
+        period(val) {
+            const period = this.periods.filter(p => p.id === val)[0];
+            if (!period) {
+                this.dateIn  = '';
+                this.dateOut = '';
+
+                this.$els.datein.value  = '';
+                this.$els.dateout.value = '';
+
+                return;
+            }
+
+            this.dateIn  = period.start;
+            this.dateOut = period.end;
+            console.log(period.start, period.end);
+
+            this.$els.datein.value  = `Début de la période ${period.name}`;
+            this.$els.dateout.value = `Fin de la période ${period.name}`;
         }
     },
 
@@ -143,16 +183,9 @@ export default {
                 }));
             }
 
-            if (this.$data.period !== '0') {
-                q.push(JSON.stringify({
-                    field: 'Period_id',
-                    eq: this.$data.period
-                }));
-            }
-
             if (this.$data.dateIn !== '') {
                 q.push(JSON.stringify({
-                    field: 'dateIn',
+                    field: 'createdAt',
                     ge: this.$data.dateIn,
                     date: true
                 }));
@@ -160,7 +193,7 @@ export default {
 
             if (this.$data.dateOut !== '') {
                 q.push(JSON.stringify({
-                    field: 'dateOut',
+                    field: 'createdAt',
                     le: this.$data.dateOut,
                     date: true
                 }));
@@ -186,11 +219,13 @@ export default {
 
             const embedPurchases = encodeURIComponent(JSON.stringify({
                 articles : true,
-                price    : true,
+                promotion: true,
+                price    : {
+                    fundation: true
+                },
                 buyer    : true,
                 seller   : true,
-                point    : true,
-                fundation: true
+                point    : true
             }));
 
             const embedReloads = encodeURIComponent(JSON.stringify({
@@ -206,7 +241,10 @@ export default {
 
             get(`purchases/search?q=${orQ}&embed=${embedPurchases}`)
                 .then(purchases => {
-                    this.purchases = purchases;
+                    this.purchases = purchases.map(purchase => {
+                        purchase.articleName = (purchase.promotion) ? purchase.promotion.name : purchase.articles[0].name;
+                        return purchase;
+                    });
 
                     return get(`reloads/search?q=${orQ}&embed=${embedReloads}`);
                 })
@@ -216,6 +254,7 @@ export default {
                     return get(`transfers/search?q=${orQ}&embed=${embedTransfers}`);
                 })
                 .then(transfers => {
+                    console.log(transfers);
                     this.transfers = transfers;
                 });
         }
