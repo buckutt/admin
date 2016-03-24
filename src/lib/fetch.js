@@ -19,7 +19,8 @@ export function get (url, opts_) {
     const opts = Object.assign(authData, opts_);
 
     return fetch(`https://localhost:3000/${url}`, opts)
-        .then(res => res.json());
+        .then(res => res.json())
+        .then(results => results.filter(r => !r.isRemoved));
 }
 
 /**
