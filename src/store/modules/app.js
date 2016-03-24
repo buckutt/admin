@@ -22,25 +22,6 @@ const mutations = {
     },
     ADDFUNDATIONS(state, fundations) {
         state.fundations.push(...fundations);
-    },
-    UPDATEPERIOD(state, period, data) {
-        state.periods.forEach((p, i) => {
-            if (p.id === period.id) { 
-                state.periods[i] = Object.assign(state.periods[i], data);
-            }
-        });
-    },
-    DELETEPERIOD(state, period) {
-        let i = 0;
-        for (const p of state.periods) {
-            if (p.id === period.id) {
-                break;
-            }
-
-            ++i;
-        }
-
-        state.periods.splice(i, 1);
     }
 };
 
