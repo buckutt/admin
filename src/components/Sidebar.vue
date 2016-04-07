@@ -1,6 +1,6 @@
 <template>
     <div class="sidebar">
-        <h1>Buckutt</h1>
+        <h1>Buckless</h1>
         <ul>
             <li>
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/' }">
