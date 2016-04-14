@@ -38,6 +38,12 @@
                     Périodes
                 </a>
             </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/cardBlock' }">
+                    <i class="material-icons">credit_card</i>
+                    Blocage de carte
+                </a>
+            </li>
         </ul>
     </div>
 </template>

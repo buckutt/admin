@@ -2,11 +2,21 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import app from './modules/app';
+import cardBlock from './modules/cardBlock';
 
 Vue.use(Vuex);
 
+// Restore mdl after each mutation
+const middlewareMDL = {
+    onMutation () {
+        setTimeout(() => componentHandler.upgradeAllRegistered());
+    }
+};
+
 export default new Vuex.Store({
     modules: {
-        app
-    }
+        app,
+        cardBlock
+    },
+    middlewares: [ middlewareMDL ]
 });

@@ -19,6 +19,7 @@ import Items     from './components/Items.vue';
 import Treasury  from './components/Treasury.vue';
 import Rights    from './components/Rights.vue';
 import Periods   from './components/Periods.vue';
+import CardBlock from './components/CardBlock.vue';
 import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations } from './store/actions';
 
 import store from './store/index';
@@ -53,6 +54,9 @@ router.map({
     },
     '/periods': {
         component: Periods
+    },
+    '/cardBlock': {
+        component: CardBlock
     }
 });
 
