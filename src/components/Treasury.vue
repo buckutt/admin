@@ -3,21 +3,34 @@
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Treasury</h3>
             <h4>Recherche</h4>
-            <select v-model="point">
-                <option value="0">Tous les points</option>
-                <option value="{{ point.id }}" v-for="point in points">{{ point.name }}</option>
-            </select>
-            <select v-model="fundation">
-                <option value="0">Toutes les fondations</option>
-                <option value="{{ fundation.id }}" v-for="fundation in fundations">{{ fundation.name }}</option>
-            </select>
-            <select v-model="period">
-                <option value="0">Toutes les périodes</option>
-                <option value="{{ period.id }}" v-for="period in periods">{{ period.name }}</option>
-            </select>
-            <input type="text" v-el:datein>
-            <input type="text" v-el:dateout>
-            <button @click="filter()">Rechercher</button>
+            <div>
+                <select v-model="point" v-stylized="points">
+                    <option value="0">Tous les points</option>
+                    <option value="{{ point.id }}" v-for="point in points">{{ point.name }}</option>
+                </select>
+                <select v-model="fundation" v-stylized>
+                    <option value="0">Toutes les fondations</option>
+                    <option value="{{ fundation.id }}" v-for="fundation in fundations">{{ fundation.name }}</option>
+                </select>
+                <select v-model="period" v-stylized>
+                    <option value="0">Toutes les périodes</option>
+                    <option value="{{ period.id }}" v-for="period in periods">{{ period.name }}</option>
+                </select>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" pattern="\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}" id="datein" v-el:datein>
+                <label class="mdl-textfield__label" for="datein">Début</label>
+                <span class="mdl-textfield__error">L'entrée n'est pas une date</span>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" pattern="\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}" id="dateout" v-el:dateout>
+                <label class="mdl-textfield__label" for="dateout">Fin</label>
+                <span class="mdl-textfield__error">La fin n'est pas une date</span>
+            </div>
+
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="filter()">Rechercher</button>
             <h4>Ventes <span class="small">(total: {{ totalSell | price true }})</span></h4>
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                 <thead>
@@ -90,6 +103,7 @@
 <script>
 import price from '../lib/price';
 import { get } from '../lib/fetch';
+import '../lib/select';
 
 export default {
     vuex: {
@@ -266,12 +280,14 @@ export default {
         jQuery($dateIn).datetimepicker({
             onChangeDateTime: ct => {
                 this.$data.dateIn = ct;
-            }
+            },
+            format:'d/m/Y H:i'
         });
         jQuery($dateOut).datetimepicker({
             onChangeDateTime: ct => {
                 this.$data.dateOut = ct;
-            }
+            },
+            format:'d/m/Y H:i'
         });
     }
 }
@@ -282,7 +298,7 @@ export default {
 
     .treasury {
         > div {
-            height: calc(100% - 40px);
+            min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);
             overflow-y: auto;
             padding: 20px;
@@ -292,13 +308,13 @@ export default {
                 margin: 0;
             }
 
-            select, input, button {
-                min-height: 25px;
-            }
-
             > select {
                 display: inline-block;
                 max-width: 150px;
+            }
+
+            button {
+                max-width: 300px;
             }
 
             table {

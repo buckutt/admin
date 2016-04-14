@@ -58,6 +58,13 @@ router.map({
 
 router.start(App, '#app');
 
+// Restore material components after page change
+router.afterEach(() => {
+    setTimeout(() => {
+        componentHandler.upgradeAllRegistered();
+    });
+});
+
 fetchPoints(router.app.$store);
 fetchDevices(router.app.$store);
 fetchPeriods(router.app.$store);

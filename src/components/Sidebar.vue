@@ -54,6 +54,7 @@ export default {
         background: $sidebarBackground;
         float: left;
         height: 100%;
+        position: fixed;
         width: $sidebarWidth;
 
         > h1 {
@@ -96,5 +97,6 @@ export default {
         float: left;
         height: 100%;
         width: calc(100% - #{$sidebarWidth});
+        margin-left: $sidebarWidth;
     }
 </style>
