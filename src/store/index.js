@@ -9,6 +9,7 @@ Vue.use(Vuex);
 // Restore mdl after each mutation
 const middlewareMDL = {
     onMutation () {
+        /* global componentHandler */
         setTimeout(() => componentHandler.upgradeAllRegistered());
     }
 };

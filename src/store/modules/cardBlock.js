@@ -1,18 +1,18 @@
 const state = {
-    foundUsers: [],
+    foundUsers: []
 };
 
 // mutations
 const mutations = {
-    SEARCHUSER(state, users_) {
-        state.foundUsers.length = 0;
+    SEARCHUSER(state_, users_) {
+        state_.foundUsers.length = 0;
 
         const users = users_.filter(user => !user.isRemoved);
 
-        state.foundUsers.push(...users);
+        state_.foundUsers.push(...users);
     },
-    INVERTMOL(state, molId) {
-        for (const user of state.foundUsers) {
+    INVERTMOL(state_, molId) {
+        for (const user of state_.foundUsers) {
             for (const mol of user.meansOfLogin) {
                 if (mol.id === molId) {
                     mol.isRemoved = !mol.isRemoved;

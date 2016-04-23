@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-console.log(Vue);
+/* global jQuery */
 
 Vue.directive('modal', {
     bind () {

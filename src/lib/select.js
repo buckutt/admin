@@ -1,10 +1,11 @@
 import Vue from 'vue';
 
+/* global jQuery */
+
 Vue.directive('stylized', {
     bind () {
-        const $el           = jQuery(this.el);
-        const $options      = $el.children('option');
-        const optionsLength = $options.length;
+        const $el      = jQuery(this.el);
+        const $options = $el.children('option');
 
         const $styledSelect = jQuery('<div class="select-styled"></div>');
 
@@ -18,12 +19,20 @@ Vue.directive('stylized', {
             .addClass('select-options')
             .insertAfter($styledSelect);
 
-        const $listItems = $options.map(function ($option) {
-            return jQuery('<li/>', {
-                text: this.textContent,
-                rel: this.value
-            }).appendTo($list);
-        });
+        $options
+            .map(function () {
+                return jQuery('<li/>', {
+                    text: this.textContent,
+                    rel : this.value
+                }).appendTo($list);
+            })
+            .click(function (e) {
+                e.stopPropagation();
+                const $item = jQuery(this);
+                $styledSelect.text($item.text()).removeClass('active');
+                $el.val($item.attr('rel'));
+                $list.hide();
+            });
 
         $styledSelect.click(function (e) {
             e.stopPropagation();
@@ -35,14 +44,6 @@ Vue.directive('stylized', {
 
             jQuery(this).toggleClass('active').next('ul.select-options').toggle();
         });
-
-        $listItems.click(function (e) {
-            e.stopPropagation();
-            const $item = jQuery(this);
-            $styledSelect.text($item.text()).removeClass('active');
-            $el.val($item.attr('rel'));
-            $list.hide();
-        });
     },
 
     update (items) {
@@ -50,15 +51,14 @@ Vue.directive('stylized', {
             return;
         }
 
-        const $el           = jQuery(this.el);
-        const $list         = $el.next().next().empty();
-        const $options      = $el.children('option');
-        const optionsLength = $options.length;
+        const $el      = jQuery(this.el);
+        const $list    = $el.next().next().empty();
+        const $options = $el.children('option');
 
-        const $listItems = $options.map(function ($option) {
+        $options.map(function () {
             return jQuery('<li/>', {
                 text: this.textContent,
-                rel: this.value
+                rel : this.value
             }).appendTo($list);
         });
 

@@ -65,6 +65,7 @@ router.start(App, '#app');
 // Restore material components after page change
 router.afterEach(() => {
     setTimeout(() => {
+        /* global componentHandler */
         componentHandler.upgradeAllRegistered();
     });
 });
