@@ -1,4 +1,4 @@
-import { get, post, put, del } from '../lib/fetch';
+import { get, post, put } from '../lib/fetch';
 
 const q = obj => encodeURIComponent(JSON.stringify(obj));
 
@@ -41,7 +41,7 @@ export function fetchFundations({ dispatch }) {
  */
 
 export function createPeriod({ dispatch }, period) {
-    post('periods', period).then(periods => {
+    post('periods', period).then(() => {
         dispatch('ADDPERIODS', [period]);
     });
 }

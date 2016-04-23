@@ -8,20 +8,20 @@ const state = {
 
 // mutations
 const mutations = {
-    ADDPOINTS(state, points) {
-        state.points.push(...points);
+    ADDPOINTS(state_, points) {
+        state_.points.push(...points);
     },
-    ADDDEVICES(state, devices) {
-        state.devices.push(...devices);
+    ADDDEVICES(state_, devices) {
+        state_.devices.push(...devices);
     },
-    ADDPERIODS(state, periods) {
-        state.periods.push(...periods);
+    ADDPERIODS(state_, periods) {
+        state_.periods.push(...periods);
     },
-    ADDARTICLES(state, articles) {
-        state.articles.push(...articles);
+    ADDARTICLES(state_, articles) {
+        state_.articles.push(...articles);
     },
-    ADDFUNDATIONS(state, fundations) {
-        state.fundations.push(...fundations);
+    ADDFUNDATIONS(state_, fundations) {
+        state_.fundations.push(...fundations);
     }
 };
 

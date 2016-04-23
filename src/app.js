@@ -2,7 +2,7 @@ import 'material-design-lite/material.min.js';
 import 'material-design-lite/material.min.css';
 import 'jquery-datetimepicker/build/jquery.datetimepicker.full.min.js';
 import 'jquery-datetimepicker/jquery.datetimepicker.css';
-import Chart  from 'chart.js/Chart.js';
+import Chart  from 'chart.js/dist/Chart.js';
 import jQuery from 'jquery';
 
 import Vue       from 'vue';
@@ -33,7 +33,7 @@ const router = new VueRouter();
 const App = Vue.extend({
     store,
     components: { Sidebar },
-    template: '<div><Sidebar></Sidebar><router-view></router-view></div>'
+    template  : '<div><Sidebar></Sidebar><router-view></router-view></div>'
 });
 
 router.map({
