@@ -2,7 +2,6 @@ import 'material-design-lite/material.min.js';
 import 'material-design-lite/material.min.css';
 import 'jquery-datetimepicker/build/jquery.datetimepicker.full.min.js';
 import 'jquery-datetimepicker/jquery.datetimepicker.css';
-import Chart  from 'chart.js/dist/Chart.js';
 import jQuery from 'jquery';
 
 import Vue       from 'vue';
@@ -25,8 +24,6 @@ import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations
 import store from './store/index';
 
 window.jQuery = jQuery;
-window.Chart  = Chart;
-Chart.defaults.global.animation = false;
 
 const router = new VueRouter();
 

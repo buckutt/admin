@@ -37,10 +37,6 @@ export default {
     },
 
     attached () {
-        this.chart = new Chart(this.$els.chart.getContext('2d')).Line(this.graph, {
-            bezierCurve: false
-        });
-
         let es = new EventSource("https://localhost:3000/changes?model=purchases", {
             withCredentials: true,
         });
@@ -50,11 +46,6 @@ export default {
         es.onerror = function (l) {
             console.log(l);
         };
-
-        setInterval(() => {
-            this.chart.datasets[0].points[2].value = parseInt(Math.random() * 50);
-            this.chart.update();
-        }, 1000);
     }
 }
 </script>
