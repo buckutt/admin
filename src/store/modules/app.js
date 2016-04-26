@@ -25,7 +25,7 @@ const mutations = {
     },
     UPDATEPERIOD(state_, period, data) {
         state_.periods.forEach((p, i) => {
-            if (p.id === period.id) { 
+            if (p.id === period.id) {
                 state_.periods[i] = Object.assign(state_.periods[i], data);
             }
         });
