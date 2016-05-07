@@ -41,8 +41,8 @@ export function fetchFundations({ dispatch }) {
  */
 
 export function createPeriod({ dispatch }, period) {
-    post('periods', period).then(() => {
-        dispatch('ADDPERIODS', [period]);
+    post('periods', period).then(result => {
+        dispatch('ADDPERIODS', [result]);
     });
 }
 
