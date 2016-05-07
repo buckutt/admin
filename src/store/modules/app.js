@@ -30,6 +30,13 @@ const mutations = {
             }
         });
     },
+    UPDATEPOINT(state_, point, data) {
+        state_.points.forEach((p, i) => {
+            if (p.id === point.id) {
+                state_.points[i] = Object.assign(state_.points[i], data);
+            }
+        });
+    },
     DELETEPERIOD(state_, period) {
         let i = 0;
         for (const p of state_.periods) {
@@ -41,6 +48,18 @@ const mutations = {
         }
 
         state_.periods.splice(i, 1);
+    },
+    DELETEPOINT(state_, point) {
+        let i = 0;
+        for (const p of state_.points) {
+            if (p.id === point.id) {
+                break;
+            }
+
+            ++i;
+        }
+
+        state_.points.splice(i, 1);
     }
 };
 

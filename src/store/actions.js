@@ -59,6 +59,28 @@ export function removePeriod({ dispatch }, period) {
 }
 
 /**
+ * Points actions
+ */
+
+export function createPoint({ dispatch }, point) {
+    post('points', point).then(result => {
+        dispatch('ADDPOINTS', [result]);
+    });
+}
+
+export function updatePoint({ dispatch }, point, data) {
+    put(`points/${point.id}`, data).then(() => {
+        dispatch('UPDATEPOINT', point, data);
+    });
+}
+
+export function removePoint({ dispatch }, point) {
+    put(`points/${point.id}`, { isRemoved: true }).then(() => {
+        dispatch('DELETEPOINT', point);
+    });
+}
+
+/**
  * CardBlock actions
  */
 export function searchUser({ dispatch }, name) {

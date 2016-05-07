@@ -39,6 +39,12 @@
                 </a>
             </li>
             <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/points' }">
+                    <i class="material-icons">location_on</i>
+                    Points
+                </a>
+            </li>
+            <li>
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/cardBlock' }">
                     <i class="material-icons">credit_card</i>
                     Blocage de carte
