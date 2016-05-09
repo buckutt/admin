@@ -36,6 +36,12 @@ export function fetchFundations({ dispatch }) {
     });
 }
 
+export function fetchGroups({ dispatch }) {
+    get('groups').then(groups => {
+        dispatch('ADDGROUPS', groups);
+    });
+}
+
 /**
  * Periods actions
  */
@@ -55,6 +61,29 @@ export function updatePeriod({ dispatch }, period, data) {
 export function removePeriod({ dispatch }, period) {
     put(`periods/${period.id}`, { isRemoved: true }).then(() => {
         dispatch('DELETEPERIOD', period);
+    });
+}
+
+
+/**
+ * Articles actions
+ */
+
+export function createArticle({ dispatch }, article) {
+    post('articles', article).then(result => {
+        dispatch('ADDARTICLES', [result]);
+    });
+}
+
+export function updateArticle({ dispatch }, article, data) {
+    put(`articles/${article.id}`, data).then(() => {
+        dispatch('UPDATEARTICLE', article, data);
+    });
+}
+
+export function removeArticle({ dispatch }, article) {
+    put(`articles/${article.id}`, { isRemoved: true }).then(() => {
+        dispatch('DELETEARTICLE', article);
     });
 }
 

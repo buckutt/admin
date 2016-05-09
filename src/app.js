@@ -20,7 +20,7 @@ import Rights    from './components/Rights.vue';
 import Periods   from './components/Periods.vue';
 import Points    from './components/Points.vue';
 import CardBlock from './components/CardBlock.vue';
-import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations } from './store/actions';
+import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations, fetchGroups } from './store/actions';
 
 import store from './store/index';
 
@@ -76,5 +76,6 @@ fetchDevices(router.app.$store);
 fetchPeriods(router.app.$store);
 fetchArticles(router.app.$store);
 fetchFundations(router.app.$store);
+fetchGroups(router.app.$store);
 
 window.router = router;

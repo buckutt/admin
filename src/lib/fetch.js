@@ -16,11 +16,19 @@ if (sessionStorage.hasOwnProperty('token')) {
  * @return {Promise} The result as JSON
  */
 export function get (url, opts_) {
-    const opts = Object.assign(authData, opts_);
+    const opts = Object.assign({}, authData, {
+        method: 'GET'
+    }, opts_);
 
     return fetch(`https://localhost:3000/${url}`, opts)
         .then(res => res.json())
-        .then(results => results.filter(r => !r.isRemoved));
+        .then(results => {
+            if (Array.isArray(results)) {
+                return results.filter(r => !r.isRemoved);
+            } else if (!results.isRemoved) {
+                return results;
+            }
+        });
 }
 
 /**
@@ -31,7 +39,7 @@ export function get (url, opts_) {
  * @return {Promise} The result as JSON
  */
 export function post (url, data, opts_) {
-    const opts = Object.assign(authData, {
+    const opts = Object.assign({}, authData, {
         method: 'POST',
         body  : JSON.stringify(data)
     }, opts_);
@@ -48,7 +56,7 @@ export function post (url, data, opts_) {
  * @return {Promise} The result as JSON
  */
 export function put (url, data, opts_) {
-    const opts = Object.assign(authData, {
+    const opts = Object.assign({}, authData, {
         method: 'PUT',
         body  : JSON.stringify(data)
     }, opts_);
@@ -64,7 +72,7 @@ export function put (url, data, opts_) {
  * @return {Promise} The result as JSON
  */
 export function del (url, opts_) {
-    const opts = Object.assign(authData, {
+    const opts = Object.assign({}, authData, {
         method: 'DELETE'
     }, opts_);
 
