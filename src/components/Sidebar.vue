@@ -15,6 +15,18 @@
                 </a>
             </li>
             <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/points' }">
+                    <i class="material-icons">location_on</i>
+                    Points
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/periods' }">
+                    <i class="material-icons">alarm</i>
+                    Périodes
+                </a>
+            </li>
+            <li>
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/items' }">
                     <i class="material-icons">view_module</i>
                     Articles
@@ -36,18 +48,6 @@
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/groups' }">
                     <i class="material-icons">group</i>
                     Groupes
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/periods' }">
-                    <i class="material-icons">alarm</i>
-                    Périodes
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/points' }">
-                    <i class="material-icons">location_on</i>
-                    Points
                 </a>
             </li>
             <li>

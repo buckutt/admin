@@ -229,21 +229,21 @@ export default {
                 white-space: normal;
             }
         }
-    }
 
-    .name {
-        text-transform: capitalize;
-    }
+        .name {
+            text-transform: capitalize;
+        }
 
-    .fade-transition {
-        transition: opacity .4s ease;
-    }
+        .fade-transition {
+            transition: opacity .4s ease;
+        }
 
-    .fade-enter {
-        opacity: 0;
-    }
+        .fade-enter {
+            opacity: 0;
+        }
 
-    .fade-leave {
-        display: none;
+        .fade-leave {
+            display: none;
+        }
     }
 </style>

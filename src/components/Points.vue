@@ -1,5 +1,5 @@
 <template>
-    <div class="periods">
+    <div class="points">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Points</h3>
             <form v-on:submit.prevent>
@@ -103,7 +103,7 @@ export default {
         },
         editPoint() {
             const point   = this.modPoint;
-            this.modPoint = null;
+            this.modPoint = {};
             this.closeModal();
             return point;
         }

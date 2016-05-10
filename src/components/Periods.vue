@@ -106,8 +106,8 @@ export default {
             name:           '',
             dateStart:      '',
             dateEnd:        '',
-            selectedPeriod: null,
-            modPeriod:      null,
+            selectedPeriod: {},
+            modPeriod:      {},
             openEditModal:  false
         };
     },
@@ -142,7 +142,7 @@ export default {
         },
         editPeriod() {
             const period   = this.modPeriod;
-            this.modPeriod = null;
+            this.modPeriod = {};
             period.start   = convertDate(period.start);
             period.end     = convertDate(period.end);
             this.closeModal();

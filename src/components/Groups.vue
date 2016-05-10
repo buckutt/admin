@@ -1,5 +1,5 @@
 <template>
-    <div class="periods">
+    <div class="groups">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Groupes</h3>
             <div v-show="selectedGroup.name" transition="fade">
@@ -122,7 +122,12 @@ export default {
 
                 q.push(JSON.stringify({
                     field  : 'firstname',
-                    matches: `.*${this.memberName}.*`
+                    matches: `.*${this.memberName.toLowerCase()}.*`
+                }));
+
+                q.push(JSON.stringify({
+                    field  : 'isRemoved',
+                    eq     : false
                 }));
 
                 const orQ = q
@@ -203,7 +208,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .points {
+    .groups {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);
@@ -228,21 +233,21 @@ export default {
                 white-space: normal;
             }
         }
-    }
 
-    .name {
-        text-transform: capitalize;
-    }
+        .name {
+            text-transform: capitalize;
+        }
 
-    .fade-transition {
-        transition: opacity .4s ease;
-    }
+        .fade-transition {
+            transition: opacity .4s ease;
+        }
 
-    .fade-enter {
-        opacity: 0;
-    }
+        .fade-enter {
+            opacity: 0;
+        }
 
-    .fade-leave {
-        display: none;
+        .fade-leave {
+            display: none;
+        }
     }
 </style>

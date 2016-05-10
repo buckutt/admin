@@ -280,7 +280,7 @@ export default {
     computed: {
         filteredArticles() {
             let val           = this.name;
-            let articlesNames = fuzzy.filter(val, this.articles, { extract: function(el) { return el.name; }});
+            let articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
             return articlesNames.map(article => {
                 return article.original;
             });
