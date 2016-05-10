@@ -48,6 +48,13 @@ const mutations = {
             }
         });
     },
+    UPDATEGROUP(state_, group, data) {
+        state_.groups.forEach((g, i) => {
+            if (g.id === group.id) {
+                state_.groups[i] = Object.assign(state_.groups[i], data);
+            }
+        });
+    },
     DELETEPERIOD(state_, period) {
         let i = 0;
         for (const p of state_.periods) {
@@ -83,6 +90,18 @@ const mutations = {
         }
 
         state_.articles.splice(i, 1);
+    },
+    DELETEGROUP(state_, group) {
+        let i = 0;
+        for (const g of state_.groups) {
+            if (g.id === group.id) {
+                break;
+            }
+
+            ++i;
+        }
+
+        state_.groups.splice(i, 1);
     }
 };
 

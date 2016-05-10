@@ -110,6 +110,28 @@ export function removePoint({ dispatch }, point) {
 }
 
 /**
+ * Groups actions
+ */
+
+export function createGroup({ dispatch }, group) {
+    post('groups', group).then(result => {
+        dispatch('ADDGROUPS', [result]);
+    });
+}
+
+export function updateGroup({ dispatch }, group, data) {
+    put(`groups/${group.id}`, data).then(() => {
+        dispatch('UPDATEGROUP', group, data);
+    });
+}
+
+export function removeGroup({ dispatch }, group) {
+    put(`groups/${group.id}`, { isRemoved: true }).then(() => {
+        dispatch('DELETEGROUP', group);
+    });
+}
+
+/**
  * CardBlock actions
  */
 export function searchUser({ dispatch }, name) {

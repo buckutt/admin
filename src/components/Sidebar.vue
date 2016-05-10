@@ -28,8 +28,14 @@
             </li>
             <li>
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/rights' }">
-                    <i class="material-icons">people</i>
+                    <i class="material-icons">person</i>
                     Droits
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/groups' }">
+                    <i class="material-icons">group</i>
+                    Groupes
                 </a>
             </li>
             <li>
