@@ -38,11 +38,17 @@ Vue.directive('stylized', {
             e.stopPropagation();
 
             jQuery('div.select-styled.active').each(function() {
-                jQuery(this).removeClass('active').next('ul.select-options').hide();
+                jQuery(this)
+                    .removeClass('active')
+                    .next('ul.select-options')
+                    .hide();
             });
 
 
-            jQuery(this).toggleClass('active').next('ul.select-options').toggle();
+            jQuery(this)
+                .toggleClass('active')
+                .next('ul.select-options')
+                .toggle();
         });
     },
 
