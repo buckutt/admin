@@ -27,9 +27,9 @@
                 </a>
             </li>
             <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/rights' }">
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/users' }">
                     <i class="material-icons">person</i>
-                    Droits
+                    Utilisateurs
                 </a>
             </li>
             <li>

@@ -16,7 +16,7 @@ import Dashboard from './components/Dashboard.vue';
 import Devices   from './components/Devices.vue';
 import Items     from './components/Items.vue';
 import Treasury  from './components/Treasury.vue';
-import Rights    from './components/Rights.vue';
+import Users     from './components/Users.vue';
 import Periods   from './components/Periods.vue';
 import Points    from './components/Points.vue';
 import Groups    from './components/Groups.vue';
@@ -48,8 +48,8 @@ router.map({
     '/treasury': {
         component: Treasury
     },
-    '/rights': {
-        component: Rights
+    '/users': {
+        component: Users
     },
     '/groups': {
         component: Groups
