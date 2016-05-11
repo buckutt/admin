@@ -27,6 +27,44 @@
                     <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="updateUser(selectedUser, modUser)" value="Modifier">
                 </form>
                 <br />
+                <h5>Droits</h5>
+                <form v-on:submit.prevent>
+                    <select v-model="rightChoice">
+                        <option v-bind:value="rightName" v-for="rightName in rightsList">{{ rightName }}</option>
+                    </select>
+                    <select v-model="rightPoint">
+                        <option v-bind:value="null" selected>Aucun</option>
+                        <option v-bind:value="point" v-for="point in points">{{ point.name }}</option>
+                    </select>
+                    <select v-model="rightPeriod">
+                        <option v-bind:value="period" v-for="period in periods">{{ period.name }}</option>
+                    </select>
+                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="createUserRight(selectedUser, inputRight)" value="Ajouter">
+                </form>
+                <br />
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="detailsUser.rights">
+                    <thead>
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">Droit</th>
+                            <th class="mdl-data-table__cell--non-numeric">Point</th>
+                            <th class="mdl-data-table__cell--non-numeric">Période</th>
+                            <th class="mdl-data-table__cell--non-numeric">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="right in detailsUser.rights">
+                            <td class="mdl-data-table__cell--non-numeric name">{{ right.name }}</td>
+                            <td class="mdl-data-table__cell--non-numeric" v-if="right.point">{{ right.point.name }}</td>
+                            <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ right.period.name }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">
+                                <button type="button" class="mdl-button" @click="openModal(right)">Modifier</button>
+                                <button type="button" class="mdl-button" @click="deleteRight(right)">Supprimer</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
                 <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="goBack()">Retour</button>
             </div>
             <div v-show="!selectedUser.firstname" transition="fade">
@@ -87,22 +125,65 @@
             </div>
         </div>
     </div>
+    <div class="modal modal__bg" v-modal="openEditModal" v-el:editmodal>
+        <div class="modal__dialog">
+            <div class="modal__header">
+                <h3>Modifier le droit {{ selectedRight.name }}</h3>
+            </div>
+            <form v-on:submit.prevent>
+                <div class="modal__body">
+                    <select v-model="modRight.name">
+                        <option v-bind:value="rightName" v-for="rightName in rightsList">{{ rightName }}</option>
+                    </select><br />
+                    <select v-model="modRight.point">
+                        <option v-bind:value="null" selected>Aucun</option>
+                        <option v-bind:value="point" v-for="point in points">{{ point.name }}</option>
+                    </select><br />
+                    <select v-model="modRight.period">
+                        <option v-bind:value="period" v-for="period in periods">{{ period.name }}</option>
+                    </select>
+                </div>
+                <div class="modal__footer">
+                    <input type="submit" class="mdl-button modal__close" @click="updateRight(selectedRight, editRight)" value="Valider">
+                    <button type="button" class="mdl-button modal__close" @click="closeModal()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </template>
 
 <script>
 import { get, post, put } from '../lib/fetch';
+import modal from '../lib/modal';
 
 export default {
+    vuex: {
+        getters: {
+            points : state => state.app.points,
+            periods: state => state.app.periods
+        },
+        actions: {
+        }
+    },
+
     data () {
         return {
-            firstname   : '',
-            lastname    : '',
-            nickname    : '',
-            mail        : '',
-            userName    : '',
-            users       : [],
-            selectedUser: {},
-            modUser     : {}
+            rightsList   : ['admin', 'seller', 'reloader'],
+            firstname    : '',
+            lastname     : '',
+            nickname     : '',
+            mail         : '',
+            userName     : '',
+            rightChoice  : '',
+            rightPoint   : {},
+            rightPeriod  : {},
+            users        : [],
+            selectedUser : {},
+            detailsUser  : {},
+            modUser      : {},
+            selectedRight: {},
+            modRight     : {},
+            openEditModal: false
         };
     },
 
@@ -143,12 +224,36 @@ export default {
             }
         },
         editUser(user) {
+            this.rightChoice = this.rightsList[0];
+            this.rightPoint  = this.$store.state.app.points[0];
+            this.rightPeriod = this.$store.state.app.periods[0];
+
+            const embedUsers = encodeURIComponent(JSON.stringify({
+                rights: {
+                    period: true,
+                    point : true
+                }
+            }));
+
+            get(`users/${user.id}?embed=${embedUsers}`)
+                .then(result => {
+                    result.rights = result.rights.filter(right => {
+                        return !right.isRemoved;
+                    });
+                    this.detailsUser = result;
+                });
+
             this.selectedUser = user;
             this.modUser      = JSON.parse(JSON.stringify(user));
             this.searchUser();
         },
         updateUser(user, modUser) {
-            put(`users/${user.id}`, modUser)
+            const embedRights = encodeURIComponent(JSON.stringify({
+                period: true,
+                point : true
+            }));
+
+            put(`users/${user.id}?embed=${embedRights}`, modUser)
                 .then(result => {
                     this.selectedUser = JSON.parse(JSON.stringify(modUser));
                     this.users.forEach((u, i) => {
@@ -173,6 +278,68 @@ export default {
 
                     this.users.splice(i, 1);
                 });
+        },
+        updateRight(selectedRight, modRight) {
+            if(modRight.point) {
+                modRight.Point_id  = modRight.point.id;
+            } else {
+                modRight.Point_id = null;
+            }
+            modRight.Period_id = modRight.period.id;
+            put(`rights/${selectedRight.id}`, modRight)
+                .then(result => {
+                    this.detailsUser.rights.forEach((r, i) => {
+                        if (r.id === result.id) {
+                            if(!result.point) {
+                                result.point = null;
+                            }
+                            this.detailsUser.rights[i] = Object.assign(this.detailsUser.rights[i], result);
+                        }
+                    });
+                });
+            this.closeModal();
+            this.modRight = {};
+        },
+        deleteRight(right) {
+            right.isRemoved = true;
+            put(`rights/${right.id}`, right)
+                .then(result => {
+                    let i = 0;
+                    for(const r of this.detailsUser.rights) {
+                        if(r.id === right.id) {
+                            break;
+                        }
+
+                        ++i;
+                    }
+
+                    this.detailsUser.rights.splice(i, 1);
+                });
+        },
+        createUserRight(user, right) {
+            let currentRight  = {};
+            const embedRight  = encodeURIComponent(JSON.stringify({
+                point : true,
+                period: true
+            }));
+
+            post(`rights?embed=${embedRight}`, right)
+                .then(result => {
+                    currentRight = result;
+                    return post(`users/${user.id}/rights`, {id: result.id});
+                })
+                .then(result => {
+                    this.detailsUser.rights.push(currentRight);
+                });
+        },
+        openModal(right) {
+            this.selectedRight = right;
+            this.modRight      = JSON.parse(JSON.stringify(right));
+
+            this.openEditModal = true;
+        },
+        closeModal() {
+            this.openEditModal = false;
         }
     },
 
@@ -196,7 +363,25 @@ export default {
                 password : 'TODO'
             };
         },
-
+        inputRight() {
+            const name       = this.rightChoice;
+            const point      = this.rightPoint;
+            const period     = this.rightPeriod;
+            this.rightChoice = '';
+            this.rightPoint  = {};
+            this.rightPeriod = {};
+            return {
+                name     : name,
+                Period_id: period.id,
+                Point_id : point.id
+            }
+        },
+        editRight() {
+            const right   = this.modRight;
+            this.modRight = {};
+            this.closeModal();
+            return right;
+        }
     }
 }
 </script>
