@@ -225,7 +225,7 @@ export default {
         },
         editUser(user) {
             this.rightChoice = this.rightsList[0];
-            this.rightPoint  = this.$store.state.app.points[0];
+            this.rightPoint  = null;
             this.rightPeriod = this.$store.state.app.periods[0];
 
             const embedUsers = encodeURIComponent(JSON.stringify({
@@ -367,9 +367,15 @@ export default {
             const name       = this.rightChoice;
             const point      = this.rightPoint;
             const period     = this.rightPeriod;
-            this.rightChoice = '';
-            this.rightPoint  = {};
-            this.rightPeriod = {};
+            this.rightChoice = this.rightsList[0];
+            this.rightPoint  = null;
+            this.rightPeriod = this.$store.state.app.periods[0];
+            if(!point) {
+                return {
+                    name     : name,
+                    Period_id: period.id
+                }
+            }
             return {
                 name     : name,
                 Period_id: period.id,
