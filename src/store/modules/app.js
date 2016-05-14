@@ -41,6 +41,13 @@ const mutations = {
             }
         });
     },
+    UPDATEDEVICE(state_, device, data) {
+        state_.devices.forEach((d, i) => {
+            if (d.id === device.id) {
+                state_.devices[i] = Object.assign(state_.devices[i], data);
+            }
+        });
+    },
     UPDATEARTICLE(state_, article, data) {
         state_.articles.forEach((a, i) => {
             if (a.id === article.id) {
@@ -78,6 +85,18 @@ const mutations = {
         }
 
         state_.points.splice(i, 1);
+    },
+    DELETEDEVICE(state_, device) {
+        let i = 0;
+        for (const d of state_.devices) {
+            if (d.id === device.id) {
+                break;
+            }
+
+            ++i;
+        }
+
+        state_.devices.splice(i, 1);
     },
     DELETEARTICLE(state_, article) {
         let i = 0;

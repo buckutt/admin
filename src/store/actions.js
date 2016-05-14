@@ -110,6 +110,22 @@ export function removePoint({ dispatch }, point) {
 }
 
 /**
+ * Devices actions
+ */
+
+export function updateDevice({ dispatch }, device, data) {
+    put(`devices/${device.id}`, data).then(() => {
+        dispatch('UPDATEDEVICE', device, data);
+    });
+}
+
+export function removeDevice({ dispatch }, device) {
+    put(`devices/${device.id}`, { isRemoved: true }).then(() => {
+        dispatch('DELETEDEVICE', device);
+    });
+}
+
+/**
  * Groups actions
  */
 
