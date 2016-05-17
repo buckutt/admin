@@ -4,7 +4,8 @@ const state = {
     periods   : [],
     articles  : [],
     fundations: [],
-    groups    : []
+    groups    : [],
+    categories: []
 };
 
 // mutations
@@ -26,6 +27,9 @@ const mutations = {
     },
     ADDGROUPS(state_, groups) {
         state_.groups.push(...groups);
+    },
+    ADDCATEGORIES(state_, categories) {
+        state_.categories.push(...categories);
     },
     UPDATEPERIOD(state_, period, data) {
         state_.periods.forEach((p, i) => {
@@ -59,6 +63,13 @@ const mutations = {
         state_.groups.forEach((g, i) => {
             if (g.id === group.id) {
                 state_.groups[i] = Object.assign(state_.groups[i], data);
+            }
+        });
+    },
+    UPDATECATEGORY(state_, category, data) {
+        state_.categories.forEach((c, i) => {
+            if (c.id === category.id) {
+                state_.categories[i] = Object.assign(state_.categories[i], data);
             }
         });
     },
@@ -121,6 +132,18 @@ const mutations = {
         }
 
         state_.groups.splice(i, 1);
+    },
+    DELETECATEGORY(state_, category) {
+        let i = 0;
+        for (const c of state_.categories) {
+            if (c.id === category.id) {
+                break;
+            }
+
+            ++i;
+        }
+
+        state_.categories.splice(i, 1);
     }
 };
 

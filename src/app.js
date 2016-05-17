@@ -11,17 +11,18 @@ import Vuex      from 'vuex';
 Vue.use(VueRouter);
 Vue.use(Vuex);
 
-import Sidebar   from './components/Sidebar.vue';
-import Dashboard from './components/Dashboard.vue';
-import Devices   from './components/Devices.vue';
-import Items     from './components/Items.vue';
-import Treasury  from './components/Treasury.vue';
-import Users     from './components/Users.vue';
-import Periods   from './components/Periods.vue';
-import Points    from './components/Points.vue';
-import Groups    from './components/Groups.vue';
-import CardBlock from './components/CardBlock.vue';
-import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations, fetchGroups } from './store/actions';
+import Sidebar    from './components/Sidebar.vue';
+import Dashboard  from './components/Dashboard.vue';
+import Devices    from './components/Devices.vue';
+import Items      from './components/Items.vue';
+import Treasury   from './components/Treasury.vue';
+import Users      from './components/Users.vue';
+import Periods    from './components/Periods.vue';
+import Points     from './components/Points.vue';
+import Groups     from './components/Groups.vue';
+import Categories from './components/Categories.vue';
+import CardBlock  from './components/CardBlock.vue';
+import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations, fetchGroups, fetchCategories } from './store/actions';
 
 import store from './store/index';
 
@@ -54,6 +55,9 @@ router.map({
     '/groups': {
         component: Groups
     },
+    '/categories': {
+        component: Categories
+    },
     '/periods': {
         component: Periods
     },
@@ -81,5 +85,6 @@ fetchPeriods(router.app.$store);
 fetchArticles(router.app.$store);
 fetchFundations(router.app.$store);
 fetchGroups(router.app.$store);
+fetchCategories(router.app.$store);
 
 window.router = router;

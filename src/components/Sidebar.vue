@@ -33,6 +33,12 @@
                 </a>
             </li>
             <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/categories' }">
+                    <i class="material-icons">format_list_numbered</i>
+                    Catégories
+                </a>
+            </li>
+            <li>
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/treasury' }">
                     <i class="material-icons">attach_money</i>
                     Trésorerie

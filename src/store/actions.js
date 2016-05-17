@@ -42,6 +42,12 @@ export function fetchGroups({ dispatch }) {
     });
 }
 
+export function fetchCategories({ dispatch }) {
+    get('categories').then(categories => {
+        dispatch('ADDCATEGORIES', categories);
+    });
+}
+
 /**
  * Periods actions
  */
@@ -144,6 +150,28 @@ export function updateGroup({ dispatch }, group, data) {
 export function removeGroup({ dispatch }, group) {
     put(`groups/${group.id}`, { isRemoved: true }).then(() => {
         dispatch('DELETEGROUP', group);
+    });
+}
+
+/**
+ * Categories actions
+ */
+
+export function createCategory({ dispatch }, category) {
+    post('categories', category).then(result => {
+        dispatch('ADDCATEGORIES', [result]);
+    });
+}
+
+export function updateCategory({ dispatch }, category, data) {
+    put(`categories/${category.id}`, data).then(() => {
+        dispatch('UPDATECATEGORY', category, data);
+    });
+}
+
+export function removeCategory({ dispatch }, category) {
+    put(`categories/${category.id}`, { isRemoved: true }).then(() => {
+        dispatch('DELETECATEGORY', category);
     });
 }
 
