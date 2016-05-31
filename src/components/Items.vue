@@ -2,57 +2,31 @@
     <div class="articles">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Articles</h3>
-            <div v-show="selectedArticle.name">
-                Modifier l'article {{ selectedArticle.name }}:<br />
+            <div v-show="selectedArticle.name" transition="fade">
+                <h5>Modifier l'article {{ selectedArticle.name }}</h5>
                 <form v-on:submit.prevent>
-                    <label for="nameMod">Nom</label> <input type="text" v-model="modArticle.name"><br />
-                    <label for="stock">Stock</label> <input type="text" v-model="modArticle.stock"><br />
-                    <label for="alcohol">Alcool</label> <input type="text" v-model="modArticle.alcohol"><br />
-                    <label for="vat">TVA</label> <input type="text" v-model="modArticle.vat"><br />
-                    <input type="submit" value="Modifier" @click="updateArticle(selectedArticle, modArticle)">
+                    <mdl-textfield floating-label="Nom" :value.sync="modArticle.name"></mdl-textfield>
+                    <mdl-textfield floating-label="Stock" :value.sync="modArticle.stock"></mdl-textfield><br />
+                    <mdl-textfield floating-label="Alcool" :value.sync="modArticle.alchohol"></mdl-textfield>
+                    <mdl-textfield floating-label="TVA" :value.sync="modArticle.vat"></mdl-textfield><br />
+                    <mdl-button colored raised @click="updateArticle(selectedArticle, modArticle)">Modifier</mdl-button>
                 </form>
                 <br />
-                Points:
+                <h5>Prix</h5>
                 <form v-on:submit.prevent>
-                    <select v-model="selectedPoint">
-                      <option v-for="point in points" v-bind:value="point">{{ point.name }}</option>
-                    </select>
-                    <input type="submit" value="Ajouter" @click="createArticlePoint(selectedArticle, selectedPoint)">
+                    <mdl-textfield floating-label="Montant" :value.sync="amount"></mdl-textfield>
+                    <mdl-select label="Point" id="point-select" :value.sync="selectedPoint" :options="pointOptions"></mdl-select>
+                    <mdl-select label="Fondation" id="fundation-select" :value.sync="selectedFundation" :options="fundationOptions"></mdl-select><br />
+                    <mdl-select label="Groupe" id="group-select" :value.sync="selectedGroup" :options="groupOptions"></mdl-select>
+                    <mdl-select label="Période" id="period-select" :value.sync="selectedPeriod" :options="periodOptions"></mdl-select><br />
+                    <mdl-button colored raised @click="createArticlePrice(selectedArticle, inputPrice)">Ajouter</mdl-button>
                 </form>
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Point</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="point in detailsArticle.points">
-                            <td class="mdl-data-table__cell--non-numeric">{{ point.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric"><button id="show-dialog" type="button" class="mdl-button" @click="deleteArticlePoint(selectedArticle, point)">Supprimer</button></td>
-                        </tr>
-                    </tbody>
-                </table>
                 <br />
-                Prices:
-                <form v-on:submit.prevent>
-                    Montant: <input type="text" v-model="amount">
-                    <select v-model="selectedFundation">
-                      <option v-for="fundation in fundations" v-bind:value="fundation">{{ fundation.name }}</option>
-                    </select>
-                    <select v-model="selectedGroup">
-                      <option v-for="group in groups" v-bind:value="group">{{ group.name }}</option>
-                    </select>
-                    <select v-model="selectedPeriod">
-                      <option v-for="period in periods" v-bind:value="period">{{ period.name }}</option>
-                    </select>
-                    <input type="submit" value="Ajouter" @click="createArticlePrice(selectedArticle, inputPrice)">
-                </form>
-
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                     <thead>
                         <tr>
                             <th class="mdl-data-table__cell--non-numeric">Montant</th>
+                            <th class="mdl-data-table__cell--non-numeric">Point</th>
                             <th class="mdl-data-table__cell--non-numeric">Fondation</th>
                             <th class="mdl-data-table__cell--non-numeric">Groupe</th>
                             <th class="mdl-data-table__cell--non-numeric">Période</th>
@@ -62,24 +36,26 @@
                     <tbody>
                         <tr v-for="price in detailsArticle.prices">
                             <td class="mdl-data-table__cell--non-numeric">{{ price.amount }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric"><button id="show-dialog" type="button" class="mdl-button" @click="editPrice(price)">Modifier</button><button id="show-dialog" type="button" class="mdl-button" @click="deletePrice(price)">Supprimer</button></td>
+                            <td class="mdl-data-table__cell--non-numeric"><mdl-button @click="deletePrice(price)">Supprimer</mdl-button></td>
                         </tr>
                     </tbody>
                 </table>
-                <button @click="goBack()">Retour</button>
+                <br />
+                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
             </div>
-            <div v-show="!selectedArticle.name">
-                Ajouter un article:<br />
+            <div v-show="!selectedArticle.name" transition="fade">
+                <h5>Ajouter un article</h5>
                 <form v-on:submit.prevent>
-                    <input type="text" v-model="nameAdd"> <input type="submit" value="Créer" @click="createArticle(inputArticle)">
+                    <mdl-textfield floating-label="Nom" :value.sync="nameAdd"></mdl-textfield> <mdl-button colored raised @click="createArticle(inputArticle)">Créer</mdl-button>
                 </form>
 
-                Rechercher un article:<br />
+                <h5>Rechercher un article</h5>
                 <form v-on:submit.prevent>
-                    <input type="text" v-model="name">
+                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
                 </form>
 
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="name.length > 0 && filteredArticles.length > 0">
@@ -92,42 +68,11 @@
                     <tbody>
                         <tr v-for="article in filteredArticles">
                             <td class="mdl-data-table__cell--non-numeric">{{ article.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric"><button id="show-dialog" type="button" class="mdl-button" @click="editArticle(article)">Modifier</button><button id="show-dialog" type="button" class="mdl-button" @click="removeArticle(article)">Supprimer</button></td>
+                            <td class="mdl-data-table__cell--non-numeric"><mdl-button @click="editArticle(article)">Modifier</mdl-button><mdl-button @click="removeArticle(article)">Supprimer</mdl-button></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-    <div class="modal modal__bg" v-modal="openEditModal" v-el:editmodal>
-        <div class="modal__dialog">
-            <div class="modal__header">
-                <h3>Modifier le prix</h3>
-            </div>
-            <form v-on:submit.prevent>
-                <div class="modal__body">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="name" v-model="modPrice.amount">
-                        <label class="mdl-textfield__label" for="name">Montant</label>
-                    </div>
-
-                    <select v-model="modPrice.fundation">
-                      <option v-for="fundation in fundations" v-bind:value="fundation">{{ fundation.name }}</option>
-                    </select>
-
-                    <select v-model="modPrice.group">
-                      <option v-for="group in groups" v-bind:value="group">{{ group.name }}</option>
-                    </select>
-
-                    <select v-model="modPrice.period">
-                      <option v-for="period in periods" v-bind:value="period">{{ period.name }}</option>
-                    </select>
-                </div>
-                <div class="modal__footer">
-                    <input type="submit" class="mdl-button modal__close" @click="updatePrice(selectedPrice, modPrice)" value="Valider">
-                    <button type="button" class="mdl-button modal__close" @click="closeModal()">Annuler</button>
-                </div>
-            </form>
         </div>
     </div>
 </template>
@@ -136,16 +81,15 @@
 import { get, post, put, del } from '../lib/fetch';
 import { createArticle, updateArticle, removeArticle } from '../store/actions';
 import fuzzy from 'fuzzy';
-import modal from '../lib/modal';
 
 export default {
     vuex: {
         getters: {
-            articles: state => state.app.articles,
-            points: state => state.app.points,
+            articles  : state => state.app.articles,
+            points    : state => state.app.points,
             fundations: state => state.app.fundations,
-            periods: state => state.app.periods,
-            groups: state => state.app.groups
+            periods   : state => state.app.periods,
+            groups    : state => state.app.groups
         },
         actions: {
             createArticle: createArticle,
@@ -161,31 +105,28 @@ export default {
             modArticle       : {},
             detailsArticle   : {},
             selectedPoint    : {},
-            selectedPrice    : {},
-            modPrice         : {},
             amount           : 0,
             selectedPeriod   : {},
             selectedGroup    : {},
-            selectedFundation: {},
-            openEditModal    : false
+            selectedFundation: {}
         };
     },
     methods: {
         editArticle(article) {
-            this.selectedArticle = article;
-            this.modArticle = JSON.parse(JSON.stringify(article));
-            this.selectedPoint = this.$store.state.app.points[0];
-            this.selectedPeriod = this.$store.state.app.periods[0];
-            this.selectedGroup = this.$store.state.app.groups[0];
+            this.selectedArticle   = article;
+            this.modArticle        = JSON.parse(JSON.stringify(article));
+            this.selectedPoint     = this.$store.state.app.points[0];
+            this.selectedPeriod    = this.$store.state.app.periods[0];
+            this.selectedGroup     = this.$store.state.app.groups[0];
             this.selectedFundation = this.$store.state.app.fundations[0];
 
             const embedArticles = encodeURIComponent(JSON.stringify({
                 prices: {
                     fundation: true,
                     group    : true,
-                    period   : true
-                },
-                points: true
+                    period   : true,
+                    point    : true
+                }
             }));
 
             get(`articles/${article.id}?embed=${embedArticles}`)
@@ -221,29 +162,6 @@ export default {
                     this.detailsArticle.points.splice(i, 1);
                 });
         },
-        editPrice(price) {
-            this.selectedPrice = price;
-            this.modPrice      = JSON.parse(JSON.stringify(price));
-            this.openEditModal = true;
-        },
-        closeModal() {
-            this.openEditModal = false;
-        },
-        updatePrice(selectedPrice, modPrice) {
-            modPrice.Fundation_id = modPrice.fundation.id;
-            modPrice.Group_id     = modPrice.group.id;
-            modPrice.Period_id    = modPrice.period.id;
-            put(`prices/${selectedPrice.id}`, modPrice)
-                .then(result => {
-                    this.detailsArticle.prices.forEach((p, i) => {
-                        if (p.id === result.id) { 
-                            this.detailsArticle.prices[i] = Object.assign(this.detailsArticle.prices[i], result);
-                        }
-                    });
-                });
-            this.closeModal();
-            this.modPrice = {};
-        },
         deletePrice(price) {
             put(`prices/${price.id}`, {isRemoved: true})
                 .then(result => {
@@ -264,7 +182,8 @@ export default {
             const embedPrices = encodeURIComponent(JSON.stringify({
                 fundation: true,
                 group    : true,
-                period   : true
+                period   : true,
+                point    : true
             }));
 
             post(`prices?embed=${embedPrices}`, price)
@@ -301,13 +220,35 @@ export default {
             const selectedFundation = this.selectedFundation;
             const selectedGroup     = this.selectedGroup;
             const selectedPeriod    = this.selectedPeriod;
+            const selectedPoint     = this.selectedPoint;
 
             return {
                 amount      : amount,
                 Fundation_id: selectedFundation.id,
                 Group_id    : selectedGroup.id,
-                Period_id   : selectedPeriod.id
+                Period_id   : selectedPeriod.id,
+                Point_id    : selectedPoint.id
             };
+        },
+        periodOptions() {
+            return this.periods.map(period => {
+                return { name: period.name, value: period };
+            });
+        },
+        pointOptions() {
+            return this.points.map(point => {
+                return { name: point.name, value: point };
+            });
+        },
+        fundationOptions() {
+            return this.fundations.map(fundation => {
+                return { name: fundation.name, value: fundation };
+            });
+        },
+        groupOptions() {
+            return this.groups.map(group => {
+                return { name: group.name, value: group };
+            });
         }
     }
 }
@@ -331,6 +272,23 @@ export default {
                 display: inline-block;
                 max-width: 150px;
             }
+
+            table {
+                width: 100%;
+                white-space: normal;
+            }
+        }
+
+        .fade-transition {
+            transition: opacity .4s ease;
+        }
+
+        .fade-enter {
+            opacity: 0;
+        }
+
+        .fade-leave {
+            display: none;
         }
     }
 </style>
