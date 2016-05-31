@@ -1,21 +1,12 @@
 <template>
     <div class="treasury">
         <div class="mdl-card mdl-shadow--2dp">
-            <h3>Treasury</h3>
+            <h3>Trésorerie</h3>
             <h4>Recherche</h4>
             <div>
-                <select v-model="point" v-stylized="points">
-                    <option value="0">Tous les points</option>
-                    <option value="{{ point.id }}" v-for="point in points">{{ point.name }}</option>
-                </select>
-                <select v-model="fundation" v-stylized>
-                    <option value="0">Toutes les fondations</option>
-                    <option value="{{ fundation.id }}" v-for="fundation in fundations">{{ fundation.name }}</option>
-                </select>
-                <select v-model="period" v-stylized>
-                    <option value="0">Toutes les périodes</option>
-                    <option value="{{ period.id }}" v-for="period in periods">{{ period.name }}</option>
-                </select>
+                <mdl-select label="Point" id="point-select" :value.sync="point" :options="pointOptions"></mdl-select>
+                <mdl-select label="Fondation" id="select-fundations" :value.sync="fundation" :options="fundationOptions"></mdl-select>
+                <mdl-select label="Periode" id="select-periods" :value.sync="period" :options="periodOptions"></mdl-select>
             </div>
 
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -154,6 +145,21 @@ export default {
             }
 
             return sum;
+        },
+        periodOptions() {
+            return this.periods.map(period => {
+                return { name: period.name, value: period.id };
+            });
+        },
+        pointOptions() {
+            return this.points.map(point => {
+                return { name: point.name, value: point.id };
+            });
+        },
+        fundationOptions() {
+            return this.fundations.map(fundation => {
+                return { name: fundation.name, value: fundation.id };
+            });
         }
     },
 
@@ -172,7 +178,6 @@ export default {
 
             this.dateIn  = period.start;
             this.dateOut = period.end;
-            console.log(period.start, period.end);
 
             this.$els.datein.value  = `Début de la période ${period.name}`;
             this.$els.dateout.value = `Fin de la période ${period.name}`;
@@ -181,6 +186,7 @@ export default {
 
     methods: {
         filter () {
+            console.log(this.point, this.period, this.fundation);
             const q = [];
 
             if (this.$data.point !== '0') {

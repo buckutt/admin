@@ -37,13 +37,12 @@ Vue.directive('stylized', {
         $styledSelect.click(function (e) {
             e.stopPropagation();
 
-            jQuery('div.select-styled.active').each(function() {
+            jQuery('div.select-styled.active').not(this).each(function() {
                 jQuery(this)
                     .removeClass('active')
                     .next('ul.select-options')
                     .hide();
             });
-
 
             jQuery(this)
                 .toggleClass('active')
@@ -74,6 +73,7 @@ Vue.directive('stylized', {
                 const $item = jQuery(this);
                 $el.next().text($item.text()).removeClass('active');
                 $el.val($item.attr('rel'));
+                console.log('CLICK TA MERE', $el.val());
                 $list.hide();
             });
         });

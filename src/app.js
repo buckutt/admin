@@ -7,9 +7,11 @@ import jQuery from 'jquery';
 import Vue       from 'vue';
 import VueRouter from 'vue-router';
 import Vuex      from 'vuex';
+import VueMdl    from 'vue-mdl';
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
+Vue.use(VueMdl);
 
 import Sidebar    from './components/Sidebar.vue';
 import Dashboard  from './components/Dashboard.vue';

@@ -1,5 +1,5 @@
 <template>
-    <div class="treasury">
+    <div class="cardblock">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Blocage de carte</h3>
             <br>
@@ -58,8 +58,14 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .treasury {
+    .cardblock {
         > div {
+            min-height: calc(100% - 40px);
+            margin: 20px ((100% - $cardSize) / 2);
+            overflow-y: auto;
+            padding: 20px;
+            width: $cardSize;
+
             .mdl-textfield {
                 width: auto;
             }
