@@ -48,6 +48,12 @@ export function fetchCategories({ dispatch }) {
     });
 }
 
+export function fetchEvents({ dispatch }) {
+    get('events').then(events => {
+        dispatch('ADDEVENTS', events);
+    });
+}
+
 /**
  * Periods actions
  */
@@ -172,6 +178,28 @@ export function updateCategory({ dispatch }, category, data) {
 export function removeCategory({ dispatch }, category) {
     put(`categories/${category.id}`, { isRemoved: true }).then(() => {
         dispatch('DELETECATEGORY', category);
+    });
+}
+
+/**
+ * Events actions
+ */
+
+export function createEvent({ dispatch }, event) {
+    post('events', event).then(result => {
+        dispatch('ADDEVENTS', [result]);
+    });
+}
+
+export function updateEvent({ dispatch }, event, data) {
+    put(`events/${event.id}`, data).then(() => {
+        dispatch('UPDATEEVENT', event, data);
+    });
+}
+
+export function removeEvent({ dispatch }, event) {
+    put(`events/${event.id}`, { isRemoved: true }).then(() => {
+        dispatch('DELETEEVENT', event);
     });
 }
 

@@ -9,6 +9,12 @@
                 </a>
             </li>
             <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/events' }">
+                    <i class="material-icons">cake</i>
+                    Évenements
+                </a>
+            </li>
+            <li>
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/devices' }">
                     <i class="material-icons">devices</i>
                     Équipements

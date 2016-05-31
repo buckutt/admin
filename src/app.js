@@ -23,8 +23,9 @@ import Periods    from './components/Periods.vue';
 import Points     from './components/Points.vue';
 import Groups     from './components/Groups.vue';
 import Categories from './components/Categories.vue';
+import Events     from './components/Events.vue';
 import CardBlock  from './components/CardBlock.vue';
-import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations, fetchGroups, fetchCategories } from './store/actions';
+import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations, fetchGroups, fetchCategories, fetchEvents } from './store/actions';
 
 import store from './store/index';
 
@@ -66,6 +67,9 @@ router.map({
     '/points': {
         component: Points
     },
+    '/events': {
+        component: Events
+    },
     '/cardBlock': {
         component: CardBlock
     }
@@ -88,5 +92,6 @@ fetchArticles(router.app.$store);
 fetchFundations(router.app.$store);
 fetchGroups(router.app.$store);
 fetchCategories(router.app.$store);
+fetchEvents(router.app.$store);
 
 window.router = router;
