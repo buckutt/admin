@@ -10,7 +10,7 @@
                         <label for="nameMod" class="mdl-textfield__label">Nom</label>
                     </div>
                     <br />
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" value="Modifier" @click="updateCategory(selectedCategory, modCategory)">
+                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" value="Modifier" @click="updatePromotion(selectedPromotion, modPromotion)">
                 </form>
                 <br />
                 <h5>Prix:</h5>
@@ -19,6 +19,9 @@
                         <input type="text" class="mdl-textfield__input" v-model="amount">
                         <label for="amount" class="mdl-textfield__label">Montant</label>
                     </div>
+                    <select v-model="selectedPoint">
+                      <option v-for="point in points" v-bind:value="point">{{ point.name }}</option>
+                    </select>
                     <select v-model="selectedFundation">
                       <option v-for="fundation in fundations" v-bind:value="fundation">{{ fundation.name }}</option>
                     </select>
@@ -35,6 +38,7 @@
                     <thead>
                         <tr>
                             <th class="mdl-data-table__cell--non-numeric">Montant</th>
+                            <th class="mdl-data-table__cell--non-numeric">Point</th>
                             <th class="mdl-data-table__cell--non-numeric">Fondation</th>
                             <th class="mdl-data-table__cell--non-numeric">Groupe</th>
                             <th class="mdl-data-table__cell--non-numeric">Période</th>
@@ -44,6 +48,7 @@
                     <tbody>
                         <tr v-for="price in detailsPromotion.prices">
                             <td class="mdl-data-table__cell--non-numeric">{{ price.amount }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
@@ -162,6 +167,7 @@ export default {
     vuex: {
         getters: {
             promotions: state => state.app.promotions,
+            points    : state => state.app.points,
             fundations: state => state.app.fundations,
             periods   : state => state.app.periods,
             groups    : state => state.app.groups,
@@ -185,6 +191,7 @@ export default {
             selectedPeriod   : {},
             selectedGroup    : {},
             selectedFundation: {},
+            selectedPoint    : {},
             articleName      : '',
             setName          : ''
         };
@@ -229,12 +236,14 @@ export default {
             this.selectedPeriod    = this.$store.state.app.periods[0];
             this.selectedGroup     = this.$store.state.app.groups[0];
             this.selectedFundation = this.$store.state.app.fundations[0];
+            this.selectedPoint     = this.$store.state.app.points[0];
 
             const embedPromotions = encodeURIComponent(JSON.stringify({
                 prices: {
                     fundation: true,
                     group    : true,
-                    period   : true
+                    period   : true,
+                    point    : true
                 },
                 articles: true,
                 sets: true
@@ -253,7 +262,8 @@ export default {
             const embedPrices = encodeURIComponent(JSON.stringify({
                 fundation: true,
                 group    : true,
-                period   : true
+                period   : true,
+                point    : true
             }));
 
             post(`prices?embed=${embedPrices}`, price)
@@ -351,9 +361,11 @@ export default {
             const selectedFundation = this.selectedFundation;
             const selectedGroup     = this.selectedGroup;
             const selectedPeriod    = this.selectedPeriod;
+            const selectedPoint     = this.selectedPoint;
 
             return {
                 amount      : amount,
+                Point_id    : selectedPoint.id,
                 Fundation_id: selectedFundation.id,
                 Group_id    : selectedGroup.id,
                 Period_id   : selectedPeriod.id

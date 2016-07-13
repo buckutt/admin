@@ -108,7 +108,8 @@ export default {
             amount           : 0,
             selectedPeriod   : {},
             selectedGroup    : {},
-            selectedFundation: {}
+            selectedFundation: {},
+            selectedPoint    : {}
         };
     },
     methods: {
