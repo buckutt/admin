@@ -39,6 +39,12 @@
                 </a>
             </li>
             <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/promotions' }">
+                    <i class="material-icons">shopping_cart</i>
+                    Promotions
+                </a>
+            </li>
+            <li>
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/categories' }">
                     <i class="material-icons">format_list_numbered</i>
                     Catégories

@@ -21,11 +21,12 @@ import Treasury   from './components/Treasury.vue';
 import Users      from './components/Users.vue';
 import Periods    from './components/Periods.vue';
 import Points     from './components/Points.vue';
+import Promotions from './components/Promotions.vue';
 import Groups     from './components/Groups.vue';
 import Categories from './components/Categories.vue';
 import Events     from './components/Events.vue';
 import CardBlock  from './components/CardBlock.vue';
-import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations, fetchGroups, fetchCategories, fetchEvents } from './store/actions';
+import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations, fetchGroups, fetchCategories, fetchEvents, fetchPromotions, fetchSets } from './store/actions';
 
 import store from './store/index';
 
@@ -67,6 +68,9 @@ router.map({
     '/points': {
         component: Points
     },
+    '/promotions': {
+        component: Promotions
+    },
     '/events': {
         component: Events
     },
@@ -92,6 +96,8 @@ fetchArticles(router.app.$store);
 fetchFundations(router.app.$store);
 fetchGroups(router.app.$store);
 fetchCategories(router.app.$store);
+fetchPromotions(router.app.$store);
+fetchSets(router.app.$store);
 fetchEvents(router.app.$store);
 
 window.router = router;

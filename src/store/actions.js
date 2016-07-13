@@ -48,6 +48,18 @@ export function fetchCategories({ dispatch }) {
     });
 }
 
+export function fetchPromotions({ dispatch }) {
+    get('promotions').then(promotions => {
+        dispatch('ADDPROMOTIONS', promotions);
+    });
+}
+
+export function fetchSets({ dispatch }) {
+    get('sets').then(sets => {
+        dispatch('ADDSETS', sets);
+    });
+}
+
 export function fetchEvents({ dispatch }) {
     get('events').then(events => {
         dispatch('ADDEVENTS', events);
@@ -178,6 +190,50 @@ export function updateCategory({ dispatch }, category, data) {
 export function removeCategory({ dispatch }, category) {
     put(`categories/${category.id}`, { isRemoved: true }).then(() => {
         dispatch('DELETECATEGORY', category);
+    });
+}
+
+/**
+ * Promotions actions
+ */
+
+export function createPromotion({ dispatch }, promotion) {
+    post('promotions', promotion).then(result => {
+        dispatch('ADDPROMOTIONS', [result]);
+    });
+}
+
+export function updatePromotion({ dispatch }, promotion, data) {
+    put(`promotions/${promotion.id}`, data).then(() => {
+        dispatch('UPDATEPROMOTION', promotion, data);
+    });
+}
+
+export function removePromotion({ dispatch }, promotion) {
+    put(`promotions/${promotion.id}`, { isRemoved: true }).then(() => {
+        dispatch('DELETEPROMOTION', promotion);
+    });
+}
+
+/**
+ * Sets actions
+ */
+
+export function createSet({ dispatch }, set) {
+    post('sets', set).then(result => {
+        dispatch('ADDSETS', [result]);
+    });
+}
+
+export function updateSet({ dispatch }, set, data) {
+    put(`sets/${set.id}`, data).then(() => {
+        dispatch('UPDATESET', set, data);
+    });
+}
+
+export function removeSet({ dispatch }, set) {
+    put(`sets/${set.id}`, { isRemoved: true }).then(() => {
+        dispatch('DELETESET', set);
     });
 }
 

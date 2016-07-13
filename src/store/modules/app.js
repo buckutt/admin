@@ -6,6 +6,8 @@ const state = {
     fundations: [],
     groups    : [],
     categories: [],
+    promotions: [],
+    sets      : [],
     events    : []
 };
 
@@ -31,6 +33,12 @@ const mutations = {
     },
     ADDCATEGORIES(state_, categories) {
         state_.categories.push(...categories);
+    },
+    ADDPROMOTIONS(state_, promotions) {
+        state_.promotions.push(...promotions);
+    },
+    ADDSETS(state_, sets) {
+        state_.sets.push(...sets);
     },
     ADDEVENTS(state_, events) {
         state_.events.push(...events);
@@ -74,6 +82,20 @@ const mutations = {
         state_.categories.forEach((c, i) => {
             if (c.id === category.id) {
                 state_.categories[i] = Object.assign(state_.categories[i], data);
+            }
+        });
+    },
+    UPDATEPROMOTION(state_, promotion, data) {
+        state_.promotions.forEach((p, i) => {
+            if (p.id === promotion.id) {
+                state_.promotions[i] = Object.assign(state_.promotions[i], data);
+            }
+        });
+    },
+    UPDATESET(state_, set, data) {
+        state_.sets.forEach((s, i) => {
+            if (s.id === set.id) {
+                state_.sets[i] = Object.assign(state_.sets[i], data);
             }
         });
     },
@@ -156,6 +178,18 @@ const mutations = {
 
         state_.categories.splice(i, 1);
     },
+    DELETEPROMOTION(state_, promotion) {
+        let i = 0;
+        for (const p of state_.promotions) {
+            if (p.id === promotion.id) {
+                break;
+            }
+
+            ++i;
+        }
+
+        state_.promotions.splice(i, 1);
+    },
     DELETEEVENT(state_, event) {
         let i = 0;
         for (const e of state_.events) {
@@ -167,6 +201,18 @@ const mutations = {
         }
 
         state_.events.splice(i, 1);
+    },
+    DELETESET(state_, set) {
+        let i = 0;
+        for (const s of state_.sets) {
+            if (s.id === set.id) {
+                break;
+            }
+
+            ++i;
+        }
+
+        state_.sets.splice(i, 1);
     }
 };
 
