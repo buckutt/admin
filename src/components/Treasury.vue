@@ -8,20 +8,12 @@
                 <mdl-select label="Fondation" id="select-fundations" :value.sync="fundation" :options="fundationOptions"></mdl-select>
                 <mdl-select label="Periode" id="select-periods" :value.sync="period" :options="periodOptions"></mdl-select>
             </div>
-
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input" type="text" pattern="\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}" id="datein" v-el:datein>
-                <label class="mdl-textfield__label" for="datein">Début</label>
-                <span class="mdl-textfield__error">L'entrée n'est pas une date</span>
+            <div>
+                <mdl-textfield floating-label="Début" :value.sync="dateIn" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" v-el:datein></mdl-textfield>
+                <mdl-textfield floating-label="Fin" :value.sync="dateOut" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateout" v-el:dateout></mdl-textfield>
             </div>
+            <mdl-button colored raised @click="filter()">Rechercher</mdl-button>
 
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input" type="text" pattern="\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}" id="dateout" v-el:dateout>
-                <label class="mdl-textfield__label" for="dateout">Fin</label>
-                <span class="mdl-textfield__error">La fin n'est pas une date</span>
-            </div>
-
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="filter()">Rechercher</button>
             <h4>Ventes <span class="small">(total: {{ totalSell | price true }})</span></h4>
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                 <thead>
@@ -85,14 +77,12 @@
             </table>
         </div>
     </div>
-    <div class="mdl-js-snackbar mdl-snackbar" v-el:snackfilter>
-        <div class="mdl-snackbar__text">You need at least one filter</div>
-        <button class="mdl-snackbar__action" type="button"></button>
-    </div>
+    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>
 import price from '../lib/price';
+import { parseDate, convertDate } from '../lib/date';
 import { get } from '../lib/fetch';
 import '../lib/select';
 
@@ -176,11 +166,8 @@ export default {
                 return;
             }
 
-            this.dateIn  = period.start;
-            this.dateOut = period.end;
-
-            this.$els.datein.value  = `Début de la période ${period.name}`;
-            this.$els.dateout.value = `Fin de la période ${period.name}`;
+            this.dateIn  = parseDate(period.start);
+            this.dateOut = parseDate(period.end);
         }
     },
 
@@ -206,7 +193,7 @@ export default {
             if (this.$data.dateIn !== '') {
                 q.push(JSON.stringify({
                     field: 'createdAt',
-                    ge: this.$data.dateIn,
+                    ge: convertDate(this.$data.dateIn),
                     date: true
                 }));
             }
@@ -214,7 +201,7 @@ export default {
             if (this.$data.dateOut !== '') {
                 q.push(JSON.stringify({
                     field: 'createdAt',
-                    le: this.$data.dateOut,
+                    le: convertDate(this.$data.dateOut),
                     date: true
                 }));
             }
@@ -222,14 +209,10 @@ export default {
             if (q.length === 0) {
                 var data = {
                     message: 'You need at least one filter.',
-                    timeout: 20000,
-                    actionHandler: () => {
-                        this.$els.snackfilter.classList.remove('mdl-snackbar--active');
-                        this.$els.snackfilter.setAttribute('aria-hidden', 'false');
-                    },
-                    actionText: 'Ok'
+                    timeout: 2000
                 };
-                this.$els.snackfilter.MaterialSnackbar.showSnackbar(data);
+
+                this.$broadcast('snackfilter', data);
                 return;
             }
 
@@ -285,13 +268,13 @@ export default {
         const $dateOut = this.$els.dateout;
         jQuery($dateIn).datetimepicker({
             onChangeDateTime: ct => {
-                this.$data.dateIn = ct;
+                this.$data.dateIn = parseDate(ct);
             },
             format:'d/m/Y H:i'
         });
         jQuery($dateOut).datetimepicker({
             onChangeDateTime: ct => {
-                this.$data.dateOut = ct;
+                this.$data.dateOut = parseDate(ct);
             },
             format:'d/m/Y H:i'
         });

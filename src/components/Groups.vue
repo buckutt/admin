@@ -5,22 +5,15 @@
             <div v-show="selectedGroup.name" transition="fade">
                 <h5>Modifier le groupe {{ selectedGroup.name }}:</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" class="mdl-textfield__input" v-model="modGroup.name">
-                        <label for="nameMod" class="mdl-textfield__label">Nom</label>
-                    </div>
-                    <br />
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" value="Modifier" @click="updateGroup(selectedGroup, modGroup)">
+                    <mdl-textfield floating-label="Nom" :value.sync="modGroup.name"></mdl-textfield><br />
+                    <mdl-button colored raised @click="updateGroup(selectedGroup, modGroup)">Modifier</mdl-button>
                 </form>
                 <br />
 
                 <h5>Rechercher un membre:</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" v-model="memberName" class="mdl-textfield__input">
-                        <label for="memberName" class="mdl-textfield__label">Prénom</label>
-                    </div>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" value="Rechercher" @click="searchMember()">
+                    <mdl-textfield floating-label="Prénom" :value.sync="memberName"></mdl-textfield>
+                    <mdl-button colored raised @click="searchMember()">Rechercher</mdl-button>
                 </form>
 
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="members.length > 0">
@@ -34,23 +27,19 @@
                         <tr v-for="member in members">
                             <td class="mdl-data-table__cell--non-numeric name">{{ member.firstname }} {{ member.lastname }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <button type="button" class="mdl-button" @click="addToGroup(member)" v-show="!isMember(member)">Ajouter</button>
-                                <button type="button" class="mdl-button" @click="removeFromGroup(member)" v-show="isMember(member)">Enlever</button>
+                                <mdl-button @click="addToGroup(member)" v-show="!isMember(member)">Ajouter</mdl-button>
+                                <mdl-button @click="removeFromGroup(member)" v-show="isMember(member)">Enlever</mdl-button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <br />
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="goBack()">Retour</button>
+                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
             </div>
             <div v-show="!selectedGroup.name" transition="fade">
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="name" v-model="name">
-                        <label class="mdl-textfield__label" for="name">Nom</label>
-                    </div>
-                    <br>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="createGroup(inputGroup)" value="Créer">
+                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield><br />
+                    <mdl-button colored raised @click="createGroup(inputGroup)">Créer</mdl-button>
                 </form>
 
                 <br>
@@ -66,8 +55,8 @@
                         <tr v-for="group in groups">
                             <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <button type="button" class="mdl-button" @click="editGroup(group)">Modifier</button>
-                                <button type="button" class="mdl-button" @click="removeGroup(group)">Supprimer</button>
+                                <mdl-button @click="editGroup(group)">Modifier</mdl-button>
+                                <mdl-button @click="removeGroup(group)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>

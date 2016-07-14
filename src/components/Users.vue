@@ -5,41 +5,19 @@
             <div v-show="selectedUser.firstname" transition="fade">
                 <h5 class="name">Modifier {{ selectedUser.firstname }} {{ selectedUser.lastname }}</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input name" type="text" id="lastname" v-model="modUser.lastname">
-                        <label class="mdl-textfield__label" for="lastname">Nom</label>
-                    </div>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input name" type="text" id="firstname" v-model="modUser.firstname">
-                        <label class="mdl-textfield__label" for="firstname">Prénom</label>
-                    </div>
-                    <br />
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="nickname" v-model="modUser.nickname">
-                        <label class="mdl-textfield__label" for="nickname">Surnom</label>
-                    </div>
-                    <br />
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="mail" v-model="modUser.mail">
-                        <label class="mdl-textfield__label" for="mail">Mail</label>
-                    </div>
-                    <br>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="updateUser(selectedUser, modUser)" value="Modifier">
+                    <mdl-textfield floating-label="Nom" :value.sync="modUser.lastname"></mdl-textfield>
+                    <mdl-textfield floating-label="Prénom" :value.sync="modUser.firstname"></mdl-textfield><br />
+                    <mdl-textfield floating-label="Surnom" :value.sync="modUser.nickname"></mdl-textfield><br />
+                    <mdl-textfield floating-label="Mail" :value.sync="modUser.mail"></mdl-textfield><br />
+                    <mdl-button colored raised @click="updateUser(selectedUser, modUser)">Modifier</mdl-button>
                 </form>
                 <br />
                 <h5>Droits</h5>
                 <form v-on:submit.prevent>
-                    <select v-model="rightChoice">
-                        <option v-bind:value="rightName" v-for="rightName in rightsList">{{ rightName }}</option>
-                    </select>
-                    <select v-model="rightPoint">
-                        <option v-bind:value="null" selected>Aucun</option>
-                        <option v-bind:value="point" v-for="point in points">{{ point.name }}</option>
-                    </select>
-                    <select v-model="rightPeriod">
-                        <option v-bind:value="period" v-for="period in periods">{{ period.name }}</option>
-                    </select>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="createUserRight(selectedUser, inputRight)" value="Ajouter">
+                    <mdl-select label="Droit" id="right-select" :value.sync="rightChoice" :options="rightsList"></mdl-select>
+                    <mdl-select label="Point" id="point-select" :value.sync="rightPoint" :options="pointOptions"></mdl-select>
+                    <mdl-select label="Période" id="period-select" :value.sync="rightPeriod" :options="periodOptions"></mdl-select><br />
+                    <mdl-button colored raised @click="createUserRight(selectedUser, inputRight)">Ajouter</mdl-button>
                 </form>
                 <br />
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="detailsUser.rights">
@@ -58,47 +36,29 @@
                             <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ right.period.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <button type="button" class="mdl-button" @click="openModal(right)">Modifier</button>
-                                <button type="button" class="mdl-button" @click="deleteRight(right)">Supprimer</button>
+                                <mdl-button @click="openModal(right)">Modifier</mdl-button>
+                                <mdl-button @click="deleteRight(right)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <br />
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="goBack()">Retour</button>
+                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
             </div>
             <div v-show="!selectedUser.firstname" transition="fade">
                 <h5>Créer un utilisateur</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="lastname" v-model="lastname">
-                        <label class="mdl-textfield__label" for="lastname">Nom</label>
-                    </div>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="firstname" v-model="firstname">
-                        <label class="mdl-textfield__label" for="firstname">Prénom</label>
-                    </div>
-                    <br />
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="nickname" v-model="nickname">
-                        <label class="mdl-textfield__label" for="nickname">Surnom</label>
-                    </div>
-                    <br />
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="mail" v-model="mail">
-                        <label class="mdl-textfield__label" for="mail">Mail</label>
-                    </div>
-                    <br>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="createUser(inputUser)" value="Créer">
+                    <mdl-textfield floating-label="Nom" :value.sync="lastname"></mdl-textfield>
+                    <mdl-textfield floating-label="Prénom" :value.sync="firstname"></mdl-textfield><br />
+                    <mdl-textfield floating-label="Surnom" :value.sync="nickname"></mdl-textfield><br />
+                    <mdl-textfield floating-label="Mail" :value.sync="mail"></mdl-textfield><br />
+                    <mdl-button colored raised @click="createUser(inputUser)">Créer</mdl-button>
                 </form>
 
                 <h5>Rechercher un utilisateur</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" v-model="userName" class="mdl-textfield__input">
-                        <label for="userName" class="mdl-textfield__label">Nom</label>
-                    </div>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" value="Rechercher" @click="searchUser()">
+                    <mdl-textfield floating-label="Prénom" :value.sync="userName"></mdl-textfield>
+                    <mdl-button colored raised @click="searchUser()">Rechercher</mdl-button>
                 </form>
 
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="users.length > 0">
@@ -116,8 +76,8 @@
                             <td class="mdl-data-table__cell--non-numeric">{{ user.nickname }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ user.mail }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <button type="button" class="mdl-button" @click="editUser(user)">Modifier</button>
-                                <button type="button" class="mdl-button" @click="deleteUser(user)">Supprimer</button>
+                                <mdl-button @click="editUser(user)">Modifier</mdl-button>
+                                <mdl-button @click="deleteUser(user)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>
@@ -132,20 +92,13 @@
             </div>
             <form v-on:submit.prevent>
                 <div class="modal__body">
-                    <select v-model="modRight.name">
-                        <option v-bind:value="rightName" v-for="rightName in rightsList">{{ rightName }}</option>
-                    </select><br />
-                    <select v-model="modRight.point">
-                        <option v-bind:value="null" selected>Aucun</option>
-                        <option v-bind:value="point" v-for="point in points">{{ point.name }}</option>
-                    </select><br />
-                    <select v-model="modRight.period">
-                        <option v-bind:value="period" v-for="period in periods">{{ period.name }}</option>
-                    </select>
+                    <mdl-select label="Droit" id="modright-select" :value.sync="modRight.name" :options="rightsList"></mdl-select><br />
+                    <mdl-select label="Point" id="modpoint-select" :value.sync="modRight.Point_id" :options="pointOptions"></mdl-select><br />
+                    <mdl-select label="Période" id="modperiod-select" :value.sync="modRight.Period_id" :options="periodOptions"></mdl-select><br />
                 </div>
                 <div class="modal__footer">
-                    <input type="submit" class="mdl-button modal__close" @click="updateRight(selectedRight, editRight)" value="Valider">
-                    <button type="button" class="mdl-button modal__close" @click="closeModal()">Annuler</button>
+                    <mdl-button @click="updateRight(selectedRight, editRight)">Valider</mdl-button>
+                    <mdl-button @click="closeModal()">Annuler</mdl-button>
                 </div>
             </form>
         </div>
@@ -226,7 +179,7 @@ export default {
         editUser(user) {
             this.rightChoice = this.rightsList[0];
             this.rightPoint  = null;
-            this.rightPeriod = this.$store.state.app.periods[0];
+            this.rightPeriod = this.$store.state.app.periods[0].id;
 
             const embedUsers = encodeURIComponent(JSON.stringify({
                 rights: {
@@ -280,19 +233,21 @@ export default {
                 });
         },
         updateRight(selectedRight, modRight) {
-            if(modRight.point) {
-                modRight.Point_id  = modRight.point.id;
-            } else {
-                modRight.Point_id = null;
-            }
-            modRight.Period_id = modRight.period.id;
-            put(`rights/${selectedRight.id}`, modRight)
+            const embedRight  = encodeURIComponent(JSON.stringify({
+                point : true,
+                period: true
+            }));
+
+            put(`rights/${selectedRight.id}?embed=${embedRight}`, modRight)
                 .then(result => {
                     this.detailsUser.rights.forEach((r, i) => {
                         if (r.id === result.id) {
-                            if(!result.point) {
+                            if(!modRight.Point_id) {
                                 result.point = null;
+                            } else {
+                                result.point = this.pointById(modRight.Point_id);
                             }
+                            result.period = this.periodById(modRight.Period_id);
                             this.detailsUser.rights[i] = Object.assign(this.detailsUser.rights[i], result);
                         }
                     });
@@ -333,13 +288,39 @@ export default {
                 });
         },
         openModal(right) {
-            this.selectedRight = right;
-            this.modRight      = JSON.parse(JSON.stringify(right));
+            this.selectedRight      = right;
+            this.modRight           = JSON.parse(JSON.stringify(right));
+            if(this.modRight.point) {
+                this.modRight.Point_id  = this.modRight.point.id;
+            } else {
+                this.modRight.Point_id = null;
+            }
+            this.modRight.Period_id = this.modRight.period.id;
+            delete this.modRight.point;
+            delete this.modRight.period;
 
             this.openEditModal = true;
         },
         closeModal() {
             this.openEditModal = false;
+        },
+        pointById(id) {
+            let point = null;
+            this.points.forEach((p, i) => {
+                if(p.id == id) {
+                    point = p;
+                }
+            });
+            return point;
+        },
+        periodById(id) {
+            let period = null;
+            this.periods.forEach((p, i) => {
+                if(p.id == id) {
+                    period = p;
+                }
+            });
+            return period;
         }
     },
 
@@ -369,17 +350,17 @@ export default {
             const period     = this.rightPeriod;
             this.rightChoice = this.rightsList[0];
             this.rightPoint  = null;
-            this.rightPeriod = this.$store.state.app.periods[0];
+            this.rightPeriod = this.$store.state.app.periods[0].id;
             if(!point) {
                 return {
                     name     : name,
-                    Period_id: period.id
+                    Period_id: period
                 }
             }
             return {
                 name     : name,
-                Period_id: period.id,
-                Point_id : point.id
+                Period_id: period,
+                Point_id : point
             }
         },
         editRight() {
@@ -387,6 +368,18 @@ export default {
             this.modRight = {};
             this.closeModal();
             return right;
+        },
+        periodOptions() {
+            return this.periods.map(period => {
+                return { name: period.name, value: period.id };
+            });
+        },
+        pointOptions() {
+            let points = this.points.map(point => {
+                return { name: point.name, value: point.id };
+            });
+            points.unshift({ name: 'Aucun', value: null });
+            return points;
         }
     }
 }

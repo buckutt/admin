@@ -2,15 +2,10 @@
     <div class="cardblock">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Blocage de carte</h3>
-            <br>
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input" type="text" id="username" v-model="username">
-                <label class="mdl-textfield__label" for="username">Nom et/ou Prénom</label>
-            </div>
-
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="searchUser(username)">
-                Rechercher
-            </button>
+            <form v-on:submit.prevent>
+                <mdl-textfield floating-label="Nom et/ou Prénom" :value.sync="username"></mdl-textfield><br />
+                <mdl-button colored raised @click="searchUser(username)">Rechercher</mdl-button>
+            </form>
 
             <ul>
                 <li class="mdl-list__item" v-for="user in foundUsers" id="lock-{{ $index }}">
@@ -66,8 +61,8 @@ export default {
             padding: 20px;
             width: $cardSize;
 
-            .mdl-textfield {
-                width: auto;
+            form, .mdl-textfield, .mdl-button {
+                width: 100%;
             }
 
             ul {

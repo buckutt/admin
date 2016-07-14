@@ -5,27 +5,21 @@
             <div v-show="selectedCategory.name" transition="fade">
                 <h5>Modifier la catégorie {{ selectedCategory.name }}:</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" class="mdl-textfield__input" v-model="modCategory.name">
-                        <label for="nameMod" class="mdl-textfield__label">Nom</label>
-                    </div>
+                    <mdl-textfield floating-label="Nom" :value.sync="modCategory.name"></mdl-textfield>
                     <br />
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" value="Modifier" @click="updateCategory(selectedCategory, modCategory)">
+                    <mdl-button colored raised @click="updateCategory(selectedCategory, modCategory)">Modifier</mdl-button>
                 </form>
                 <br />
 
                 <div v-show="detailsCategory.articles">
                     <h5>Articles dans la catégorie:</h5>
-                    <button v-for="article in detailsCategory.articles" class="mdl-button" @click="search(article)">{{ article.name }}</button>
+                    <mdl-button v-for="article in detailsCategory.articles" @click="search(article)">{{ article.name }}</mdl-button>
                     <br />
                 </div>
 
                 <h5>Rechercher un article:</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" v-model="articleName" class="mdl-textfield__input">
-                        <label for="articleName" class="mdl-textfield__label">Nom</label>
-                    </div>
+                    <mdl-textfield floating-label="Nom" :value.sync="articleName"></mdl-textfield>
                 </form>
 
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="articleName.length > 0 && filteredArticles.length > 0">
@@ -39,23 +33,20 @@
                         <tr v-for="article in filteredArticles">
                             <td class="mdl-data-table__cell--non-numeric name">{{ article.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <button type="button" class="mdl-button" @click="addToCategory(article)" v-show="!isInCategory(article)">Ajouter</button>
-                                <button type="button" class="mdl-button" @click="removeFromCategory(article)" v-show="isInCategory(article)">Enlever</button>
+                                <mdl-button @click="addToCategory(article)" v-show="!isInCategory(article)">Ajouter</mdl-button>
+                                <mdl-button @click="removeFromCategory(article)" v-show="isInCategory(article)">Enlever</mdl-button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <br />
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="goBack()">Retour</button>
+                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
             </div>
             <div v-show="!selectedCategory.name" transition="fade">
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="name" v-model="name">
-                        <label class="mdl-textfield__label" for="name">Nom</label>
-                    </div>
+                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
                     <br>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="createCategory(inputCategory)" value="Créer">
+                    <mdl-button colored raised @click="createCategory(inputCategory)">Créer</mdl-button>
                 </form>
 
                 <br>
@@ -71,8 +62,8 @@
                         <tr v-for="category in categories">
                             <td class="mdl-data-table__cell--non-numeric">{{ category.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <button type="button" class="mdl-button" @click="editCategory(category)">Modifier</button>
-                                <button type="button" class="mdl-button" @click="removeCategory(category)">Supprimer</button>
+                                <mdl-button @click="editCategory(category)">Modifier</mdl-button>
+                                <mdl-button @click="removeCategory(category)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>
@@ -112,6 +103,7 @@ export default {
 
     methods: {
         goBack() {
+            this.articleName      = '';
             this.selectedCategory = {};
             this.modCategory      = {};
         },
@@ -136,12 +128,14 @@ export default {
         },
         isInCategory(article) {
             let isInCategory = false;
-            if(this.detailsCategory.articles.length > 0) {
-                this.detailsCategory.articles.forEach((a, i) => {
-                    if(a.id == article.id) {
-                        isInCategory = true;
-                    }
-                });
+            if(this.detailsCategory.articles) {
+                if(this.detailsCategory.articles.length > 0) {
+                    this.detailsCategory.articles.forEach((a, i) => {
+                        if(a.id == article.id) {
+                            isInCategory = true;
+                        }
+                    });
+                }
             }
             return isInCategory;
         },
@@ -172,7 +166,6 @@ export default {
         filteredArticles() {
             let val           = this.articleName;
             let articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
-            console.log(articlesNames);
             return articlesNames.map(article => {
                 return article.original;
             });

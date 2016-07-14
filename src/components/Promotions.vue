@@ -5,33 +5,18 @@
             <div v-show="selectedPromotion.name" transition="fade">
                 <h5>Modifier la promotion {{ selectedPromotion.name }}:</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" class="mdl-textfield__input" v-model="modPromotion.name">
-                        <label for="nameMod" class="mdl-textfield__label">Nom</label>
-                    </div>
-                    <br />
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" value="Modifier" @click="updatePromotion(selectedPromotion, modPromotion)">
+                    <mdl-textfield floating-label="Nom" :value.sync="modPromotion.name"></mdl-textfield><br />
+                    <mdl-button colored raised @click="updatePromotion(selectedPromotion, modPromotion)">Modifier</mdl-button>
                 </form>
                 <br />
                 <h5>Prix:</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input type="text" class="mdl-textfield__input" v-model="amount">
-                        <label for="amount" class="mdl-textfield__label">Montant</label>
-                    </div>
-                    <select v-model="selectedPoint">
-                      <option v-for="point in points" v-bind:value="point">{{ point.name }}</option>
-                    </select>
-                    <select v-model="selectedFundation">
-                      <option v-for="fundation in fundations" v-bind:value="fundation">{{ fundation.name }}</option>
-                    </select>
-                    <select v-model="selectedGroup">
-                      <option v-for="group in groups" v-bind:value="group">{{ group.name }}</option>
-                    </select>
-                    <select v-model="selectedPeriod">
-                      <option v-for="period in periods" v-bind:value="period">{{ period.name }}</option>
-                    </select>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" value="Ajouter" @click="createPromotionPrice(selectedPromotion, inputPrice)">
+                    <mdl-textfield floating-label="Montant" :value.sync="amount"></mdl-textfield>
+                    <mdl-select label="Point" id="point-select" :value.sync="selectedPoint" :options="pointOptions"></mdl-select>
+                    <mdl-select label="Fondation" id="fundation-select" :value.sync="selectedFundation" :options="fundationOptions"></mdl-select><br />
+                    <mdl-select label="Groupe" id="group-select" :value.sync="selectedGroup" :options="groupOptions"></mdl-select>
+                    <mdl-select label="Période" id="period-select" :value.sync="selectedPeriod" :options="periodOptions"></mdl-select><br />
+                    <mdl-button colored raised @click="createPromotionPrice(selectedPromotion, inputPrice)">Ajouter</mdl-button>
                 </form>
                 <br />
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
@@ -52,7 +37,7 @@
                             <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric"><button id="show-dialog" type="button" class="mdl-button" @click="deletePrice(price)">Supprimer</button></td>
+                            <td class="mdl-data-table__cell--non-numeric"><mdl-button @click="deletePrice(price)">Supprimer</mdl-button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -60,15 +45,12 @@
                 <div class="setsManagement">
                     <div v-show="detailsPromotion.sets.length > 0">
                         <h5>Sets dans la promotion:</h5>
-                        <button v-for="set in detailsPromotion.sets" track-by="$index" class="mdl-button" @click="searchSet(set)">{{ set.name }}</button>
+                        <mdl-button v-for="set in detailsPromotion.sets" track-by="$index" @click="searchSet(set)">{{ set.name }}</mdl-button>
                     </div>
 
                     <h5>Rechercher un set:</h5>
                     <form v-on:submit.prevent>
-                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input type="text" v-model="setName" class="mdl-textfield__input">
-                            <label for="setName" class="mdl-textfield__label">Nom</label>
-                        </div>
+                        <mdl-textfield floating-label="Nom" :value.sync="setName"></mdl-textfield>
                     </form>
 
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="setName.length > 0 && filteredSets.length > 0">
@@ -82,8 +64,8 @@
                             <tr v-for="set in filteredSets">
                                 <td class="mdl-data-table__cell--non-numeric name">{{ set.name }}</td>
                                 <td class="mdl-data-table__cell--non-numeric">
-                                    <button type="button" class="mdl-button" @click="addSetToPromotion(set)">Ajouter</button>
-                                    <button type="button" class="mdl-button" @click="removeSetFromPromotion(set)" v-show="isSetInPromotion(set)">Enlever</button>
+                                    <mdl-button @click="addSetToPromotion(set)">Ajouter</mdl-button>
+                                    <mdl-button @click="removeSetFromPromotion(set)" v-show="isSetInPromotion(set)">Enlever</mdl-button>
                                 </td>
                             </tr>
                         </tbody>
@@ -92,15 +74,12 @@
                 <div class="articlesManagement">
                     <div v-show="detailsPromotion.articles.length > 0">
                         <h5>Articles dans la promotion:</h5>
-                        <button v-for="article in detailsPromotion.articles" track-by="$index" class="mdl-button" @click="search(article)">{{ article.name }}</button>
+                        <mdl-button v-for="article in detailsPromotion.articles" track-by="$index" @click="search(article)">{{ article.name }}</mdl-button>
                     </div>
 
                     <h5>Rechercher un article:</h5>
                     <form v-on:submit.prevent>
-                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input type="text" v-model="articleName" class="mdl-textfield__input">
-                            <label for="articleName" class="mdl-textfield__label">Nom</label>
-                        </div>
+                        <mdl-textfield floating-label="Nom" :value.sync="articleName"></mdl-textfield>
                     </form>
 
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="articleName.length > 0 && filteredArticles.length > 0">
@@ -114,24 +93,20 @@
                             <tr v-for="article in filteredArticles">
                                 <td class="mdl-data-table__cell--non-numeric name">{{ article.name }}</td>
                                 <td class="mdl-data-table__cell--non-numeric">
-                                    <button type="button" class="mdl-button" @click="addToPromotion(article)">Ajouter</button>
-                                    <button type="button" class="mdl-button" @click="removeFromPromotion(article)" v-show="isInPromotion(article)">Enlever</button>
+                                    <mdl-button @click="addToPromotion(article)">Ajouter</mdl-button>
+                                    <mdl-button @click="removeFromPromotion(article)" v-show="isInPromotion(article)">Enlever</mdl-button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <br />
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="goBack()">Retour</button>
+                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
             </div>
             <div v-show="!selectedPromotion.name" transition="fade">
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="name" v-model="name">
-                        <label class="mdl-textfield__label" for="name">Nom</label>
-                    </div>
-                    <br>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="createPromotion(inputPromotion)" value="Créer">
+                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield><br />
+                    <mdl-button colored raised @click="createPromotion(inputPromotion)">Créer</mdl-button>
                 </form>
 
                 <br>
@@ -147,8 +122,8 @@
                         <tr v-for="promotion in promotions">
                             <td class="mdl-data-table__cell--non-numeric">{{ promotion.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <button type="button" class="mdl-button" @click="editPromotion(promotion)">Modifier</button>
-                                <button type="button" class="mdl-button" @click="removePromotion(promotion)">Supprimer</button>
+                                <mdl-button @click="editPromotion(promotion)">Modifier</mdl-button>
+                                <mdl-button @click="removePromotion(promotion)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>
@@ -370,6 +345,26 @@ export default {
                 Group_id    : selectedGroup.id,
                 Period_id   : selectedPeriod.id
             };
+        },
+        periodOptions() {
+            return this.periods.map(period => {
+                return { name: period.name, value: period };
+            });
+        },
+        pointOptions() {
+            return this.points.map(point => {
+                return { name: point.name, value: point };
+            });
+        },
+        fundationOptions() {
+            return this.fundations.map(fundation => {
+                return { name: fundation.name, value: fundation };
+            });
+        },
+        groupOptions() {
+            return this.groups.map(group => {
+                return { name: group.name, value: group };
+            });
         }
     }
 }

@@ -5,29 +5,23 @@
             <div v-show="selectedDevice.name" transition="fade">
                 <h5>Modifier {{ selectedDevice.name }}</h5>
                 <form v-on:submit.prevent>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="name" v-model="modDevice.name">
-                        <label class="mdl-textfield__label" for="name">Nom</label>
-                    </div>
-                    <switch :checked.sync="modDevice.offline">Support hors-ligne</switch><br/>
-                    <switch :checked.sync="modDevice.doubleValidation">Revalidation post-achats</switch><br/>
-                    <switch :checked.sync="modDevice.alcohol">Avertissement alcool</switch><br/>
-                    <switch :checked.sync="modDevice.showCategories">Afficher les catégories</switch><br/>
-                    <switch :checked.sync="modDevice.showPicture">Afficher l'image utilisateur</switch><br/>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="updateDevice(selectedDevice, modDevice)" value="Modifier">
+                    <mdl-textfield floating-label="Nom" :value.sync="modDevice.name"></mdl-textfield>
+                    <mdl-switch :checked.sync="modDevice.offlineSupport" class="mdl-js-ripple-effect">Support hors-ligne</mdl-switch><br />
+                    <mdl-switch :checked.sync="modDevice.doubleValidation" class="mdl-js-ripple-effect">Revalidation post-achats</mdl-switch><br />
+                    <mdl-switch :checked.sync="modDevice.alcohol" class="mdl-js-ripple-effect">Avertissement alcool</mdl-switch><br />
+                    <mdl-switch :checked.sync="modDevice.showCategories" class="mdl-js-ripple-effect">Afficher les catégories</mdl-switch><br />
+                    <mdl-switch :checked.sync="modDevice.showPicture" class="mdl-js-ripple-effect">Afficher l'image utilisateur</mdl-switch><br />
+
+                    <mdl-button colored raised @click="updateDevice(selectedDevice, modDevice)">Modifier</mdl-button>
                 </form>
                 <br />
                 <h5>Assigner l'équipement</h5>
                 <br />
                 <form v-on:submit.prevent>
-                    <select v-model="selectedPoint">
-                        <option v-bind:value="null" selected>Aucun</option>
-                        <option v-bind:value="point" v-for="point in points">{{ point.name }}</option>
-                    </select>
-                    <select v-model="selectedPeriod">
-                        <option v-bind:value="period" v-for="period in periods">{{ period.name }}</option>
-                    </select>
-                    <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="createPeriodPoint(selectedDevice, inputPeriodPoint)" value="Ajouter">
+                    <mdl-select label="Point" id="point-select" :value.sync="selectedPoint" :options="pointOptions"></mdl-select>
+                    <mdl-select label="Période" id="period-select" :value.sync="selectedPeriod" :options="periodOptions"></mdl-select>
+
+                    <mdl-button colored raised @click="createPeriodPoint(selectedDevice, inputPeriodPoint)">Ajouter</mdl-button>
                 </form>
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                     <thead>
@@ -43,7 +37,7 @@
                             <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ periodPoint.period.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <button id="show-dialog" type="button" class="mdl-button" @click="removePeriodPoint(periodPoint)">Supprimer</button>
+                                <mdl-button @click="removePeriodPoint(periodPoint)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>
@@ -66,35 +60,25 @@
                     </thead>
                     <tbody>
                         <tr v-for="device in devices">
-                           <td class="mdl-data-table__cell--non-numeric">{{ device.name }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ device.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                    <input type="checkbox" class="mdl-checkbox__input" :checked.once="device.offline" disabled>
-                                </label>
+                                <mdl-checkbox :checked.sync="device.offlineSupport" disabled></mdl-checkbox>
                             </td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                    <input type="checkbox" class="mdl-checkbox__input" :checked.once="device.doubleValidation" disabled>
-                                </label>
+                                <mdl-checkbox :checked.sync="device.doubleValidation" disabled></mdl-checkbox>
                             </td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                    <input type="checkbox" class="mdl-checkbox__input" :checked.once="device.alcohol" disabled>
-                                </label>
+                                <mdl-checkbox :checked.sync="device.alcohol" disabled></mdl-checkbox>
                             </td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                    <input type="checkbox" class="mdl-checkbox__input" :checked.once="device.showCategories" disabled>
-                                </label>
+                                <mdl-checkbox :checked.sync="device.showCategories" disabled></mdl-checkbox>
                             </td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                                    <input type="checkbox" class="mdl-checkbox__input" :checked.once="device.showPicture" disabled>
-                                </label>
+                                <mdl-checkbox :checked.sync="device.showPicture" disabled></mdl-checkbox>
                             </td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <button id="show-dialog" type="button" class="mdl-button" @click="editDevice(device)">Modifier</button>
-                                <button id="show-dialog" type="button" class="mdl-button" @click="removeDevice(device)">Supprimer</button>
+                                <mdl-button @click="editDevice(device)">Modifier</mdl-button>
+                                <mdl-button @click="removeDevice(device)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>
@@ -107,7 +91,6 @@
 <script>
 import { get, post, put } from '../lib/fetch';
 import { updateDevice, removeDevice } from '../store/actions';
-import Switch from './switch.vue';
 
 export default {
     vuex: {
@@ -126,21 +109,29 @@ export default {
         return {
             name          : '',
             selectedDevice: {},
-            modDevice     : {},
+            modDevice     : {
+                offlineSupport  : false,
+                doubleValidation: false,
+                alcohol         : false,
+                showCategories  : false,
+                showPicture     : false
+            },
             detailsDevice : {},
             selectedPeriod: {},
             selectedPoint : {}
         };
     },
 
-    components: {
-        Switch
-    },
-
     methods: {
         goBack() {
             this.selectedDevice = {};
-            this.modDevice      = {};
+            this.modDevice      = {
+                offlineSupport  : false,
+                doubleValidation: false,
+                alcohol         : false,
+                showCategories  : false,
+                showPicture     : false
+            };
         },
         editDevice(device) {
             this.selectedDevice = device;
@@ -212,6 +203,16 @@ export default {
                 Period_id: period.id,
                 Point_id : point.id
             }
+        },
+        periodOptions() {
+            return this.periods.map(period => {
+                return { name: period.name, value: period };
+            });
+        },
+        pointOptions() {
+            return this.points.map(point => {
+                return { name: point.name, value: point };
+            });
         }
     }
 }

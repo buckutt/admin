@@ -3,12 +3,9 @@
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Points</h3>
             <form v-on:submit.prevent>
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="name" v-model="name">
-                    <label class="mdl-textfield__label" for="name">Nom</label>
-                </div>
+                <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
                 <br>
-                <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="createPoint(inputPoint)" value="Créer">
+                <mdl-button colored raised @click="createPoint(inputPoint)">Créer</mdl-button>
             </form>
 
             <br>
@@ -24,8 +21,8 @@
                     <tr v-for="point in points">
                         <td class="mdl-data-table__cell--non-numeric">{{ point.name }}</td>
                         <td class="mdl-data-table__cell--non-numeric">
-                            <button type="button" class="mdl-button" @click="openModal(point)">Modifier</button>
-                            <button type="button" class="mdl-button" @click="removePoint(point)">Supprimer</button>
+                            <mdl-button @click="openModal(point)">Modifier</mdl-button>
+                            <mdl-button @click="removePoint(point)">Supprimer</mdl-button>
                         </td>
                     </tr>
                 </tbody>
@@ -40,14 +37,11 @@
             </div>
             <form v-on:submit.prevent>
                 <div class="modal__body">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="text" id="name" v-model="modPoint.name">
-                        <label class="mdl-textfield__label" for="name">Nom</label>
-                    </div>
+                    <mdl-textfield floating-label="Nom" :value.sync="modPoint.name"></mdl-textfield>
                 </div>
                 <div class="modal__footer">
-                    <input type="submit" class="mdl-button modal__close" @click="updatePoint(selectedPoint,editPoint)" value="Valider">
-                    <button type="button" class="mdl-button modal__close" @click="closeModal()">Annuler</button>
+                    <mdl-button @click="updatePoint(selectedPoint,editPoint)">Valider</mdl-button>
+                    <mdl-button @click="closeModal()">Annuler</mdl-button>
                 </div>
             </form>
         </div>
