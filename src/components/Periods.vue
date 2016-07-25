@@ -1,60 +1,62 @@
 <template>
-    <div class="periods">
-        <div class="mdl-card mdl-shadow--2dp">
-            <h3>Périodes</h3>
-            <form v-on:submit.prevent>
-                <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
+    <div>
+        <div class="periods">
+            <div class="mdl-card mdl-shadow--2dp">
+                <h3>Périodes</h3>
+                <form v-on:submit.prevent>
+                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
+                    <br>
+                    <mdl-textfield floating-label="Début" :value.sync="dateStart" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="dateStart" v-el:createdatestart></mdl-textfield>
+                    <mdl-textfield floating-label="Fin" :value.sync="dateEnd" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateEnd" v-el:createdateend></mdl-textfield>
+                    <br>
+                    <mdl-button colored raised @click="createPeriod(inputPeriod)">Créer</mdl-button>
+                </form>
+
                 <br>
-                <mdl-textfield floating-label="Début" :value.sync="dateStart" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="dateStart" v-el:createdatestart></mdl-textfield>
-                <mdl-textfield floating-label="Fin" :value.sync="dateEnd" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateEnd" v-el:createdateend></mdl-textfield>
-                <br>
-                <mdl-button colored raised @click="createPeriod(inputPeriod)">Créer</mdl-button>
-            </form>
 
-            <br>
-
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                <thead>
-                    <tr>
-                        <th class="mdl-data-table__cell--non-numeric">Période</th>
-                        <th class="mdl-data-table__cell--non-numeric">Début</th>
-                        <th class="mdl-data-table__cell--non-numeric">Fin</th>
-                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="period in periods">
-                        <td class="mdl-data-table__cell--non-numeric">{{ period.name }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ period.start | date }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ period.end | date }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">
-                            <mdl-button @click="openModal(period)">Modifier</mdl-button>
-                            <mdl-button @click="removePeriod(period)">Supprimer</mdl-button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="modal modal__bg" v-modal="openEditModal" v-el:editmodal>
-        <div class="modal__dialog">
-            <div class="modal__header">
-                <h3>Modifier la période {{ selectedPeriod.name }}</h3>
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <thead>
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">Période</th>
+                            <th class="mdl-data-table__cell--non-numeric">Début</th>
+                            <th class="mdl-data-table__cell--non-numeric">Fin</th>
+                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="period in periods">
+                            <td class="mdl-data-table__cell--non-numeric">{{ period.name }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ period.start | date }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ period.end | date }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">
+                                <mdl-button @click="openModal(period)">Modifier</mdl-button>
+                                <mdl-button @click="removePeriod(period)">Supprimer</mdl-button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <form v-on:submit.prevent>
-                <div class="modal__body">
-                    <mdl-textfield floating-label="Nom" :value.sync="modPeriod.name"></mdl-textfield>
+        </div>
 
-                    <mdl-textfield floating-label="Début" :value.sync="modPeriod.start" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="dateStart" v-el:editdatestart></mdl-textfield>
+        <div class="modal modal__bg" v-modal="openEditModal" v-el:editmodal>
+            <div class="modal__dialog">
+                <div class="modal__header">
+                    <h3>Modifier la période {{ selectedPeriod.name }}</h3>
+                </div>
+                <form v-on:submit.prevent>
+                    <div class="modal__body">
+                        <mdl-textfield floating-label="Nom" :value.sync="modPeriod.name"></mdl-textfield>
 
-                    <mdl-textfield floating-label="Fin" :value.sync="modPeriod.end" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateEnd" v-el:editdateend></mdl-textfield>
-                </div>
-                <div class="modal__footer">
-                    <mdl-button @click="updatePeriod(selectedPeriod, editPeriod)">Valider</mdl-button>
-                    <mdl-button @click="closeModal()">Annuler</mdl-button>
-                </div>
-            </form>
+                        <mdl-textfield floating-label="Début" :value.sync="modPeriod.start" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="dateStart" v-el:editdatestart></mdl-textfield>
+
+                        <mdl-textfield floating-label="Fin" :value.sync="modPeriod.end" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateEnd" v-el:editdateend></mdl-textfield>
+                    </div>
+                    <div class="modal__footer">
+                        <mdl-button @click="updatePeriod(selectedPeriod, editPeriod)">Valider</mdl-button>
+                        <mdl-button @click="closeModal()">Annuler</mdl-button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </template>

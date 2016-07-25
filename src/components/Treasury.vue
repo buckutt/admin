@@ -1,83 +1,85 @@
 <template>
-    <div class="treasury">
-        <div class="mdl-card mdl-shadow--2dp">
-            <h3>Trésorerie</h3>
-            <h4>Recherche</h4>
-            <div>
-                <mdl-select label="Point" id="point-select" :value.sync="point" :options="pointOptions"></mdl-select>
-                <mdl-select label="Fondation" id="select-fundations" :value.sync="fundation" :options="fundationOptions"></mdl-select>
-                <mdl-select label="Periode" id="select-periods" :value.sync="period" :options="periodOptions"></mdl-select>
-            </div>
-            <div>
-                <mdl-textfield floating-label="Début" :value.sync="dateIn" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" v-el:datein></mdl-textfield>
-                <mdl-textfield floating-label="Fin" :value.sync="dateOut" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateout" v-el:dateout></mdl-textfield>
-            </div>
-            <mdl-button colored raised @click="filter()">Rechercher</mdl-button>
+    <div>
+        <div class="treasury">
+            <div class="mdl-card mdl-shadow--2dp">
+                <h3>Trésorerie</h3>
+                <h4>Recherche</h4>
+                <div>
+                    <mdl-select label="Point" id="point-select" :value.sync="point" :options="pointOptions"></mdl-select>
+                    <mdl-select label="Fondation" id="select-fundations" :value.sync="fundation" :options="fundationOptions"></mdl-select>
+                    <mdl-select label="Periode" id="select-periods" :value.sync="period" :options="periodOptions"></mdl-select>
+                </div>
+                <div>
+                    <mdl-textfield floating-label="Début" :value.sync="dateIn" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" v-el:datein></mdl-textfield>
+                    <mdl-textfield floating-label="Fin" :value.sync="dateOut" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateout" v-el:dateout></mdl-textfield>
+                </div>
+                <mdl-button colored raised @click="filter()">Rechercher</mdl-button>
 
-            <h4>Ventes <span class="small">(total: {{ totalSell | price true }})</span></h4>
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                <thead>
-                    <tr>
-                        <th class="mdl-data-table__cell--non-numeric">Vendeur</th>
-                        <th class="mdl-data-table__cell--non-numeric">Client</th>
-                        <th class="mdl-data-table__cell--non-numeric">Objet</th>
-                        <th class="mdl-data-table__cell--non-numeric">Point</th>
-                        <th class="mdl-data-table__cell--non-numeric">Fondation</th>
-                        <th>Montant</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="purchase in purchases">
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.seller.firstname }} {{ purchase.seller.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.buyer.firstname }} {{ purchase.buyer.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.articleName }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.point.name }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.price.fundation.name }}</td>
-                        <td>{{ purchase.price.amount | price true }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <h4>Rechargements <span class="small">(total: {{ totalReload | price true }})</span></h4>
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                <thead>
-                    <tr>
-                        <th class="mdl-data-table__cell--non-numeric">Vendeur</th>
-                        <th class="mdl-data-table__cell--non-numeric">Client</th>
-                        <th class="mdl-data-table__cell--non-numeric">Moyen</th>
-                        <th class="mdl-data-table__cell--non-numeric">Point</th>
-                        <th>Montant</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="reload in reloads">
-                        <td class="mdl-data-table__cell--non-numeric">{{ reload.seller.firstname }} {{ reload.seller.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ reload.buyer.firstname }} {{ reload.buyer.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ reload.trace }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ reload.point.name }}</td>
-                        <td>{{ reload.credit | price true }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <h4>Transfers <span class="small">(total: {{ totalTransfer | price true }})</span></h4>
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                <thead>
-                    <tr>
-                        <th class="mdl-data-table__cell--non-numeric">De</th>
-                        <th class="mdl-data-table__cell--non-numeric">À</th>
-                        <th>Montant</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="transfer in transfers">
-                        <td class="mdl-data-table__cell--non-numeric">{{ transfer.sender.firstname }} {{ transfer.sender.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ transfer.reciever.firstname }} {{ transfer.reciever.lastname }}</td>
-                        <td>{{ transfer.amount | price true }}</td>
-                    </tr>
-                </tbody>
-            </table>
+                <h4>Ventes <span class="small">(total: {{ totalSell | price true }})</span></h4>
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <thead>
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">Vendeur</th>
+                            <th class="mdl-data-table__cell--non-numeric">Client</th>
+                            <th class="mdl-data-table__cell--non-numeric">Objet</th>
+                            <th class="mdl-data-table__cell--non-numeric">Point</th>
+                            <th class="mdl-data-table__cell--non-numeric">Fondation</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="purchase in purchases">
+                            <td class="mdl-data-table__cell--non-numeric">{{ purchase.seller.firstname }} {{ purchase.seller.lastname }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ purchase.buyer.firstname }} {{ purchase.buyer.lastname }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ purchase.articleName }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ purchase.point.name }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ purchase.price.fundation.name }}</td>
+                            <td>{{ purchase.price.amount | price true }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4>Rechargements <span class="small">(total: {{ totalReload | price true }})</span></h4>
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <thead>
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">Vendeur</th>
+                            <th class="mdl-data-table__cell--non-numeric">Client</th>
+                            <th class="mdl-data-table__cell--non-numeric">Moyen</th>
+                            <th class="mdl-data-table__cell--non-numeric">Point</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="reload in reloads">
+                            <td class="mdl-data-table__cell--non-numeric">{{ reload.seller.firstname }} {{ reload.seller.lastname }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ reload.buyer.firstname }} {{ reload.buyer.lastname }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ reload.trace }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ reload.point.name }}</td>
+                            <td>{{ reload.credit | price true }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4>Transfers <span class="small">(total: {{ totalTransfer | price true }})</span></h4>
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <thead>
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">De</th>
+                            <th class="mdl-data-table__cell--non-numeric">À</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="transfer in transfers">
+                            <td class="mdl-data-table__cell--non-numeric">{{ transfer.sender.firstname }} {{ transfer.sender.lastname }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ transfer.reciever.firstname }} {{ transfer.reciever.lastname }}</td>
+                            <td>{{ transfer.amount | price true }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
-    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>

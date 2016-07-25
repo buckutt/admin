@@ -8,14 +8,14 @@
             </form>
 
             <ul>
-                <li class="mdl-list__item" v-for="user in foundUsers" id="lock-{{ $index }}">
+                <li class="mdl-list__item" v-for="user in foundUsers" :id="'lock'+ $index">
                     <span class="mdl-list__item-primary-content">
                         <i class="material-icons mdl-list__item-icon">person</i>
 
                         {{ user.firstname }}&nbsp;{{ user.lastname }}
 
                         <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
-                            for="lock-{{ $index }}">
+                            :for="'lock-' + $index">
                             <li class="mdl-menu__item" v-for="mol in user.meansOfLogin" @click="blockMOL(mol.id, !mol.isRemoved)">
                                 <span v-if="mol.isRemoved">Debloquer {{ mol.type }}</span>
                                 <span v-if="!mol.isRemoved">Bloquer {{ mol.type }}</span>

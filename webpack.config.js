@@ -14,7 +14,7 @@ module.exports = {
         filename  : 'bundle.js'
     },
 
-    devtool: 'source-map',
+    //devtool: 'source-map',
 
     module: {
         loaders: [
@@ -27,7 +27,8 @@ module.exports = {
                 loader : 'babel',
                 exclude: /node_modules/,
                 query  : {
-                    presets: ['es2015']
+                    presets: ['es2015'],
+                    plugins: ['transform-runtime']
                 }
             },
             {
@@ -48,6 +49,11 @@ module.exports = {
     devServer: {
         contentBase: './public',
         hot        : true
+    },
+
+    babel: {
+        presets: ['es2015'],
+        plugins: ['transform-runtime']
     },
 
     plugins: [

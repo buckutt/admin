@@ -1,49 +1,51 @@
 <template>
-    <div class="points">
-        <div class="mdl-card mdl-shadow--2dp">
-            <h3>Points</h3>
-            <form v-on:submit.prevent>
-                <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
+    <div>
+        <div class="points">
+            <div class="mdl-card mdl-shadow--2dp">
+                <h3>Points</h3>
+                <form v-on:submit.prevent>
+                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
+                    <br>
+                    <mdl-button colored raised @click="createPoint(inputPoint)">Créer</mdl-button>
+                </form>
+
                 <br>
-                <mdl-button colored raised @click="createPoint(inputPoint)">Créer</mdl-button>
-            </form>
 
-            <br>
-
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                <thead>
-                    <tr>
-                        <th class="mdl-data-table__cell--non-numeric">Point</th>
-                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="point in points">
-                        <td class="mdl-data-table__cell--non-numeric">{{ point.name }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">
-                            <mdl-button @click="openModal(point)">Modifier</mdl-button>
-                            <mdl-button @click="removePoint(point)">Supprimer</mdl-button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="modal modal__bg" v-modal="openEditModal" v-el:editmodal>
-        <div class="modal__dialog">
-            <div class="modal__header">
-                <h3>Modifier le point {{ selectedPoint.name }}</h3>
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <thead>
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">Point</th>
+                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="point in points">
+                            <td class="mdl-data-table__cell--non-numeric">{{ point.name }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">
+                                <mdl-button @click="openModal(point)">Modifier</mdl-button>
+                                <mdl-button @click="removePoint(point)">Supprimer</mdl-button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <form v-on:submit.prevent>
-                <div class="modal__body">
-                    <mdl-textfield floating-label="Nom" :value.sync="modPoint.name"></mdl-textfield>
+        </div>
+
+        <div class="modal modal__bg" v-modal="openEditModal" v-el:editmodal>
+            <div class="modal__dialog">
+                <div class="modal__header">
+                    <h3>Modifier le point {{ selectedPoint.name }}</h3>
                 </div>
-                <div class="modal__footer">
-                    <mdl-button @click="updatePoint(selectedPoint,editPoint)">Valider</mdl-button>
-                    <mdl-button @click="closeModal()">Annuler</mdl-button>
-                </div>
-            </form>
+                <form v-on:submit.prevent>
+                    <div class="modal__body">
+                        <mdl-textfield floating-label="Nom" :value.sync="modPoint.name"></mdl-textfield>
+                    </div>
+                    <div class="modal__footer">
+                        <mdl-button @click="updatePoint(selectedPoint,editPoint)">Valider</mdl-button>
+                        <mdl-button @click="closeModal()">Annuler</mdl-button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </template>
