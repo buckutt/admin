@@ -26,7 +26,18 @@ import Groups     from './components/Groups.vue';
 import Categories from './components/Categories.vue';
 import Events     from './components/Events.vue';
 import CardBlock  from './components/CardBlock.vue';
-import { fetchPoints, fetchDevices, fetchPeriods, fetchArticles, fetchFundations, fetchGroups, fetchCategories, fetchEvents, fetchPromotions, fetchSets } from './store/actions';
+import {
+    fetchPoints,
+    fetchDevices,
+    fetchPeriods,
+    fetchArticles,
+    fetchFundations,
+    fetchGroups,
+    fetchCategories,
+    fetchEvents,
+    fetchPromotions,
+    fetchSets
+} from './store/actions';
 
 import store from './store/index';
 
