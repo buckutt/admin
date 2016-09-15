@@ -1,5 +1,7 @@
 # Admin
 
+[![dependencies Status](https://david-dm.org/buckless/admin/status.png)](https://david-dm.org/buckless/admin)
+
 > Buckless Administration Tool
 
 ## Build Setup
