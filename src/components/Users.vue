@@ -13,6 +13,11 @@
                         <mdl-button colored raised @click="updateUser(selectedUser, modUser)">Modifier</mdl-button>
                     </form>
                     <br />
+                    <mdl-button @click="regenPin(selectedUser)">Regénérer le code PIN</mdl-button>
+                    <mdl-button @click="regenPassword(selectedUser)">Regénérer le mot de passe</mdl-button>
+                    <br />
+                    <p v-show="newPin" transition="fade">Le nouveau code PIN généré est <strong>{{ newPin }}</strong></p>
+                    <p v-show="newPassword" transition="fade">Le nouveau mot de passe généré est <strong>{{ newPassword }}</strong></p>
                     <h5>Droits</h5>
                     <form v-on:submit.prevent>
                         <mdl-select label="Droit" id="right-select" :value.sync="rightChoice" :options="rightsList"></mdl-select>
@@ -48,6 +53,8 @@
                 </div>
                 <div v-show="!selectedUser.firstname" transition="fade">
                     <h5>Créer un utilisateur</h5>
+                    <p v-show="newPin" transition="fade">Le code PIN de l'utilisateur est <strong>{{ newPin }}</strong></p>
+                    <p v-show="newPassword" transition="fade">Le mot de passe de l'utilisateur est <strong>{{ newPassword }}</strong></p>
                     <form v-on:submit.prevent>
                         <mdl-textfield floating-label="Nom" :value.sync="lastname"></mdl-textfield>
                         <mdl-textfield floating-label="Prénom" :value.sync="firstname"></mdl-textfield><br />
@@ -110,6 +117,7 @@
 <script>
 import { get, post, put } from '../lib/fetch';
 import modal from '../lib/modal';
+import bcrypt from 'bcryptjs';
 
 export default {
     vuex: {
@@ -138,7 +146,9 @@ export default {
             modUser      : {},
             selectedRight: {},
             modRight     : {},
-            openEditModal: false
+            openEditModal: false,
+            newPin       : '',
+            newPassword  : ''
         };
     },
 
@@ -146,6 +156,8 @@ export default {
         goBack() {
             this.selectedUser = {};
             this.modUser      = {};
+            this.newPin       = '';
+            this.newPassword  = '';
         },
         createUser(user) {
             post('users', user)
@@ -179,6 +191,8 @@ export default {
             }
         },
         editUser(user) {
+            this.newPin      = '';
+            this.newPassword = '';
             this.rightChoice = this.rightsList[0];
             this.rightPoint  = null;
             this.rightPeriod = this.$store.state.app.periods[0].id;
@@ -201,6 +215,49 @@ export default {
             this.selectedUser = user;
             this.modUser      = JSON.parse(JSON.stringify(user));
             this.searchUser();
+        },
+        regenPin(user) {
+            const randTen     = () => Math.floor(Math.random() * 10);
+            const pin         = `${randTen()}${randTen()}${randTen()}${randTen()}`;
+            const embedRights = encodeURIComponent(JSON.stringify({
+                period: true,
+                point : true
+            }));
+
+            user.pin      = bcrypt.hashSync(pin, 10);
+            const modUser = user;
+            this.newPin   = pin;
+
+            put(`users/${user.id}?embed=${embedRights}`, modUser)
+                .then(result => {
+                    this.selectedUser = JSON.parse(JSON.stringify(modUser));
+                    this.users.forEach((u, i) => {
+                        if(u.id == user.id) {
+                            this.users[i] = Object.assign(this.users[i], modUser);
+                        }
+                    });
+                });
+        },
+        regenPassword(user) {
+            const password    = this.randString(8);
+            const embedRights = encodeURIComponent(JSON.stringify({
+                period: true,
+                point : true
+            }));
+
+            user.password    = bcrypt.hashSync(password, 10);
+            const modUser    = user;
+            this.newPassword = password;
+
+            put(`users/${user.id}?embed=${embedRights}`, modUser)
+                .then(result => {
+                    this.selectedUser = JSON.parse(JSON.stringify(modUser));
+                    this.users.forEach((u, i) => {
+                        if(u.id == user.id) {
+                            this.users[i] = Object.assign(this.users[i], modUser);
+                        }
+                    });
+                });
         },
         updateUser(user, modUser) {
             const embedRights = encodeURIComponent(JSON.stringify({
@@ -323,27 +380,42 @@ export default {
                 }
             });
             return period;
+        },
+        randString(x) {
+            let s = '';
+            while(s.length < x && x > 0) {
+                let r = Math.random();
+                s += (r<0.1?Math.floor(r*100):String.fromCharCode(Math.floor(r*26) + (r>0.5?97:65)));
+            }
+            return s;
         }
     },
 
    computed: {
         inputUser() {
-            const firstname = this.firstname;
-            const lastname  = this.lastname;
-            const nickname  = this.nickname;
-            const mail      = this.mail;
-            this.firstname  = '';
-            this.lastname   = '';
-            this.nickname   = '';
-            this.mail       = '';
+            const firstname  = this.firstname;
+            const lastname   = this.lastname;
+            const nickname   = this.nickname;
+            const mail       = this.mail;
+            const randTen    = () => Math.floor(Math.random() * 10);
+            const pin        = `${randTen()}${randTen()}${randTen()}${randTen()}`;
+            const password   = this.randString(8);
+
+            this.newPin      = pin;
+            this.newPassword = password;
+
+            this.firstname   = '';
+            this.lastname    = '';
+            this.nickname    = '';
+            this.mail        = '';
             return {
                 firstname: firstname,
                 lastname : lastname,
                 nickname : nickname,
                 mail     : mail,
                 credit   : 0,
-                pin      : 'TODO',
-                password : 'TODO'
+                pin      : bcrypt.hashSync(pin, 10),
+                password : bcrypt.hashSync(password)
             };
         },
         inputRight() {
