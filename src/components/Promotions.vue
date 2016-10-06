@@ -11,7 +11,7 @@
                 <br />
                 <h5>Prix:</h5>
                 <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Montant" :value.sync="amount"></mdl-textfield>
+                    <mdl-textfield floating-label="Montant TTC (centimes)" :value.sync="amount"></mdl-textfield>
                     <mdl-select label="Point" id="point-select" :value.sync="selectedPoint" :options="pointOptions"></mdl-select>
                     <mdl-select label="Fondation" id="fundation-select" :value.sync="selectedFundation" :options="fundationOptions"></mdl-select><br />
                     <mdl-select label="Groupe" id="group-select" :value.sync="selectedGroup" :options="groupOptions"></mdl-select>
@@ -32,7 +32,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="price in detailsPromotion.prices">
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.amount }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ price.amount | price true }} TTC <span v-show="modPromotion.vat > 0">({{ price.amount/(1+modPromotion.vat/100) | price true }} HT)</span></td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
@@ -134,6 +134,7 @@
 </template>
 
 <script>
+import price from '../lib/price';
 import { get, post, put, del } from '../lib/fetch';
 import { createPromotion, updatePromotion, removePromotion } from '../store/actions';
 import fuzzy from 'fuzzy';

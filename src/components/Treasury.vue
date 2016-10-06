@@ -34,7 +34,7 @@
                             <td class="mdl-data-table__cell--non-numeric">{{ purchase.articleName }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ purchase.point.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ purchase.price.fundation.name }}</td>
-                            <td>{{ purchase.price.amount | price true }}</td>
+                            <td>{{ purchase.price.amount | price true }} TTC ({{ purchase.vat | price true }} HT)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -83,6 +83,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import price from '../lib/price';
 import { parseDate, convertDate } from '../lib/date';
 import { get } from '../lib/fetch';
@@ -174,6 +175,39 @@ export default {
     },
 
     methods: {
+        calculateWT(purchase) {
+            if(purchase.articlesAmount.length > 1) {
+                let promises = purchase.articlesAmount.map(article => {
+                    return get(`prices/${article.price}`)
+                        .then(result => {
+                            return {
+                                wt   : result.amount/(1+article.vat/100),
+                                vat  : 1+article.vat/100,
+                                price: result.amount
+                            };
+                        });
+                });
+
+                return Promise.all(promises).then(results => {
+                    let totalWT     = 0;
+                    let priceWT     = purchase.price.amount;
+                    let totalDivide = 0;
+                    results.forEach(value => {
+                        totalWT += value.wt;
+                    });
+
+                    results.forEach(value => {
+                        const ratioPrice = value.wt/totalWT;
+
+                        totalDivide += ratioPrice*value.vat;
+                    });
+
+                    priceWT = priceWT/totalDivide;
+                    return priceWT;
+                });
+            }
+            return Promise.resolve(purchase.price.amount/(1+purchase.articlesAmount[0].vat/100));
+        },
         filter () {
             console.log(this.point, this.period, this.fundation);
             const q = [];
@@ -248,6 +282,9 @@ export default {
                 .then(purchases => {
                     this.purchases = purchases.map(purchase => {
                         purchase.articleName = (purchase.promotion) ? purchase.promotion.name : purchase.articles[0].name;
+                        this.calculateWT(purchase).then(vat => {
+                            Vue.set(purchase, 'vat', vat);
+                        })
                         return purchase;
                     });
 
