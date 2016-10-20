@@ -17,7 +17,7 @@ export function convertDate (dateString) {
     const regexp = /([0-9]{2})\/([0-9]{2})\/([0-9]{4}) ([0-9]{2}):([0-9]{2})/;
     const result = dateString.match(regexp);
 
-    return new Date(result[3], result[2], result[1], result[4], result[5]);
+    return new Date(result[3], result[2] - 1, result[1], result[4], result[5]);
 }
 
 Vue.filter('date', date => parseDate(date));

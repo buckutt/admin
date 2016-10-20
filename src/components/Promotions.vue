@@ -1,5 +1,5 @@
 <template>
-    <div class="promotions">
+    <div class="promotions" v-show="currentEvent">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Promotions</h3>
             <div v-show="selectedPromotion.name" transition="fade">
@@ -31,7 +31,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="price in detailsPromotion.prices">
+                        <tr v-for="price in detailsPromotion.prices" v-show="price.period.Event_id == currentEvent.id">
                             <td class="mdl-data-table__cell--non-numeric">{{ price.amount | price true }} TTC <span v-show="modPromotion.vat > 0">({{ price.amount/(1+modPromotion.vat/100) | price true }} HT)</span></td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
@@ -142,13 +142,14 @@ import fuzzy from 'fuzzy';
 export default {
     vuex: {
         getters: {
-            promotions: state => state.app.promotions,
-            points    : state => state.app.points,
-            fundations: state => state.app.fundations,
-            periods   : state => state.app.periods,
-            groups    : state => state.app.groups,
-            articles  : state => state.app.articles,
-            sets      : state => state.app.sets
+            promotions  : state => state.app.promotions,
+            points      : state => state.app.points,
+            fundations  : state => state.app.fundations,
+            periods     : state => state.app.periods,
+            groups      : state => state.app.groups,
+            articles    : state => state.app.articles,
+            sets        : state => state.app.sets,
+            currentEvent: state => state.global.currentEvent
         },
         actions: {
             createPromotion: createPromotion,
@@ -348,9 +349,15 @@ export default {
             };
         },
         periodOptions() {
-            return this.periods.map(period => {
-                return { name: period.name, value: period };
+            let periods = this.periods.map(period => {
+                if(period.Event_id == this.currentEvent.id) {
+                    return { name: period.name, value: period };
+                } else {
+                    return null;
+                }
             });
+
+            return periods.filter(a => a);
         },
         pointOptions() {
             return this.points.map(point => {

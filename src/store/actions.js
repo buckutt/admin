@@ -287,3 +287,11 @@ export function blockMOL({ dispatch }, molId, blockOrRestore) {
         dispatch('INVERTMOL', molId);
     });
 }
+
+/**
+ * Global actions
+ */
+
+export function updateCurrentEvent({ dispatch }, currentEvent) {
+    dispatch('UPDATECURRENTEVENT', currentEvent);
+}

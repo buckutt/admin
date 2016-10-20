@@ -1,8 +1,8 @@
 <template>
-    <div>
+    <div v-show="currentEvent">
         <div class="periods">
             <div class="mdl-card mdl-shadow--2dp">
-                <h3>Périodes</h3>
+                <h3>Périodes de "{{ currentEvent.name }}"</h3>
                 <form v-on:submit.prevent>
                     <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
                     <br>
@@ -24,7 +24,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="period in periods">
+                        <tr v-for="period in periods" v-show="currentEvent.id == period.Event_id">
                             <td class="mdl-data-table__cell--non-numeric">{{ period.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ period.start | date }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ period.end | date }}</td>
@@ -71,7 +71,8 @@ import { createPeriod, updatePeriod, removePeriod } from '../store/actions';
 export default {
     vuex: {
         getters: {
-            periods: state => state.app.periods
+            periods     : state => state.app.periods,
+            currentEvent: state => state.global.currentEvent
         },
         actions: {
             createPeriod: createPeriod,
@@ -114,9 +115,10 @@ export default {
             this.dateStart = '';
             this.dateEnd   = '';
             return {
-                name: name,
-                start: start,
-                end: end
+                name    : name,
+                start   : start,
+                end     : end,
+                Event_id: this.currentEvent.id
             };
         },
         editPeriod() {

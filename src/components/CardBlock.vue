@@ -1,5 +1,5 @@
 <template>
-    <div class="cardblock">
+    <div class="cardblock" v-show="currentEvent">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Blocage de carte</h3>
             <form v-on:submit.prevent>
@@ -34,7 +34,8 @@ import { searchUser, blockMOL } from '../store/actions';
 export default {
     vuex: {
         getters: {
-            foundUsers: state => state.cardBlock.foundUsers
+            foundUsers  : state => state.cardBlock.foundUsers,
+            currentEvent: state => state.global.currentEvent
         },
         actions: {
             searchUser: searchUser,

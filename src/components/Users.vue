@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-show="currentEvent">
         <div class="users">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Utilisateurs</h3>
@@ -36,7 +36,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="right in detailsUser.rights">
+                            <tr v-for="right in detailsUser.rights" v-show="right.period.Event_id == currentEvent.id">
                                 <td class="mdl-data-table__cell--non-numeric name">{{ right.name }}</td>
                                 <td class="mdl-data-table__cell--non-numeric" v-if="right.point">{{ right.point.name }}</td>
                                 <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
@@ -122,8 +122,9 @@ import bcrypt from 'bcryptjs';
 export default {
     vuex: {
         getters: {
-            points : state => state.app.points,
-            periods: state => state.app.periods
+            points      : state => state.app.points,
+            periods     : state => state.app.periods,
+            currentEvent: state => state.global.currentEvent
         },
         actions: {
         }
@@ -444,9 +445,15 @@ export default {
             return right;
         },
         periodOptions() {
-            return this.periods.map(period => {
-                return { name: period.name, value: period.id };
+            let periods = this.periods.map(period => {
+                if(period.Event_id == this.currentEvent.id) {
+                    return { name: period.name, value: period };
+                } else {
+                    return null;
+                }
             });
+
+            return periods.filter(a => a);
         },
         pointOptions() {
             let points = this.points.map(point => {

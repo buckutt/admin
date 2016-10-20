@@ -1,5 +1,5 @@
 <template>
-    <div class="devices">
+    <div class="devices" v-show="currentEvent">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Equipements</h3>
             <div v-show="selectedDevice.name" transition="fade">
@@ -32,7 +32,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="periodPoint in detailsDevice.periodPoints">
+                        <tr v-for="periodPoint in detailsDevice.periodPoints" v-show="periodPoint.period.Event_id == currentEvent.id">
                             <td class="mdl-data-table__cell--non-numeric" v-if="periodPoint.point">{{ periodPoint.point.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ periodPoint.period.name }}</td>
@@ -95,9 +95,10 @@ import { updateDevice, removeDevice } from '../store/actions';
 export default {
     vuex: {
         getters: {
-            devices: state => state.app.devices,
-            points : state => state.app.points,
-            periods: state => state.app.periods
+            devices     : state => state.app.devices,
+            points      : state => state.app.points,
+            periods     : state => state.app.periods,
+            currentEvent: state => state.global.currentEvent
         },
         actions: {
             updateDevice: updateDevice,
@@ -205,9 +206,15 @@ export default {
             }
         },
         periodOptions() {
-            return this.periods.map(period => {
-                return { name: period.name, value: period };
+            let periods = this.periods.map(period => {
+                if(period.Event_id == this.currentEvent.id) {
+                    return { name: period.name, value: period };
+                } else {
+                    return null;
+                }
             });
+
+            return periods.filter(a => a);
         },
         pointOptions() {
             return this.points.map(point => {

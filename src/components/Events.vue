@@ -6,36 +6,18 @@
                 <h5>Modifier l'évenement {{ selectedEvent.name }}:</h5>
                 <form v-on:submit.prevent>
                     <mdl-textfield floating-label="Nom" :value.sync="modEvent.name"></mdl-textfield><br />
+                    <mdl-textfield floating-label="Rechargement minimal (en centimes)" :value.sync="modEvent.config.minReload"></mdl-textfield><br />
+                    <mdl-textfield floating-label="Solde maximal (en centimes)" :value.sync="modEvent.config.maxPerAccount"></mdl-textfield><br />
                     <mdl-button colored raised @click="updateEvent(selectedEvent, modEvent)">Modifier</mdl-button>
                 </form>
-                <br />
-                <h5>Périodes liées</h5>
-                <form v-on:submit.prevent>
-                    <mdl-select label="Période" id="period-select" :value.sync="selectedPeriod" :options="periodOptions"></mdl-select>
-                    <mdl-button colored raised @click="addToEvent(selectedEvent, inputPeriod)">Ajouter</mdl-button>
-                </form>
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Période</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="period in detailsEvent.periods">
-                            <td class="mdl-data-table__cell--non-numeric">{{ period.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="removeFromEvent(selectedEvent, period)">Supprimer</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
                 <br />
                 <mdl-button colored raised @click="goBack()">Retour</mdl-button>
             </div>
             <div v-show="!selectedEvent.name" transition="fade">
                 <form v-on:submit.prevent>
                     <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield><br />
+                    <mdl-textfield floating-label="Rechargement minimal (en centimes)" :value.sync="minReload"></mdl-textfield><br />
+                    <mdl-textfield floating-label="Solde maximal (en centimes)" :value.sync="maxPerAccount"></mdl-textfield><br />
                     <mdl-button colored raised @click="createEvent(inputEvent)">Créer</mdl-button>
                 </form>
                 <br>
@@ -43,12 +25,16 @@
                     <thead>
                         <tr>
                             <th class="mdl-data-table__cell--non-numeric">Évenement</th>
+                            <th class="mdl-data-table__cell--non-numeric">Rechargement minimal</th>
+                            <th class="mdl-data-table__cell--non-numeric">Solde maximal</th>
                             <th class="mdl-data-table__cell--non-numeric">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="event in events">
                             <td class="mdl-data-table__cell--non-numeric">{{ event.name }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ event.config.minReload | price true }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxPerAccount | price true }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
                                 <mdl-button @click="editEvent(event)">Modifier</mdl-button>
                                 <mdl-button @click="removeEvent(event)">Supprimer</mdl-button>
@@ -62,6 +48,7 @@
 </template>
 
 <script>
+import price from '../lib/price';
 import { get, post, del } from '../lib/fetch';
 import { createEvent, updateEvent, removeEvent } from '../store/actions';
 
@@ -81,10 +68,11 @@ export default {
     data () {
         return {
             name          : '',
+            minReload     : 0,
+            maxPerAccount : 10000,
             selectedEvent : {},
             modEvent      : {},
-            detailsEvent  : {},
-            selectedPeriod: {}
+            detailsEvent  : {}
         };
     },
 
@@ -96,7 +84,6 @@ export default {
         editEvent(event) {
             this.selectedEvent  = event;
             this.modEvent       = JSON.parse(JSON.stringify(event));
-            this.selectedPeriod = this.$store.state.app.periods[0];
 
             const embedEvents = encodeURIComponent(JSON.stringify({
                 periods: true
@@ -111,47 +98,25 @@ export default {
                     }
                     this.detailsEvent = result;
                 });
-        },
-        addToEvent(event, period) {
-            post(`events/${event.id}/periods`, {id: period.id})
-                .then(result => {
-                    this.detailsEvent.periods.push(period);
-                });
-        },
-        removeFromEvent(event, period) {
-            del(`events/${event.id}/periods/${period.id}`)
-                .then(result => {
-                    let i = 0;
-                    for (const p of this.detailsEvent.periods) {
-                        if (p.id === period.id) {
-                            break;
-                        }
-
-                        ++i;
-                    }
-
-                    this.detailsEvent.periods.splice(i, 1);
-                });
         }
     },
 
     computed: {
         inputEvent() {
-            const name = this.name;
-            this.name  = '';
+            const name          = this.name;
+            const minReload     = this.minReload;
+            const maxPerAccount = this.maxPerAccount;
+            this.name           = '';
+            this.minReload      = 0;
+            this.maxPerAccount  = 10000;
+
             return {
                 name: name,
+                config: {
+                    minReload    : minReload,
+                    maxPerAccount: maxPerAccount
+                }
             };
-        },
-        inputPeriod() {
-            const period        = this.selectedPeriod;
-            this.selectedPeriod = this.$store.state.app.periods[0];
-            return period;
-        },
-        periodOptions() {
-            return this.periods.map(period => {
-                return { name: period.name, value: period };
-            });
         }
     }
 }

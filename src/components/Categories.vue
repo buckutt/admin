@@ -1,5 +1,5 @@
 <template>
-    <div class="categories">
+    <div class="categories" v-show="currentEvent">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Catégories</h3>
             <div v-show="selectedCategory.name" transition="fade">
@@ -81,8 +81,9 @@ import fuzzy from 'fuzzy';
 export default {
     vuex: {
         getters: {
-            categories: state => state.app.categories,
-            articles  : state => state.app.articles
+            categories  : state => state.app.categories,
+            articles    : state => state.app.articles,
+            currentEvent: state => state.global.currentEvent
         },
         actions: {
             createCategory: createCategory,

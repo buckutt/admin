@@ -1,5 +1,5 @@
 <template>
-    <div class="groups">
+    <div class="groups" v-show="currentEvent">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Groupes</h3>
             <div v-show="selectedGroup.name" transition="fade">
@@ -74,7 +74,8 @@ import { createGroup, updateGroup, removeGroup } from '../store/actions';
 export default {
     vuex: {
         getters: {
-            groups: state => state.app.groups
+            groups      : state => state.app.groups,
+            currentEvent: state => state.global.currentEvent
         },
         actions: {
             createGroup: createGroup,

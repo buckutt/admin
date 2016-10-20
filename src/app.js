@@ -14,10 +14,12 @@ Vue.use(Vuex);
 Vue.use(VueMdl);
 
 import Sidebar    from './components/Sidebar.vue';
+import Home       from './components/Home.vue';
 import Dashboard  from './components/Dashboard.vue';
 import Devices    from './components/Devices.vue';
 import Items      from './components/Items.vue';
 import Treasury   from './components/Treasury.vue';
+import Purchases  from './components/Purchases.vue';
 import Users      from './components/Users.vue';
 import Periods    from './components/Periods.vue';
 import Points     from './components/Points.vue';
@@ -53,6 +55,9 @@ const App = Vue.extend({
 
 router.map({
     '/': {
+        component: Home
+    },
+    '/stats': {
         component: Dashboard
     },
     '/devices': {
@@ -63,6 +68,9 @@ router.map({
     },
     '/treasury': {
         component: Treasury
+    },
+    '/purchases': {
+        component: Purchases
     },
     '/users': {
         component: Users

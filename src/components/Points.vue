@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-show="currentEvent">
         <div class="points">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Points</h3>
@@ -59,7 +59,8 @@ import { createPoint, updatePoint, removePoint } from '../store/actions';
 export default {
     vuex: {
         getters: {
-            points: state => state.app.points
+            points      : state => state.app.points,
+            currentEvent: state => state.global.currentEvent
         },
         actions: {
             createPoint: createPoint,

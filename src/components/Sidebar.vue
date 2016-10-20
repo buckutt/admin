@@ -1,10 +1,15 @@
 <template>
     <div class="sidebar">
         <h1>Buckless</h1>
-        <ul>
+        <ul class="eventSelector">
+            <li>
+                <form v-on:submit.prevent>
+                    <mdl-select label="Évenement" id="event-select" :value.sync="selectedEvent" :options="eventOptions" v-on:click="changeEvent"></mdl-select>
+                </form>
+            </li>
             <li>
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/' }">
-                    <i class="material-icons">insert_chart</i>
+                    <i class="material-icons">home</i>
                     Accueil
                 </a>
             </li>
@@ -12,6 +17,26 @@
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/events' }">
                     <i class="material-icons">cake</i>
                     Évenements
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/treasury' }">
+                    <i class="material-icons">attach_money</i>
+                    Trésorerie
+                </a>
+            </li>
+        </ul>
+        <ul v-show="currentEvent" transition="fade">
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/stats' }">
+                    <i class="material-icons">insert_chart</i>
+                    Statistiques
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/purchases' }">
+                    <i class="material-icons">shopping_cart</i>
+                    Achats
                 </a>
             </li>
             <li>
@@ -40,7 +65,7 @@
             </li>
             <li>
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/promotions' }">
-                    <i class="material-icons">shopping_cart</i>
+                    <i class="material-icons">stars</i>
                     Promotions
                 </a>
             </li>
@@ -48,12 +73,6 @@
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/categories' }">
                     <i class="material-icons">format_list_numbered</i>
                     Catégories
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/treasury' }">
-                    <i class="material-icons">attach_money</i>
-                    Trésorerie
                 </a>
             </li>
             <li>
@@ -79,6 +98,60 @@
 </template>
 
 <script>
+import { updateCurrentEvent } from '../store/actions';
+import { get } from '../lib/fetch';
+
+export default {
+    vuex: {
+        getters: {
+            events      : state => state.app.events,
+            currentEvent: state => state.global.currentEvent
+        },
+        actions: {
+            updateCurrentEvent: updateCurrentEvent
+        }
+    },
+
+    data () {
+        return {
+            selectedEvent: null
+        };
+    },
+
+    methods: {
+        changeEvent() {
+            if(this.selectedEvent) {
+                if(this.currentEvent) {
+                    if(this.selectedEvent.id != this.currentEvent.id) {
+                        this.$route.router.go('/stats');
+                    }
+                }
+
+                const embedEvents = encodeURIComponent(JSON.stringify({
+                    periods: true
+                }));
+
+                get(`events/${this.selectedEvent.id}?embed=${embedEvents}`)
+                    .then(result => {
+                        if(result.periods) {
+                            result.periods = result.periods.filter(period => {
+                                return !period.isRemoved;
+                            });
+                        }
+                        this.updateCurrentEvent(result);
+                    });
+            }
+        }
+    },
+
+    computed: {
+        eventOptions() {
+            return this.events.map(event => {
+                return { name: event.name, value: event };
+            });
+        }
+    }
+}
 </script>
 
 <style lang="sass">
@@ -125,6 +198,25 @@
                 background-color: lighten($sidebarBackground, 10%);
             }
         }
+
+        > .eventSelector {
+            > li {
+                &:first-child {
+                    padding-left: 10px;
+                    padding-right: 10px;
+                    font-family: 'Roboto', sans-serif;
+                    color: $sidebarColor;
+                }
+
+                label {
+                    color: $sidebarColor !important;
+                }
+
+                &:nth-child(4) {
+                    margin-bottom: 30px;
+                }
+            }
+        }
     }
 
     .sidebar + div {
@@ -132,5 +224,17 @@
         height: 100%;
         width: calc(100% - #{$sidebarWidth});
         margin-left: $sidebarWidth;
+    }
+
+    .fade-transition {
+        transition: opacity .4s ease;
+    }
+
+    .fade-enter {
+        opacity: 0;
+    }
+
+    .fade-leave {
+        display: none;
     }
 </style>
