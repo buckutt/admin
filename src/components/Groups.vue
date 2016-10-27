@@ -20,15 +20,29 @@
                     <thead>
                         <tr>
                             <th class="mdl-data-table__cell--non-numeric">Utilisateur</th>
+                            <th class="mdl-data-table__cell--non-numeric">Periode</th>
                             <th class="mdl-data-table__cell--non-numeric">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr v-for="member in members">
+                    <tbody v-for="member in members">
+                        <tr v-for="groupPeriod in member.groupPeriods" v-show="groupPeriod.period.Event_id == currentEvent.id">
                             <td class="mdl-data-table__cell--non-numeric name">{{ member.firstname }} {{ member.lastname }}</td>
+                            <td class="mdl-data-table__cell--non-numeric name">{{ groupPeriod.period.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="addToGroup(member)" v-show="!isMember(member)">Ajouter</mdl-button>
-                                <mdl-button @click="removeFromGroup(member)" v-show="isMember(member)">Enlever</mdl-button>
+                                <mdl-button @click="removeFromGroup(groupPeriod)">Enlever</mdl-button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody v-show="members">
+                        <tr>
+                            <td class="mdl-data-table__cell--non-numeric name">
+                                <mdl-select label="Utilisateur" id="member-select" :value.sync="selectedMember" :options="memberOptions" class="name"></mdl-select>
+                            </td>
+                            <td class="mdl-data-table__cell--non-numeric">
+                                <mdl-select label="Période" id="period-select" :value.sync="selectedPeriod" :options="periodOptions"></mdl-select>
+                            </td>
+                            <td class="mdl-data-table__cell--non-numeric">
+                                <mdl-button @click="addToGroup(selectedMember, inputGroupPeriod)" v-show="selectedMember && selectedPeriod">Ajouter</mdl-button>
                             </td>
                         </tr>
                     </tbody>
@@ -64,10 +78,11 @@
             </div>
         </div>
     </div>
+    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>
-import { get, post, del } from '../lib/fetch';
+import { get, post, put } from '../lib/fetch';
 import { createGroup, updateGroup, removeGroup } from '../store/actions';
 
 
@@ -75,6 +90,7 @@ export default {
     vuex: {
         getters: {
             groups      : state => state.app.groups,
+            periods     : state => state.app.periods,
             currentEvent: state => state.global.currentEvent
         },
         actions: {
@@ -86,11 +102,13 @@ export default {
 
     data () {
         return {
-            name         : '',
-            memberName   : '',
-            selectedGroup: {},
-            modGroup     : {},
-            members      : {}
+            name          : '',
+            memberName    : '',
+            selectedGroup : {},
+            modGroup      : {},
+            members       : [],
+            selectedPeriod: null,
+            selectedMember: null
         };
     },
 
@@ -100,15 +118,20 @@ export default {
             this.modGroup      = {};
         },
         editGroup(group) {
-            this.selectedGroup = group;
-            this.modGroup      = JSON.parse(JSON.stringify(group));
+            this.selectedGroup  = group;
+            this.modGroup       = JSON.parse(JSON.stringify(group));
         },
         searchMember() {
             if(this.memberName.length >= 2) {
+                this.selectedPeriod = null;
+                this.selectedMember = null;
+
                 const embedUsers = encodeURIComponent(JSON.stringify({
-                    groups: true
+                    groupPeriods: {
+                        period: true
+                    }
                 }));
-                const q          = [];
+                const q = [];
 
                 q.push(JSON.stringify({
                     field  : 'firstname',
@@ -126,70 +149,115 @@ export default {
 
                 get(`users/search?q=${orQ}&embed=${embedUsers}`)
                     .then(result => {
-                        this.members = result;
+                        this.members = result.map(member => {
+                            if(member.groupPeriods) {
+                                member.groupPeriods = member.groupPeriods.filter(groupPeriod => {
+                                    return !groupPeriod.isRemoved;
+                                });
+                            }
+
+                            return member;
+                        });
+                        console.log(this.members[1].groupPeriods);
                     });
             }
         },
-        isMember(member) {
-            let isMember = false;
-            if(member.groups.length > 0) {
-                member.groups.forEach((g, i) => {
-                    if(g.id == this.selectedGroup.id) {
-                        isMember = true;
-                    }
-                });
+        addToGroup(user, groupPeriod) {
+            let exists = false;
+
+            user.groupPeriods.forEach(gPeriod => {
+                if (gPeriod.Period_id == groupPeriod.Period_id && gPeriod.Group_id == gPeriod.Group_id) {
+                    exists = true;
+                }
+            });
+
+            if(!exists) {
+                let currentGroupPeriod  = {};
+                const embedGroupPeriods = encodeURIComponent(JSON.stringify({
+                    period: true
+                }));
+
+                post(`groupPeriods?embed=${embedGroupPeriods}`, groupPeriod)
+                    .then(result => {
+                        currentGroupPeriod = result;
+                        return post(`users/${user.id}/groupPeriods`, {id: result.id});
+                    })
+                    .then(result => {
+                        this.members = this.members.map(member => {
+                            if (member.id == user.id) {
+                                member.groupPeriods.push(currentGroupPeriod);
+                            }
+                            return member;
+                        });
+                    });
+            } else {
+                const data = {
+                    message: 'L\'utilisateur appartient déjà au groupe sur cette période.',
+                    timeout: 2000
+                };
+
+                this.$broadcast('snackfilter', data);
             }
-            return isMember;
         },
-        addToGroup(member) {
-            post(`groups/${this.selectedGroup.id}/users`, {id: member.id})
+        removeFromGroup(groupPeriod) {
+            groupPeriod.isRemoved = true;
+
+            put(`groupPeriods/${groupPeriod.id}`, groupPeriod)
                 .then(result => {
-                    let i = 0;
-                    for (const m of this.members) {
-                        if (m.id === member.id) {
-                            break;
+                    this.members = this.members.map(member => {
+                        let i = 0;
+                        for(const g of member.groupPeriods) {
+                            if(g.id === groupPeriod.id) {
+                                break;
+                            }
+                            ++i;
                         }
+                        member.groupPeriods.splice(i, 1);
 
-                        ++i;
-                    }
-
-                    this.members[i].groups.push(this.selectedGroup);
-                });
-        },
-        removeFromGroup(member) {
-            del(`groups/${this.selectedGroup.id}/users/${member.id}`)
-                .then(result => {
-                    let i = 0;
-                    for (const m of this.members) {
-                        if (m.id === member.id) {
-                            break;
-                        }
-
-                        ++i;
-                    }
-
-
-                    let j = 0;
-                    for(const g of this.members[i].groups) {
-                        if(g.id === this.selectedGroup.id) {
-                            break;
-                        }
-
-                        ++j;
-                    }
-
-                    this.members[i].groups.splice(j, 1);
+                        return member;
+                    });
                 });
         }
     },
 
    computed: {
+        inputGroupPeriod() {
+            const group         = this.selectedGroup;
+            const period        = this.selectedPeriod;
+
+            return {
+                Period_id: period.id,
+                Group_id : group.id
+            }
+        },
         inputGroup() {
             const name = this.name;
             this.name  = '';
             return {
                 name: name,
             };
+        },
+        memberOptions() {
+            let members = this.members.map(member => {
+                return { name: `${member.firstname} ${member.lastname}`, value: member };
+            });
+
+            return members.filter(a => a);
+        },
+        periodOptions() {
+            if(!this.currentEvent) {
+                return {};
+            }
+
+            let periods = this.periods.map(period => {
+                if(period.Event_id == this.currentEvent.id) {
+                    return { name: period.name, value: period };
+                } else {
+                    return null;
+                }
+            });
+
+            return periods.filter(a => a);
         }
     }
 }
@@ -222,6 +290,10 @@ export default {
                 width: 100%;
                 white-space: normal;
             }
+        }
+
+        & + .mdl-snackbar {
+            margin-left: $sidebarWidth / 2;
         }
 
         .name {
