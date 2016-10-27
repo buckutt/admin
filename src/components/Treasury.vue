@@ -61,7 +61,6 @@ import Vue from 'vue';
 import price from '../lib/price';
 import { parseDate, convertDate } from '../lib/date';
 import { get } from '../lib/fetch';
-import '../lib/select';
 
 export default {
     vuex: {
