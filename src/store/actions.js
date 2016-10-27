@@ -67,25 +67,107 @@ export function fetchEvents({ dispatch }) {
 }
 
 /**
+ * SSE actions
+ */
+
+const modelToDispatch = {
+    points: {
+        add   : 'ADDPOINTS',
+        update: 'UPDATEPOINT',
+        delete: 'DELETEPOINT'
+    },
+    devices: {
+        add   : 'ADDDEVICES',
+        update: 'UPDATEDEVICE',
+        delete: 'DELETEDEVICE'
+    },
+    periods: {
+        add   : 'ADDPERIODS',
+        update: 'UPDATEPERIOD',
+        delete: 'DELETEPERIOD'
+    },
+    articles: {
+        add   : 'ADDARTICLES',
+        update: 'UPDATEARTICLE',
+        delete: 'DELETEARTICLE'
+    },
+    fundations: {
+        add   : 'ADDFUNDATIONS',
+        update: 'UPDATEFUNDATION',
+        delete: 'DELETEFUNDATION'
+    },
+    groups: {
+        add   : 'ADDGROUPS',
+        update: 'UPDATEGROUP',
+        delete: 'DELETEGROUP'
+    },
+    categories: {
+        add   : 'ADDCATEGORIES',
+        update: 'UPDATECATEGORY',
+        delete: 'DELETECATEGORY'
+    },
+    promotions: {
+        add   : 'ADDPROMOTIONS',
+        update: 'UPDATEPROMOTION',
+        delete: 'DELETEPROMOTION'
+    },
+    sets: {
+        add   : 'ADDSETS',
+        update: 'UPDATESET',
+        delete: 'DELETESET'
+    },
+    events: {
+        add   : 'ADDEVENTS',
+        update: 'UPDATEEVENT',
+        delete: 'DELETEEVENT'
+    }
+};
+
+export function listenChanges({ dispatch }, models) {
+    const modelsString = models.join(',');
+    const es           = new EventSource(`https://localhost:3000/changes?models=${modelsString}`, {
+        withCredentials: true
+    });
+
+    es.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        switch (data.action) {
+            case 'listen':
+                console.log(`Listen to ${data.model} changes`);
+                break;
+            case 'create':
+                dispatch(modelToDispatch[data.model].add, [data.doc]);
+                break;
+            case 'update':
+                if (data.doc.isRemoved) {
+                    dispatch(modelToDispatch[data.model].delete, data.doc);
+                }
+                dispatch(modelToDispatch[data.model].update, data.from, data.doc);
+                break;
+            case 'delete':
+                dispatch(modelToDispatch[data.model].delete, data.doc);
+                break;
+            default:
+                console.log('Unknown event');
+                break;
+        }
+    };
+}
+
+/**
  * Periods actions
  */
 
 export function createPeriod({ dispatch }, period) {
-    post('periods', period).then(result => {
-        dispatch('ADDPERIODS', [result]);
-    });
+    post('periods', period);
 }
 
 export function updatePeriod({ dispatch }, period, data) {
-    put(`periods/${period.id}`, data).then(() => {
-        dispatch('UPDATEPERIOD', period, data);
-    });
+    put(`periods/${period.id}`, data);
 }
 
 export function removePeriod({ dispatch }, period) {
-    put(`periods/${period.id}`, { isRemoved: true }).then(() => {
-        dispatch('DELETEPERIOD', period);
-    });
+    put(`periods/${period.id}`, { isRemoved: true });
 }
 
 
@@ -94,21 +176,15 @@ export function removePeriod({ dispatch }, period) {
  */
 
 export function createArticle({ dispatch }, article) {
-    post('articles', article).then(result => {
-        dispatch('ADDARTICLES', [result]);
-    });
+    post('articles', article);
 }
 
 export function updateArticle({ dispatch }, article, data) {
-    put(`articles/${article.id}`, data).then(() => {
-        dispatch('UPDATEARTICLE', article, data);
-    });
+    put(`articles/${article.id}`, data);
 }
 
 export function removeArticle({ dispatch }, article) {
-    put(`articles/${article.id}`, { isRemoved: true }).then(() => {
-        dispatch('DELETEARTICLE', article);
-    });
+    put(`articles/${article.id}`, { isRemoved: true });
 }
 
 /**
@@ -116,21 +192,15 @@ export function removeArticle({ dispatch }, article) {
  */
 
 export function createPoint({ dispatch }, point) {
-    post('points', point).then(result => {
-        dispatch('ADDPOINTS', [result]);
-    });
+    post('points', point);
 }
 
 export function updatePoint({ dispatch }, point, data) {
-    put(`points/${point.id}`, data).then(() => {
-        dispatch('UPDATEPOINT', point, data);
-    });
+    put(`points/${point.id}`, data);
 }
 
 export function removePoint({ dispatch }, point) {
-    put(`points/${point.id}`, { isRemoved: true }).then(() => {
-        dispatch('DELETEPOINT', point);
-    });
+    put(`points/${point.id}`, { isRemoved: true });
 }
 
 /**
@@ -138,15 +208,11 @@ export function removePoint({ dispatch }, point) {
  */
 
 export function updateDevice({ dispatch }, device, data) {
-    put(`devices/${device.id}`, data).then(() => {
-        dispatch('UPDATEDEVICE', device, data);
-    });
+    put(`devices/${device.id}`, data);
 }
 
 export function removeDevice({ dispatch }, device) {
-    put(`devices/${device.id}`, { isRemoved: true }).then(() => {
-        dispatch('DELETEDEVICE', device);
-    });
+    put(`devices/${device.id}`, { isRemoved: true });
 }
 
 /**
@@ -154,21 +220,15 @@ export function removeDevice({ dispatch }, device) {
  */
 
 export function createGroup({ dispatch }, group) {
-    post('groups', group).then(result => {
-        dispatch('ADDGROUPS', [result]);
-    });
+    post('groups', group);
 }
 
 export function updateGroup({ dispatch }, group, data) {
-    put(`groups/${group.id}`, data).then(() => {
-        dispatch('UPDATEGROUP', group, data);
-    });
+    put(`groups/${group.id}`, data);
 }
 
 export function removeGroup({ dispatch }, group) {
-    put(`groups/${group.id}`, { isRemoved: true }).then(() => {
-        dispatch('DELETEGROUP', group);
-    });
+    put(`groups/${group.id}`, { isRemoved: true });
 }
 
 /**
@@ -176,21 +236,15 @@ export function removeGroup({ dispatch }, group) {
  */
 
 export function createCategory({ dispatch }, category) {
-    post('categories', category).then(result => {
-        dispatch('ADDCATEGORIES', [result]);
-    });
+    post('categories', category);
 }
 
 export function updateCategory({ dispatch }, category, data) {
-    put(`categories/${category.id}`, data).then(() => {
-        dispatch('UPDATECATEGORY', category, data);
-    });
+    put(`categories/${category.id}`, data);
 }
 
 export function removeCategory({ dispatch }, category) {
-    put(`categories/${category.id}`, { isRemoved: true }).then(() => {
-        dispatch('DELETECATEGORY', category);
-    });
+    put(`categories/${category.id}`, { isRemoved: true });
 }
 
 /**
@@ -198,21 +252,15 @@ export function removeCategory({ dispatch }, category) {
  */
 
 export function createPromotion({ dispatch }, promotion) {
-    post('promotions', promotion).then(result => {
-        dispatch('ADDPROMOTIONS', [result]);
-    });
+    post('promotions', promotion);
 }
 
 export function updatePromotion({ dispatch }, promotion, data) {
-    put(`promotions/${promotion.id}`, data).then(() => {
-        dispatch('UPDATEPROMOTION', promotion, data);
-    });
+    put(`promotions/${promotion.id}`, data);
 }
 
 export function removePromotion({ dispatch }, promotion) {
-    put(`promotions/${promotion.id}`, { isRemoved: true }).then(() => {
-        dispatch('DELETEPROMOTION', promotion);
-    });
+    put(`promotions/${promotion.id}`, { isRemoved: true });
 }
 
 /**
@@ -220,9 +268,7 @@ export function removePromotion({ dispatch }, promotion) {
  */
 
 export function createSet({ dispatch }, set) {
-    post('sets', set).then(result => {
-        dispatch('ADDSETS', [result]);
-    });
+    post('sets', set);
 }
 
 export function createSetWithArticles({ dispatch }, set, articles, promotion) {
@@ -238,15 +284,11 @@ export function createSetWithArticles({ dispatch }, set, articles, promotion) {
 }
 
 export function updateSet({ dispatch }, set, data) {
-    put(`sets/${set.id}`, data).then(() => {
-        dispatch('UPDATESET', set, data);
-    });
+    put(`sets/${set.id}`, data);
 }
 
 export function removeSet({ dispatch }, set) {
-    put(`sets/${set.id}`, { isRemoved: true }).then(() => {
-        dispatch('DELETESET', set);
-    });
+    put(`sets/${set.id}`, { isRemoved: true });
 }
 
 /**
@@ -254,21 +296,15 @@ export function removeSet({ dispatch }, set) {
  */
 
 export function createEvent({ dispatch }, event) {
-    post('events', event).then(result => {
-        dispatch('ADDEVENTS', [result]);
-    });
+    post('events', event);
 }
 
 export function updateEvent({ dispatch }, event, data) {
-    put(`events/${event.id}`, data).then(() => {
-        dispatch('UPDATEEVENT', event, data);
-    });
+    put(`events/${event.id}`, data);
 }
 
 export function removeEvent({ dispatch }, event) {
-    put(`events/${event.id}`, { isRemoved: true }).then(() => {
-        dispatch('DELETEEVENT', event);
-    });
+    put(`events/${event.id}`, { isRemoved: true });
 }
 
 /**

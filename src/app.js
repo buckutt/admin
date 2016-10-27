@@ -38,7 +38,8 @@ import {
     fetchCategories,
     fetchEvents,
     fetchPromotions,
-    fetchSets
+    fetchSets,
+    listenChanges
 } from './store/actions';
 
 import store from './store/index';
@@ -118,5 +119,18 @@ fetchCategories(router.app.$store);
 fetchPromotions(router.app.$store);
 fetchSets(router.app.$store);
 fetchEvents(router.app.$store);
+
+listenChanges(router.app.$store, [
+    'points',
+    'devices',
+    'periods',
+    'articles',
+    'fundations',
+    'groups',
+    'categories',
+    'promotions',
+    'sets',
+    'events'
+]);
 
 window.router = router;

@@ -37,7 +37,7 @@ export default {
     },
 
     attached () {
-        let es = new EventSource("https://localhost:3000/changes?model=purchases", {
+        let es = new EventSource("https://localhost:3000/changes?models=purchases", {
             withCredentials: true,
         });
         es.onmessage = function (event) {
