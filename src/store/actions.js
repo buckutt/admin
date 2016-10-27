@@ -225,6 +225,18 @@ export function createSet({ dispatch }, set) {
     });
 }
 
+export function createSetWithArticles({ dispatch }, set, articles, promotion) {
+    post('sets', set).then(result => {
+        dispatch('ADDSETS', [result]);
+
+        post(`sets/${result.id}/promotions`, { id: promotion.id });
+
+        articles.forEach(article => {
+            post(`sets/${result.id}/articles`, { id: article.id });
+        });
+    });
+}
+
 export function updateSet({ dispatch }, set, data) {
     put(`sets/${set.id}`, data).then(() => {
         dispatch('UPDATESET', set, data);

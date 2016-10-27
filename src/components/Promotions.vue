@@ -42,41 +42,37 @@
                     </tbody>
                 </table>
                 <br />
-                <div class="setsManagement">
-                    <div v-show="detailsPromotion.sets.length > 0">
-                        <h5>Sets dans la promotion:</h5>
-                        <mdl-button v-for="set in detailsPromotion.sets" track-by="$index" @click="searchSet(set)">{{ set.name }}</mdl-button>
-                    </div>
-
-                    <h5>Rechercher un set:</h5>
-                    <form v-on:submit.prevent>
-                        <mdl-textfield floating-label="Nom" :value.sync="setName"></mdl-textfield>
-                    </form>
-
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="setName.length > 0 && filteredSets.length > 0">
-                        <thead>
+                <div class="promotionContent">
+                    <h5>Contenu de la promotion :</h5>
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="formatPromo.length > 0" transition="fade">
+                       <thead>
                             <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Objet</th>
-                                <th class="mdl-data-table__cell--non-numeric">Action</th>
+                                <th class="mdl-data-table__cell--non-numeric">Ensemble</th>
+                                <th class="mdl-data-table__cell--non-numeric">Choix possibles</th>
+                                <th class="mdl-data-table__cell--non-numeric" v-show="typeof displayRemove === 'number' || displayChoose">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="set in filteredSets">
-                                <td class="mdl-data-table__cell--non-numeric name">{{ set.name }}</td>
+                            <tr v-for="set in formatPromo">
                                 <td class="mdl-data-table__cell--non-numeric">
-                                    <mdl-button @click="addSetToPromotion(set)">Ajouter</mdl-button>
-                                    <mdl-button @click="removeSetFromPromotion(set)" v-show="isSetInPromotion(set)">Enlever</mdl-button>
+                                    <strong>{{ $index }}</strong>
                                 </td>
+                                <td class="mdl-data-table__cell--non-numeric" transition="fade">
+                                    <mdl-button v-for="article in set.articles" @click="chooseArticle(article, $parent.$index)">{{ article.name }}</mdl-button>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric right" v-show="displayChoose" transition="fade">
+                                    <mdl-button @click="addChosenArticleToStep($index)"><i class="material-icons">add</i></mdl-button>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric right" v-show="displayRemove === $index" transition="fade">
+                                    <mdl-button @click="removeChosenArticleFromStep($index)"><i class="material-icons">remove</i></mdl-button>
+                                </td>
+                                <td v-show="typeof displayRemove === 'number' && displayRemove !== $index"></td>
                             </tr>
                         </tbody>
                     </table>
+                    <p v-show="formatPromo.length == 0" transition="fade">La promotion est vide.</p>
                 </div>
                 <div class="articlesManagement">
-                    <div v-show="detailsPromotion.articles.length > 0">
-                        <h5>Articles dans la promotion:</h5>
-                        <mdl-button v-for="article in detailsPromotion.articles" track-by="$index" @click="search(article)">{{ article.name }}</mdl-button>
-                    </div>
-
                     <h5>Rechercher un article:</h5>
                     <form v-on:submit.prevent>
                         <mdl-textfield floating-label="Nom" :value.sync="articleName"></mdl-textfield>
@@ -85,21 +81,22 @@
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="articleName.length > 0 && filteredArticles.length > 0">
                         <thead>
                             <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Objet</th>
-                                <th class="mdl-data-table__cell--non-numeric">Action</th>
+                                <th class="mdl-data-table__cell--non-numeric">Article</th>
+                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="article in filteredArticles">
                                 <td class="mdl-data-table__cell--non-numeric name">{{ article.name }}</td>
                                 <td class="mdl-data-table__cell--non-numeric">
-                                    <mdl-button @click="addToPromotion(article)">Ajouter</mdl-button>
-                                    <mdl-button @click="removeFromPromotion(article)" v-show="isInPromotion(article)">Enlever</mdl-button>
+                                    <mdl-button @click="addArticleToPromotion(article)">Nouvel ensemble</mdl-button>
+                                    <mdl-button @click="chooseStepToAdd(article)" v-show="formatPromo.length > 0">Ajouter à un ensemble</mdl-button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                <div class="clear"></div>
                 <br />
                 <mdl-button colored raised @click="goBack()">Retour</mdl-button>
             </div>
@@ -131,12 +128,13 @@
             </div>
         </div>
     </div>
+    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>
 import price from '../lib/price';
 import { get, post, put, del } from '../lib/fetch';
-import { createPromotion, updatePromotion, removePromotion } from '../store/actions';
+import { createPromotion, updatePromotion, removePromotion, createSetWithArticles, removeSet } from '../store/actions';
 import fuzzy from 'fuzzy';
 
 export default {
@@ -152,9 +150,11 @@ export default {
             currentEvent: state => state.global.currentEvent
         },
         actions: {
-            createPromotion: createPromotion,
-            updatePromotion: updatePromotion,
-            removePromotion: removePromotion
+            createPromotion      : createPromotion,
+            updatePromotion      : updatePromotion,
+            removePromotion      : removePromotion,
+            createSetWithArticles: createSetWithArticles,
+            removeSet            : removeSet
         }
     },
 
@@ -170,7 +170,9 @@ export default {
             selectedFundation: {},
             selectedPoint    : {},
             articleName      : '',
-            setName          : ''
+            displayChoose    : false,
+            chosenArticle    : {},
+            displayRemove    : false
         };
     },
 
@@ -178,34 +180,12 @@ export default {
         goBack() {
             this.selectedPromotion = {};
             this.modPromotion      = {};
+            this.displayChoose     = false;
+            this.displayRemove     = false;
+            this.chosenArticle     = {};
         },
         search(article) {
             this.articleName = article.name;
-        },
-        searchSet(set) {
-            this.setName = set.name;
-        },
-        isInPromotion(article) {
-            let isInPromotion = false;
-            if(this.detailsPromotion.articles.length > 0) {
-                this.detailsPromotion.articles.forEach((a, i) => {
-                    if(a.id == article.id) {
-                        isInPromotion = true;
-                    }
-                });
-            }
-            return isInPromotion;
-        },
-        isSetInPromotion(set) {
-            let isInPromotion = false;
-            if(this.detailsPromotion.sets.length > 0) {
-                this.detailsPromotion.sets.forEach((a, i) => {
-                    if(a.id == set.id) {
-                        isInPromotion = true;
-                    }
-                });
-            }
-            return isInPromotion;
         },
         editPromotion(promotion) {
             this.selectedPromotion = promotion;
@@ -223,7 +203,9 @@ export default {
                     point    : true
                 },
                 articles: true,
-                sets: true
+                sets    : {
+                    articles: true
+                }
             }));
 
             get(`promotions/${promotion.id}?embed=${embedPromotions}`)
@@ -267,13 +249,16 @@ export default {
                     this.detailsPromotion.prices.splice(i, 1);
                 });
         },
-        addToPromotion(article) {
+        addArticleToPromotion(article) {
+            this.displayChoose = false;
+            this.chosenArticle = {};
+
             post(`promotions/${this.selectedPromotion.id}/articles`, {id: article.id})
                 .then(result => {
                     this.detailsPromotion.articles.push(article);
                 });
         },
-        removeFromPromotion(article) {
+        removeArticleFromPromotion(article) {
             del(`promotions/${this.selectedPromotion.id}/articles/${article.id}`)
                 .then(result => {
                     let i = 0;
@@ -286,12 +271,6 @@ export default {
                     }
 
                     this.detailsPromotion.articles.splice(i, 1);
-                });
-        },
-        addSetToPromotion(set) {
-            post(`promotions/${this.selectedPromotion.id}/sets`, {id: set.id})
-                .then(result => {
-                    this.detailsPromotion.sets.push(set);
                 });
         },
         removeSetFromPromotion(set) {
@@ -308,22 +287,170 @@ export default {
 
                     this.detailsPromotion.sets.splice(i, 1);
                 });
+
+            this.removeSet(set);
+        },
+        addArticleToSet(article, set) {
+            post(`sets/${set.id}/articles`, {id: article.id})
+                .then(result => {
+                    this.detailsPromotion.sets.map(setPromo => {
+                        if(setPromo.id == set.id) {
+                            setPromo.articles.push(article);
+                        }
+
+                        return setPromo;
+                    });
+                });
+        },
+        removeArticleFromSet(article, set) {
+            del(`sets/${set.id}/articles/${article.id}`)
+                .then(result => {
+                    let i = 0;
+                    let j = 0;
+                    for (const s of this.detailsPromotion.sets) {
+                        if (s.id === set.id) {
+                            for (const a of s.articles) {
+                                if(a.id === article.id) {
+                                    break;
+                                }
+
+                                ++i;
+                            }
+
+                            this.detailsPromotion.sets[j].articles.splice(i, 1);
+                        }
+                        ++j;
+                    }
+                });
+        },
+        chooseStepToAdd(article) {
+            this.displayRemove = false;
+            this.displayChoose = true;
+            this.chosenArticle = article;
+        },
+        chooseArticle(article, index) {
+            this.displayChoose = false;
+            this.displayRemove = index;
+            this.chosenArticle = article;
+        },
+        addChosenArticleToStep(index) {
+            const step = this.formatPromo[index];
+
+            if(step.type == 'article') {
+                if(step.articles[0].id != this.chosenArticle.id) {
+                    this.createSetWithArticles({
+                        name: this.detailsPromotion.name
+                    }, [step.articles[0], this.chosenArticle], this.selectedPromotion);
+
+                    this.detailsPromotion.sets.push({
+                        name    : this.detailsPromotion.name,
+                        articles: [step.articles[0], this.chosenArticle]
+                    });
+
+                    this.removeArticleFromPromotion(step.articles[0]);
+                } else {
+                    const data = {
+                        message: 'L\'article est déjà présent dans l\'ensemble.',
+                        timeout: 2000
+                    };
+
+                    this.$broadcast('snackfilter', data);
+                }
+            } else if(step.type == 'set') {
+                const articlesIds = step.set.articles.map(article => article.id);
+
+                if(articlesIds.indexOf(this.chosenArticle.id) == -1) {
+                    this.addArticleToSet(this.chosenArticle, step.set);
+                } else {
+                    const data = {
+                        message: 'L\'article est déjà présent dans l\'ensemble.',
+                        timeout: 2000
+                    };
+
+                    this.$broadcast('snackfilter', data);
+                }
+            }
+
+            this.displayChoose = false;
+            this.chosenArticle = {};
+        },
+        removeChosenArticleFromStep(index) {
+            const step = this.formatPromo[index];
+
+            if(step.type == 'article') {
+                this.removeArticleFromPromotion(this.chosenArticle);
+            } else if (step.type == 'set') {
+                if(step.set.articles.length > 2) {
+                    this.removeArticleFromSet(this.chosenArticle, step.set);
+                } else {
+                    let keptArticle = {};
+                    step.set.articles.forEach(article => {
+                        if(article.id != this.chosenArticle.id) {
+                            keptArticle = article;
+                        }
+                    });
+
+                    this.removeArticleFromSet(this.chosenArticle, step.set);
+                    this.removeSetFromPromotion(step.set);
+                    this.addArticleToPromotion(keptArticle);
+                }
+            }
+
+            this.displayRemove = false;
+            this.chosenArticle = {};
         }
     },
 
     computed: {
+        formatPromo() {
+            let promotion = [];
+
+            if(this.detailsPromotion.articles) {
+                this.detailsPromotion.articles.forEach(article => {
+                    promotion.push({
+                        type    : 'article',
+                        articles: [article]
+                    });
+                });
+            }
+
+            if(this.detailsPromotion.sets) {
+                this.detailsPromotion.sets.forEach(set => {
+                    const sortedArticles = set.articles.sort((a, b) => {
+                        if(a.name < b.name) {
+                            return -1;
+                        }
+                        if(a.name > b.name) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+
+                    promotion.push({
+                        type    : 'set',
+                        set     : set,
+                        articles: sortedArticles
+                    });
+                });
+            }
+
+            promotion = promotion.sort((a, b) => {
+                if(a.articles[0].name < b.articles[0].name) {
+                    return -1;
+                }
+                if(a.articles[0].name > b.articles[0].name) {
+                    return 1;
+                }
+                return 0;
+            });
+
+            return promotion;
+        },
         filteredArticles() {
             let val           = this.articleName;
             let articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
             return articlesNames.map(article => {
                 return article.original;
-            });
-        },
-        filteredSets() {
-            let val       = this.setName;
-            let setsNames = fuzzy.filter(val, this.sets, { extract: el => el.name });
-            return setsNames.map(set => {
-                return set.original;
             });
         },
         inputPromotion() {
@@ -407,6 +534,10 @@ export default {
             }
         }
 
+        & + .mdl-snackbar {
+            margin-left: $sidebarWidth / 2;
+        }
+
         .fade-transition {
             transition: opacity .4s ease;
         }
@@ -420,14 +551,23 @@ export default {
         }
 
         .articlesManagement {
-            display:inline-block;
+            display:block;
+            float:right;
             width:47%;
         }
 
-        .setsManagement {
-            display:inline-block;
+        .promotionContent {
+            display:block;
             width:47%;
-            padding-right:5%;
+            float:left;
+        }
+
+        .clear {
+            clear:both;
+        }
+
+        .right {
+            text-align:right;
         }
     }
 </style>
