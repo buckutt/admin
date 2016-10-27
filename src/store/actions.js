@@ -343,3 +343,7 @@ export function blockMOL({ dispatch }, molId, blockOrRestore) {
 export function updateCurrentEvent({ dispatch }, currentEvent) {
     dispatch('UPDATECURRENTEVENT', currentEvent);
 }
+
+export function updateLogged({ dispatch }, logged) {
+    dispatch('UPDATELOGGED', logged);
+}

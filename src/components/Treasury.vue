@@ -1,5 +1,5 @@
 <template>
-    <div class="treasury">
+    <div class="treasury" v-show="logged">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Trésorerie</h3>
             <h4>Recherche</h4>
@@ -67,7 +67,8 @@ export default {
         getters: {
             points      : state => state.app.points,
             fundations  : state => state.app.fundations,
-            currentEvent: state => state.global.currentEvent
+            currentEvent: state => state.global.currentEvent,
+            logged      : state => state.global.logged
         }
     },
 

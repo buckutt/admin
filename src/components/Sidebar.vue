@@ -1,5 +1,5 @@
 <template>
-    <div class="sidebar">
+    <div class="sidebar" v-show="logged" transition="slide">
         <h1>Buckless</h1>
         <ul class="eventSelector">
             <li>
@@ -11,6 +11,12 @@
                 <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/' }">
                     <i class="material-icons">home</i>
                     Accueil
+                </a>
+            </li>
+            <li>
+                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/logout' }">
+                    <i class="material-icons">power_settings_new</i>
+                    Déconnexion
                 </a>
             </li>
             <li>
@@ -105,7 +111,8 @@ export default {
     vuex: {
         getters: {
             events      : state => state.app.events,
-            currentEvent: state => state.global.currentEvent
+            currentEvent: state => state.global.currentEvent,
+            logged      : state => state.global.logged
         },
         actions: {
             updateCurrentEvent: updateCurrentEvent
@@ -114,7 +121,8 @@ export default {
 
     data () {
         return {
-            selectedEvent: null
+            selectedEvent: null,
+            test: true
         };
     },
 
@@ -141,6 +149,9 @@ export default {
                         this.updateCurrentEvent(result);
                     });
             }
+        },
+        changeTest() {
+            this.test = !this.test;
         }
     },
 
@@ -212,7 +223,7 @@ export default {
                     color: $sidebarColor !important;
                 }
 
-                &:nth-child(4) {
+                &:nth-child(5) {
                     margin-bottom: 30px;
                 }
             }
@@ -236,5 +247,22 @@ export default {
 
     .fade-leave {
         display: none;
+    }
+
+    .slide-transition {
+        transition: all .5s ease;
+    }
+
+    .slide-transition + .container {
+        transition: all .5s ease;
+    }
+
+    .slide-enter, .slide-leave {
+        margin-left: -200px;
+    }
+
+    .slide-enter + .container, .slide-leave + .container {
+        margin-left: 0;
+        width: 100%;
     }
 </style>

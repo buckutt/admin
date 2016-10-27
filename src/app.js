@@ -27,22 +27,12 @@ import Promotions from './components/Promotions.vue';
 import Groups     from './components/Groups.vue';
 import Categories from './components/Categories.vue';
 import Events     from './components/Events.vue';
+import Logout     from './components/Logout.vue';
 import CardBlock  from './components/CardBlock.vue';
-import {
-    fetchPoints,
-    fetchDevices,
-    fetchPeriods,
-    fetchArticles,
-    fetchFundations,
-    fetchGroups,
-    fetchCategories,
-    fetchEvents,
-    fetchPromotions,
-    fetchSets,
-    listenChanges
-} from './store/actions';
 
-import store from './store/index';
+import store                           from './store/index';
+import { updateLogged, listenChanges } from './store/actions';
+import { load }                        from './lib/load';
 
 window.jQuery = jQuery;
 
@@ -94,6 +84,9 @@ router.map({
     '/events': {
         component: Events
     },
+    '/logout': {
+        component: Logout
+    },
     '/cardBlock': {
         component: CardBlock
     }
@@ -109,16 +102,10 @@ router.afterEach(() => {
     });
 });
 
-fetchPoints(router.app.$store);
-fetchDevices(router.app.$store);
-fetchPeriods(router.app.$store);
-fetchArticles(router.app.$store);
-fetchFundations(router.app.$store);
-fetchGroups(router.app.$store);
-fetchCategories(router.app.$store);
-fetchPromotions(router.app.$store);
-fetchSets(router.app.$store);
-fetchEvents(router.app.$store);
+if (sessionStorage.hasOwnProperty('token')) {
+    updateLogged(router.app.$store, true);
+    load(router.app.$store);
+}
 
 listenChanges(router.app.$store, [
     'points',

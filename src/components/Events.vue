@@ -1,5 +1,5 @@
 <template>
-    <div class="events">
+    <div class="events" v-show="logged">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Évenements</h3>
             <div v-show="selectedEvent.name" transition="fade">
@@ -56,7 +56,8 @@ export default {
     vuex: {
         getters: {
             events : state => state.app.events,
-            periods: state => state.app.periods
+            periods: state => state.app.periods,
+            logged : state => state.global.logged
         },
         actions: {
             createEvent: createEvent,
