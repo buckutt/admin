@@ -273,8 +273,6 @@ export function createSet({ dispatch }, set) {
 
 export function createSetWithArticles({ dispatch }, set, articles, promotion) {
     post('sets', set).then(result => {
-        dispatch('ADDSETS', [result]);
-
         post(`sets/${result.id}/promotions`, { id: promotion.id });
 
         articles.forEach(article => {
