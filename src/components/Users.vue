@@ -18,6 +18,26 @@
                     <br />
                     <p v-show="newPin" transition="fade">Le nouveau code PIN généré est <strong>{{ newPin }}</strong></p>
                     <p v-show="newPassword" transition="fade">Le nouveau mot de passe généré est <strong>{{ newPassword }}</strong></p>
+
+                    <h5>Identifiants de connexion</h5>
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="detailsUser.meansOfLogin">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Type</th>
+                                <th class="mdl-data-table__cell--non-numeric">Contenu</th>
+                                <th class="mdl-data-table__cell--non-numeric">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="meanOfLogin in detailsUser.meansOfLogin">
+                                <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.type }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.data }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-button @click="deleteMol(meanOfLogin)">Désactiver</mdl-button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <h5>Droits</h5>
                     <form v-on:submit.prevent>
                         <mdl-select label="Droit" id="right-select" :value.sync="rightChoice" :options="rightsList"></mdl-select>
@@ -101,8 +121,8 @@
                 <form v-on:submit.prevent>
                     <div class="modal__body">
                         <mdl-select label="Droit" id="modright-select" :value.sync="modRight.name" :options="rightsList"></mdl-select><br />
-                        <mdl-select label="Point" id="modpoint-select" :value.sync="modRight.Point_id" :options="pointOptions"></mdl-select><br />
-                        <mdl-select label="Période" id="modperiod-select" :value.sync="modRight.Period_id" :options="periodOptions"></mdl-select><br />
+                        <mdl-select label="Point" id="modpoint-select" :value.sync="modRight.Point_id" :options="pointOptionsIds"></mdl-select><br />
+                        <mdl-select label="Période" id="modperiod-select" :value.sync="modRight.Period_id" :options="periodOptionsIds"></mdl-select><br />
                     </div>
                     <div class="modal__footer">
                         <mdl-button @click="updateRight(selectedRight, editRight)">Valider</mdl-button>
@@ -112,6 +132,7 @@
             </div>
         </div>
     </div>
+    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>
@@ -138,9 +159,9 @@ export default {
             nickname     : '',
             mail         : '',
             userName     : '',
-            rightChoice  : '',
-            rightPoint   : {},
-            rightPeriod  : {},
+            rightChoice  : null,
+            rightPoint   : null,
+            rightPeriod  : null,
             users        : [],
             selectedUser : {},
             detailsUser  : {},
@@ -163,6 +184,10 @@ export default {
         createUser(user) {
             post('users', user)
                 .then(result => {
+                    if(result.mail) {
+                        post('meansoflogin', { type: 'etuMail', data: result.mail, User_id: result.id });
+                    }
+
                     this.userName = user.firstname;
                     this.searchUser();
                 });
@@ -194,12 +219,13 @@ export default {
         editUser(user) {
             this.newPin      = '';
             this.newPassword = '';
-            this.rightChoice = this.rightsList[0];
+            this.rightChoice = null;
             this.rightPoint  = null;
-            this.rightPeriod = this.$store.state.app.periods[0].id;
+            this.rightPeriod = null;
 
             const embedUsers = encodeURIComponent(JSON.stringify({
-                rights: {
+                meansOfLogin: true,
+                rights      : {
                     period: true,
                     point : true
                 }
@@ -209,6 +235,9 @@ export default {
                 .then(result => {
                     result.rights = result.rights.filter(right => {
                         return !right.isRemoved;
+                    });
+                    result.meansOfLogin = result.meansOfLogin.filter(meanOfLogin => {
+                        return !meanOfLogin.isRemoved;
                     });
                     this.detailsUser = result;
                 });
@@ -261,12 +290,35 @@ export default {
                 });
         },
         updateUser(user, modUser) {
-            const embedRights = encodeURIComponent(JSON.stringify({
-                period: true,
-                point : true
-            }));
+            if(user.mail != modUser.mail) {
+                let existingMol = false;
 
-            put(`users/${user.id}?embed=${embedRights}`, modUser)
+                this.detailsUser.meansOfLogin.forEach(meanOfLogin => {
+                    if(meanOfLogin.type == 'etuMail') {
+                        existingMol = meanOfLogin.id;
+                    }
+                });
+
+                if(!existingMol) {
+                    post('meansoflogin', { type: 'etuMail', data: modUser.mail, User_id: user.id })
+                        .then(result => {
+                            this.detailsUser.meansOfLogin.push(result);
+                        });
+                } else {
+                    put(`meansoflogin/${existingMol}`, { data: modUser.mail })
+                        .then(result => {
+                            this.detailsUser.meansOfLogin = this.detailsUser.meansOfLogin.map(meanOfLogin => {
+                                if(meanOfLogin.id == result.id) {
+                                    meanOfLogin = result;
+                                }
+
+                                return meanOfLogin;
+                            });
+                        });
+                }
+            }
+
+            put(`users/${user.id}`, modUser)
                 .then(result => {
                     this.selectedUser = JSON.parse(JSON.stringify(modUser));
                     this.users.forEach((u, i) => {
@@ -332,6 +384,17 @@ export default {
                 });
         },
         createUserRight(user, right) {
+            if (!right.name || !right.Period_id) {
+                const data = {
+                    message: 'Tous les champs doivent être remplis.',
+                    timeout: 2000
+                };
+
+                this.$broadcast('snackfilter', data);
+
+                return;
+            }
+
             let currentRight  = {};
             const embedRight  = encodeURIComponent(JSON.stringify({
                 point : true,
@@ -347,9 +410,25 @@ export default {
                     this.detailsUser.rights.push(currentRight);
                 });
         },
+        deleteMol(meanOfLogin) {
+            meanOfLogin.isRemoved = true;
+            put(`meansoflogin/${meanOfLogin.id}`, meanOfLogin)
+                .then(result => {
+                    let i = 0;
+                    for(const mol of this.detailsUser.meansOfLogin) {
+                        if(mol.id === meanOfLogin.id) {
+                            break;
+                        }
+
+                        ++i;
+                    }
+
+                    this.detailsUser.meansOfLogin.splice(i, 1);
+                });
+        },
         openModal(right) {
-            this.selectedRight      = right;
-            this.modRight           = JSON.parse(JSON.stringify(right));
+            this.selectedRight = right;
+            this.modRight      = JSON.parse(JSON.stringify(right));
             if(this.modRight.point) {
                 this.modRight.Point_id  = this.modRight.point.id;
             } else {
@@ -423,19 +502,20 @@ export default {
             const name       = this.rightChoice;
             const point      = this.rightPoint;
             const period     = this.rightPeriod;
-            this.rightChoice = this.rightsList[0];
+            this.rightChoice = null;
             this.rightPoint  = null;
-            this.rightPeriod = this.$store.state.app.periods[0].id;
+            this.rightPeriod = null;
+            console.log(point);
             if(!point) {
                 return {
                     name     : name,
-                    Period_id: period
+                    Period_id: period.id
                 }
             }
             return {
                 name     : name,
-                Period_id: period,
-                Point_id : point
+                Period_id: period.id,
+                Point_id : point.id
             }
         },
         editRight() {
@@ -445,6 +525,10 @@ export default {
             return right;
         },
         periodOptions() {
+            if(!this.currentEvent) {
+                return {};
+            }
+
             let periods = this.periods.map(period => {
                 if(period.Event_id == this.currentEvent.id) {
                     return { name: period.name, value: period };
@@ -456,6 +540,28 @@ export default {
             return periods.filter(a => a);
         },
         pointOptions() {
+            let points = this.points.map(point => {
+                return { name: point.name, value: point };
+            });
+            points.unshift({ name: 'Aucun', value: null });
+            return points;
+        },
+        periodOptionsIds() {
+            if(!this.currentEvent) {
+                return {};
+            }
+
+            let periods = this.periods.map(period => {
+                if(period.Event_id == this.currentEvent.id) {
+                    return { name: period.name, value: period.id };
+                } else {
+                    return null;
+                }
+            });
+
+            return periods.filter(a => a);
+        },
+        pointOptionsIds() {
             let points = this.points.map(point => {
                 return { name: point.name, value: point.id };
             });
@@ -493,6 +599,10 @@ export default {
                 width: 100%;
                 white-space: normal;
             }
+        }
+
+        & + .mdl-snackbar {
+            margin-left: $sidebarWidth / 2;
         }
 
         .name {
