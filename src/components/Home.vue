@@ -29,9 +29,9 @@
 </template>
 
 <script>
-import { updateLogged } from '../store/actions';
-import { post }         from '../lib/fetch';
-import { load }         from '../lib/load';
+import { updateLogged }       from '../store/actions';
+import { post, updateBearer } from '../lib/fetch';
+import { load }               from '../lib/load';
 
 export default {
     vuex: {
@@ -57,13 +57,23 @@ export default {
             post('services/login', { meanOfLogin: 'etuMail', data: mail, password })
                 .then(result => {
                     if (!result.isAPIError) {
-                        sessionStorage.setItem('user', JSON.stringify(result.user));
-                        sessionStorage.setItem('token', result.token);
-                        this.isToken = true;
-                        this.user    = result.user;
-                        this.updateLogged(true);
+                        if(this.isAdmin(result.user)) {
+                            sessionStorage.setItem('user', JSON.stringify(result.user));
+                            sessionStorage.setItem('token', result.token);
+                            this.isToken = true;
+                            this.user    = result.user;
+                            this.updateLogged(true);
+                            updateBearer(result.token);
 
-                        load(this.$route.router.app.$store);
+                            load(this.$route.router.app.$store);
+                        } else {
+                            const dataAdmin = {
+                                message: 'Vous n\'êtes pas administrateur.',
+                                timeout: 2000
+                            };
+
+                            this.$broadcast('snackfilter', dataAdmin);
+                        }
                     } else {
                         const data = {
                             message: 'La connexion a échoué.',
@@ -82,6 +92,16 @@ export default {
                 return JSON.parse(sessionStorage.getItem('user'));
             }
             return {};
+        },
+        isAdmin(user) {
+            let admin = false;
+            user.rights.forEach(right => {
+                if (right.name == 'admin' && !right.isRemoved && new Date(right.period.start).getTime() <= Date.now() && new Date(right.period.end).getTime() >= Date.now()) {
+                    admin = true;
+                }
+            });
+
+            return admin;
         }
     }
 }

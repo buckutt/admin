@@ -9,6 +9,10 @@ if (sessionStorage.hasOwnProperty('token')) {
     authData.headers.Authorization = `Bearer ${sessionStorage.getItem('token')}`;
 }
 
+export function updateBearer (token) {
+    authData.headers.Authorization = `Bearer ${token}`;
+}
+
 /**
  * Get a ressource from the API
  * @param  {String} url   The base URL

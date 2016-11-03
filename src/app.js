@@ -30,9 +30,10 @@ import Events     from './components/Events.vue';
 import Logout     from './components/Logout.vue';
 import CardBlock  from './components/CardBlock.vue';
 
-import store                           from './store/index';
 import { updateLogged, listenChanges } from './store/actions';
-import { load }                        from './lib/load';
+
+import store    from './store/index';
+import { load } from './lib/load';
 
 window.jQuery = jQuery;
 
