@@ -5,7 +5,6 @@
             <h4>Recherche</h4>
             <div>
                 <mdl-select label="Point" id="point-select" :value.sync="point" :options="pointOptions"></mdl-select>
-                <mdl-select label="Fondation" id="select-fundations" :value.sync="fundation" :options="fundationOptions"></mdl-select>
             </div>
             <div>
                 <mdl-textfield floating-label="Début" :value.sync="dateIn" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" v-el:datein></mdl-textfield>
@@ -17,20 +16,14 @@
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                 <thead>
                     <tr>
-                        <th class="mdl-data-table__cell--non-numeric">Vendeur</th>
-                        <th class="mdl-data-table__cell--non-numeric">Client</th>
-                        <th class="mdl-data-table__cell--non-numeric">Moyen</th>
-                        <th class="mdl-data-table__cell--non-numeric">Point</th>
-                        <th>Montant</th>
+                        <th class="mdl-data-table__cell--non-numeric">Moyen de paiement</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="reload in reloads">
-                        <td class="mdl-data-table__cell--non-numeric">{{ reload.seller.firstname }} {{ reload.seller.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ reload.buyer.firstname }} {{ reload.buyer.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ reload.trace }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ reload.point.name }}</td>
-                        <td>{{ reload.credit | price true }}</td>
+                        <td class="mdl-data-table__cell--non-numeric">{{ reload.group | reload }}</td>
+                        <td>{{ reload.reduction | price true }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -57,8 +50,10 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import price from '../lib/price';
+import Vue    from 'vue';
+import price  from '../lib/price';
+import reload from '../lib/reloadType';
+
 import { parseDate, convertDate } from '../lib/date';
 import { get } from '../lib/fetch';
 
@@ -66,7 +61,6 @@ export default {
     vuex: {
         getters: {
             points      : state => state.app.points,
-            fundations  : state => state.app.fundations,
             currentEvent: state => state.global.currentEvent,
             logged      : state => state.global.logged
         }
@@ -74,8 +68,7 @@ export default {
 
     data () {
         return {
-            point    : '0',
-            fundation: '0',
+            point    : '',
             dateIn   : '',
             dateOut  : '',
             reloads  : [],
@@ -88,7 +81,7 @@ export default {
             let sum = 0;
 
             for (const reload of this.reloads) {
-                sum += reload.credit;
+                sum += reload.reduction;
             }
 
             return sum;
@@ -103,37 +96,34 @@ export default {
             return sum;
         },
         pointOptions() {
-            return this.points.map(point => {
+            let options = this.points.map(point => {
                 return { name: point.name, value: point.id };
             });
-        },
-        fundationOptions() {
-            return this.fundations.map(fundation => {
-                return { name: fundation.name, value: fundation.id };
-            });
+
+            options.unshift({ name: 'Tous', value: '' });
+
+            return options;
         }
     },
 
     methods: {
         filter () {
-            const q = [];
+            const q  = [];
+            const qt = [];
 
-            if (this.$data.point !== '0') {
-                q.push(JSON.stringify({
+            if (this.$data.point !== '') {
+                q.push(`point=${this.$data.point}`);
+
+                qt.push(JSON.stringify({
                     field: 'Point_id',
                     eq: this.$data.point
                 }));
             }
 
-            if (this.$data.fundation !== '0') {
-                q.push(JSON.stringify({
-                    field: 'Fundation_id',
-                    eq: this.$data.fundation
-                }));
-            }
-
             if (this.$data.dateIn !== '') {
-                q.push(JSON.stringify({
+                q.push(`dateIn=${convertDate(this.$data.dateIn)}`);
+
+                qt.push(JSON.stringify({
                     field: 'createdAt',
                     ge: convertDate(this.$data.dateIn),
                     date: true
@@ -141,7 +131,9 @@ export default {
             }
 
             if (this.$data.dateOut !== '') {
-                q.push(JSON.stringify({
+                q.push(`dateOut=${convertDate(this.$data.dateOut)}`);
+
+                qt.push(JSON.stringify({
                     field: 'createdAt',
                     le: convertDate(this.$data.dateOut),
                     date: true
@@ -149,7 +141,7 @@ export default {
             }
 
             if (q.length === 0) {
-                var data = {
+                const data = {
                     message: 'You need at least one filter.',
                     timeout: 2000
                 };
@@ -158,31 +150,26 @@ export default {
                 return;
             }
 
-            const orQ = q
+            const qString = q
+                .join('&');
+
+            const orQt = qt
                 .map(o => encodeURIComponent(o))
                 .join('&q[]=');
-
-
-            const embedReloads = encodeURIComponent(JSON.stringify({
-                point : true,
-                buyer : true,
-                seller: true
-            }));
 
             const embedTransfers = encodeURIComponent(JSON.stringify({
                 sender  : true,
                 reciever: true
             }));
 
-            get(`reloads/search?q=${orQ}&embed=${embedReloads}`)
+            get(`services/treasury/reloads?${qString}`)
                 .then(reloads => {
                     this.reloads = reloads;
 
-                    return get(`transfers/search?q=${orQ}&embed=${embedTransfers}`);
+                    return get(`transfers/search?q=${orQt}&embed=${embedTransfers}`);
                 })
                 .then(transfers => {
-                    console.log(transfers);
-                    this.transfers = transfers;
+                    this.transfers = transfers.filter(t => !t.isRemoved);
                 });
         }
     },
