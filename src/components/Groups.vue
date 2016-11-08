@@ -1,84 +1,90 @@
 <template>
-    <div class="groups" v-show="currentEvent">
-        <div class="mdl-card mdl-shadow--2dp">
-            <h3>Groupes</h3>
-            <div v-show="selectedGroup.name" transition="fade">
-                <h5>Modifier le groupe {{ selectedGroup.name }}:</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="modGroup.name"></mdl-textfield><br />
-                    <mdl-button colored raised @click="updateGroup(selectedGroup, modGroup)">Modifier</mdl-button>
-                </form>
-                <br />
+    <div>
+        <div class="groups" v-if="currentEvent">
+            <div class="mdl-card mdl-shadow--2dp">
+                <h3>Groupes</h3>
+                <transition name="fade">
+                    <div v-if="selectedGroup.name">
+                        <h5>Modifier le groupe {{ selectedGroup.name }}:</h5>
+                        <form @submit.prevent="updateGroup(selectedGroup, modGroup)">
+                            <mdl-textfield floating-label="Nom" v-model="modGroup.name"></mdl-textfield><br />
+                            <mdl-button colored raised>Modifier</mdl-button>
+                        </form>
+                        <br />
 
-                <h5>Rechercher un membre:</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Prénom" :value.sync="memberName"></mdl-textfield>
-                    <mdl-button colored raised @click="searchMember()">Rechercher</mdl-button>
-                </form>
+                        <h5>Rechercher un membre:</h5>
+                        <form @submit.prevent="searchMember(selectedGroup)">
+                            <mdl-textfield floating-label="Prénom" v-model="memberName"></mdl-textfield>
+                            <mdl-button colored raised>Rechercher</mdl-button>
+                        </form>
 
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="members.length > 0">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Utilisateur</th>
-                            <th class="mdl-data-table__cell--non-numeric">Periode</th>
-                            <th class="mdl-data-table__cell--non-numeric">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody v-for="member in members">
-                        <tr v-for="groupPeriod in member.groupPeriods" v-show="groupPeriod.period.Event_id == currentEvent.id">
-                            <td class="mdl-data-table__cell--non-numeric name">{{ member.firstname }} {{ member.lastname }}</td>
-                            <td class="mdl-data-table__cell--non-numeric name">{{ groupPeriod.period.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="removeFromGroup(groupPeriod)">Enlever</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody v-show="members">
-                        <tr>
-                            <td class="mdl-data-table__cell--non-numeric name">
-                                <mdl-select label="Utilisateur" id="member-select" :value.sync="selectedMember" :options="memberOptions" class="name"></mdl-select>
-                            </td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-select label="Période" id="period-select" :value.sync="selectedPeriod" :options="periodOptions"></mdl-select>
-                            </td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="addToGroup(selectedMember, inputGroupPeriod)" v-show="selectedMember && selectedPeriod">Ajouter</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br />
-                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
-            </div>
-            <div v-show="!selectedGroup.name" transition="fade">
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield><br />
-                    <mdl-button colored raised @click="createGroup(inputGroup)">Créer</mdl-button>
-                </form>
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="members.length > 0">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Utilisateur</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Periode</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody v-for="member in members">
+                                <tr v-for="groupPeriod in member.groupPeriods" v-show="groupPeriod.period.Event_id == currentEvent.id">
+                                    <td class="mdl-data-table__cell--non-numeric name">{{ member.firstname }} {{ member.lastname }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric name">{{ groupPeriod.period.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-button @click.native="removeFromGroup(groupPeriod)">Enlever</mdl-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody v-show="members">
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric name">
+                                        <mdl-select label="Utilisateur" id="member-select" v-model="selectedMember" :options="memberOptions" class="name"></mdl-select>
+                                    </td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-select label="Période" id="period-select" v-model="selectedPeriod" :options="periodOptions"></mdl-select>
+                                    </td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-button @click.native="addToGroup(selectedMember, inputGroupPeriod)" v-show="selectedMember && selectedPeriod">Ajouter</mdl-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br />
+                        <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
+                    </div>
+                </transition>
+                <transition name="fade">
+                    <div v-if="!selectedGroup.name">
+                        <form @submit.prevent="createGroup(inputGroup)">
+                            <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield><br />
+                            <mdl-button colored raised>Créer</mdl-button>
+                        </form>
 
-                <br>
+                        <br>
 
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Groupe</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="group in groups">
-                            <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="editGroup(group)">Modifier</mdl-button>
-                                <mdl-button @click="removeGroup(group)">Supprimer</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Groupe</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="group in groups">
+                                    <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-button @click.native="editGroup(group)">Modifier</mdl-button>
+                                        <mdl-button @click.native="removeGroup(group)">Supprimer</mdl-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </transition>
             </div>
         </div>
+        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
-    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>
@@ -94,9 +100,9 @@ export default {
             currentEvent: state => state.global.currentEvent
         },
         actions: {
-            createGroup: createGroup,
-            updateGroup: updateGroup,
-            removeGroup: removeGroup
+            createGroup,
+            updateGroup,
+            removeGroup
         }
     },
 
@@ -118,10 +124,11 @@ export default {
             this.modGroup      = {};
         },
         editGroup(group) {
+            this.members        = [];
             this.selectedGroup  = group;
             this.modGroup       = JSON.parse(JSON.stringify(group));
         },
-        searchMember() {
+        searchMember(group) {
             if(this.memberName.length >= 2) {
                 this.selectedPeriod = null;
                 this.selectedMember = null;
@@ -152,6 +159,9 @@ export default {
                         this.members = result.map(member => {
                             if(member.groupPeriods) {
                                 member.groupPeriods = member.groupPeriods.filter(groupPeriod => {
+                                    if (groupPeriod.Group_id != group.id) {
+                                        return false;
+                                    }
                                     return !groupPeriod.isRemoved;
                                 });
                             }
@@ -196,7 +206,7 @@ export default {
                     timeout: 2000
                 };
 
-                this.$broadcast('snackfilter', data);
+                this.$root.$emit('snackfilter', data);
             }
         },
         removeFromGroup(groupPeriod) {
@@ -298,18 +308,6 @@ export default {
 
         .name {
             text-transform: capitalize;
-        }
-
-        .fade-transition {
-            transition: opacity .4s ease;
-        }
-
-        .fade-enter {
-            opacity: 0;
-        }
-
-        .fade-leave {
-            display: none;
         }
     }
 </style>

@@ -1,48 +1,52 @@
 <template>
-    <div class="events" v-show="logged">
+    <div class="events" v-if="logged">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Évenements</h3>
-            <div v-show="selectedEvent.name" transition="fade">
-                <h5>Modifier l'évenement {{ selectedEvent.name }}:</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="modEvent.name"></mdl-textfield><br />
-                    <mdl-textfield floating-label="Rechargement minimal (en centimes)" :value.sync="modEvent.config.minReload"></mdl-textfield><br />
-                    <mdl-textfield floating-label="Solde maximal (en centimes)" :value.sync="modEvent.config.maxPerAccount"></mdl-textfield><br />
-                    <mdl-button colored raised @click="updateEvent(selectedEvent, modEvent)">Modifier</mdl-button>
-                </form>
-                <br />
-                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
-            </div>
-            <div v-show="!selectedEvent.name" transition="fade">
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield><br />
-                    <mdl-textfield floating-label="Rechargement minimal (en centimes)" :value.sync="minReload"></mdl-textfield><br />
-                    <mdl-textfield floating-label="Solde maximal (en centimes)" :value.sync="maxPerAccount"></mdl-textfield><br />
-                    <mdl-button colored raised @click="createEvent(inputEvent)">Créer</mdl-button>
-                </form>
-                <br>
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="events.length > 0">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Évenement</th>
-                            <th class="mdl-data-table__cell--non-numeric">Rechargement minimal</th>
-                            <th class="mdl-data-table__cell--non-numeric">Solde maximal</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="event in events">
-                            <td class="mdl-data-table__cell--non-numeric">{{ event.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ event.config.minReload | price true }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxPerAccount | price true }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="editEvent(event)">Modifier</mdl-button>
-                                <mdl-button @click="removeEvent(event)">Supprimer</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <transition name="fade">
+                <div v-if="selectedEvent.name">
+                    <h5>Modifier l'évenement {{ selectedEvent.name }}:</h5>
+                    <form @submit.prevent="updateEvent(selectedEvent, modEvent)">
+                        <mdl-textfield floating-label="Nom" v-model="modEvent.name"></mdl-textfield><br />
+                        <mdl-textfield floating-label="Rechargement minimal (en centimes)" v-model="modEvent.config.minReload"></mdl-textfield><br />
+                        <mdl-textfield floating-label="Solde maximal (en centimes)" v-model="modEvent.config.maxPerAccount"></mdl-textfield><br />
+                        <mdl-button colored raised>Modifier</mdl-button>
+                    </form>
+                    <br />
+                    <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
+                </div>
+            </transition>
+            <transition name="fade">
+                <div v-if="!selectedEvent.name">
+                    <form v-on:submit.prevent="createEvent(inputEvent)">
+                        <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield><br />
+                        <mdl-textfield floating-label="Rechargement minimal (en centimes)" v-model="minReload"></mdl-textfield><br />
+                        <mdl-textfield floating-label="Solde maximal (en centimes)" v-model="maxPerAccount"></mdl-textfield><br />
+                        <mdl-button colored raised>Créer</mdl-button>
+                    </form>
+                    <br>
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="events.length > 0">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Évenement</th>
+                                <th class="mdl-data-table__cell--non-numeric">Rechargement minimal</th>
+                                <th class="mdl-data-table__cell--non-numeric">Solde maximal</th>
+                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="event in events">
+                                <td class="mdl-data-table__cell--non-numeric">{{ event.name }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ event.config.minReload | price(true) }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxPerAccount | price(true) }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-button @click.native="editEvent(event)">Modifier</mdl-button>
+                                    <mdl-button @click.native="removeEvent(event)">Supprimer</mdl-button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </transition>
         </div>
     </div>
 </template>
@@ -60,9 +64,9 @@ export default {
             logged : state => state.global.logged
         },
         actions: {
-            createEvent: createEvent,
-            updateEvent: updateEvent,
-            removeEvent: removeEvent
+            createEvent,
+            updateEvent,
+            removeEvent
         }
     },
 
@@ -150,16 +154,6 @@ export default {
                 width: 100%;
                 white-space: normal;
             }
-        }
-
-        .fade-transition {
-            transition: opacity .4s ease;
-        }
-        .fade-enter {
-            opacity: 0;
-        }
-        .fade-leave {
-            display: none;
         }
     }
 </style>

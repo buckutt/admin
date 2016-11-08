@@ -30,95 +30,90 @@ import Events     from './components/Events.vue';
 import Logout     from './components/Logout.vue';
 import CardBlock  from './components/CardBlock.vue';
 
-import { updateLogged, listenChanges } from './store/actions';
+import { updateLogged } from './store/actions';
 
 import store    from './store/index';
 import { load } from './lib/load';
 
 window.jQuery = jQuery;
 
-const router = new VueRouter();
+const routes = [
+    {
+        path     : '/',
+        component: Home
+    },
+    {
+        path     : '/stats',
+        component: Dashboard
+    },
+    {
+        path     : '/devices',
+        component: Devices
+    },
+    {
+        path     : '/items',
+        component: Items
+    },
+    {
+        path     : '/treasury',
+        component: Treasury
+    },
+    {
+        path     : '/purchases',
+        component: Purchases
+    },
+    {
+        path     : '/users',
+        component: Users
+    },
+    {
+        path     : '/groups',
+        component: Groups
+    },
+    {
+        path     : '/categories',
+        component: Categories
+    },
+    {
+        path     : '/periods',
+        component: Periods
+    },
+    {
+        path     : '/points',
+        component: Points
+    },
+    {
+        path     : '/promotions',
+        component: Promotions
+    },
+    {
+        path     : '/events',
+        component: Events
+    },
+    {
+        path     : '/logout',
+        component: Logout
+    },
+    {
+        path     : '/cardBlock',
+        component: CardBlock
+    }
+];
+
+const router = new VueRouter({ routes });
 
 const App = Vue.extend({
+    router,
     store,
     components: { Sidebar },
     template  : '<div><Sidebar></Sidebar><router-view></router-view></div>'
 });
 
-router.map({
-    '/': {
-        component: Home
-    },
-    '/stats': {
-        component: Dashboard
-    },
-    '/devices': {
-        component: Devices
-    },
-    '/items': {
-        component: Items
-    },
-    '/treasury': {
-        component: Treasury
-    },
-    '/purchases': {
-        component: Purchases
-    },
-    '/users': {
-        component: Users
-    },
-    '/groups': {
-        component: Groups
-    },
-    '/categories': {
-        component: Categories
-    },
-    '/periods': {
-        component: Periods
-    },
-    '/points': {
-        component: Points
-    },
-    '/promotions': {
-        component: Promotions
-    },
-    '/events': {
-        component: Events
-    },
-    '/logout': {
-        component: Logout
-    },
-    '/cardBlock': {
-        component: CardBlock
-    }
-});
-
-router.start(App, '#app');
-
-// Restore material components after page change
-router.afterEach(() => {
-    setTimeout(() => {
-        /* global componentHandler */
-        componentHandler.upgradeAllRegistered();
-    });
-});
+new App().$mount('#app');
 
 if (sessionStorage.hasOwnProperty('token')) {
     updateLogged(router.app.$store, true);
     load(router.app.$store);
 }
-
-listenChanges(router.app.$store, [
-    'points',
-    'devices',
-    'periods',
-    'articles',
-    'fundations',
-    'groups',
-    'categories',
-    'promotions',
-    'sets',
-    'events'
-]);
 
 window.router = router;

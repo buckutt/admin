@@ -123,33 +123,38 @@ const modelToDispatch = {
     }
 };
 
-export function listenChanges({ dispatch }, models) {
+export function listenChanges({ dispatch }, token, models) {
     const modelsString = models.join(',');
-    const es           = new EventSource(`https://localhost:3000/changes?models=${modelsString}`, {
+
+    const es = new EventSource(`https://localhost:3000/changes?models=${modelsString}&authorization=Bearer ${token}`, {
         withCredentials: true
     });
 
     es.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        switch (data.action) {
-            case 'listen':
-                console.log(`Listen to ${data.model} changes`);
-                break;
-            case 'create':
-                dispatch(modelToDispatch[data.model].add, [data.doc]);
-                break;
-            case 'update':
-                if (data.doc.isRemoved) {
+        try {
+            const data = JSON.parse(e.data);
+            switch (data.action) {
+                case 'listen':
+                    console.log(`Listen to ${data.model} changes`);
+                    break;
+                case 'create':
+                    dispatch(modelToDispatch[data.model].add, [data.doc]);
+                    break;
+                case 'update':
+                    if (data.doc.isRemoved) {
+                        dispatch(modelToDispatch[data.model].delete, data.doc);
+                    }
+                    dispatch(modelToDispatch[data.model].update, data.from, data.doc);
+                    break;
+                case 'delete':
                     dispatch(modelToDispatch[data.model].delete, data.doc);
-                }
-                dispatch(modelToDispatch[data.model].update, data.from, data.doc);
-                break;
-            case 'delete':
-                dispatch(modelToDispatch[data.model].delete, data.doc);
-                break;
-            default:
-                console.log('Unknown event');
-                break;
+                    break;
+                default:
+                    console.log('Unknown event');
+                    break;
+            }
+        } catch (error) {
+            console.log(error);
         }
     };
 }
@@ -344,4 +349,8 @@ export function updateCurrentEvent({ dispatch }, currentEvent) {
 
 export function updateLogged({ dispatch }, logged) {
     dispatch('UPDATELOGGED', logged);
+}
+
+export function updateEditModal({ dispatch }, openEditModal) {
+    dispatch('UPDATEEDITMODAL', openEditModal);
 }

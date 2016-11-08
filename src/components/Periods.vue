@@ -1,15 +1,15 @@
 <template>
-    <div v-show="currentEvent">
+    <div v-if="currentEvent">
         <div class="periods">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Périodes de "{{ currentEvent.name }}"</h3>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
+                <form @submit.prevent="createPeriod(inputPeriod)">
+                    <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
                     <br>
-                    <mdl-textfield floating-label="Début" :value.sync="dateStart" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="dateStart" v-el:createdatestart></mdl-textfield>
-                    <mdl-textfield floating-label="Fin" :value.sync="dateEnd" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateEnd" v-el:createdateend></mdl-textfield>
+                    <mdl-textfield floating-label="Début" v-model="dateStart" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="dateStart" ref="createdatestart"></mdl-textfield>
+                    <mdl-textfield floating-label="Fin" v-model="dateEnd" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateEnd" ref="createdateend"></mdl-textfield>
                     <br>
-                    <mdl-button colored raised @click="createPeriod(inputPeriod)">Créer</mdl-button>
+                    <mdl-button colored raised>Créer</mdl-button>
                 </form>
 
                 <br>
@@ -29,8 +29,8 @@
                             <td class="mdl-data-table__cell--non-numeric">{{ period.start | date }}</td>
                             <td class="mdl-data-table__cell--non-numeric">{{ period.end | date }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="openModal(period)">Modifier</mdl-button>
-                                <mdl-button @click="removePeriod(period)">Supprimer</mdl-button>
+                                <mdl-button @click.native="openModal(period)">Modifier</mdl-button>
+                                <mdl-button @click.native="removePeriod(period)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>
@@ -38,47 +38,53 @@
             </div>
         </div>
 
-        <div class="modal modal__bg" v-modal="openEditModal" v-el:editmodal>
+        <modal>
             <div class="modal__dialog">
                 <div class="modal__header">
                     <h3>Modifier la période {{ selectedPeriod.name }}</h3>
                 </div>
-                <form v-on:submit.prevent>
+                <form @submit.prevent="updatePeriod(selectedPeriod, editPeriod)">
                     <div class="modal__body">
-                        <mdl-textfield floating-label="Nom" :value.sync="modPeriod.name"></mdl-textfield>
+                        <mdl-textfield floating-label="Nom" v-model="modPeriod.name"></mdl-textfield>
 
-                        <mdl-textfield floating-label="Début" :value.sync="modPeriod.start" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="dateStart" v-el:editdatestart></mdl-textfield>
+                        <mdl-textfield floating-label="Début" v-model="modPeriod.start" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="dateStart" ref="editdatestart"></mdl-textfield>
 
-                        <mdl-textfield floating-label="Fin" :value.sync="modPeriod.end" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateEnd" v-el:editdateend></mdl-textfield>
+                        <mdl-textfield floating-label="Fin" v-model="modPeriod.end" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateEnd" ref="editdateend"></mdl-textfield>
                     </div>
                     <div class="modal__footer">
-                        <mdl-button @click="updatePeriod(selectedPeriod, editPeriod)">Valider</mdl-button>
-                        <mdl-button @click="closeModal()">Annuler</mdl-button>
+                        <mdl-button>Valider</mdl-button>
+                        <mdl-button @click.native="closeModal()">Annuler</mdl-button>
                     </div>
                 </form>
             </div>
-        </div>
+        </modal>
     </div>
 </template>
 
 <script>
+import Modal    from './Modal.vue';
 import { post } from '../lib/fetch';
 import date, { parseDate, convertDate } from '../lib/date';
-import modal from '../lib/modal';
-import { createPeriod, updatePeriod, removePeriod } from '../store/actions';
+import { createPeriod, updatePeriod, removePeriod, updateEditModal } from '../store/actions';
 
 
 export default {
     vuex: {
         getters: {
             periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent
+            currentEvent: state => state.global.currentEvent,
+            openEditModal: state => state.global.openEditModal
         },
         actions: {
-            createPeriod: createPeriod,
-            updatePeriod: updatePeriod,
-            removePeriod: removePeriod
+            createPeriod,
+            updatePeriod,
+            removePeriod,
+            updateEditModal
         }
+    },
+
+    components: {
+        Modal
     },
 
     data () {
@@ -87,8 +93,7 @@ export default {
             dateStart:      '',
             dateEnd:        '',
             selectedPeriod: {},
-            modPeriod:      {},
-            openEditModal:  false
+            modPeriod:      {}
         };
     },
 
@@ -96,13 +101,35 @@ export default {
         openModal(period) {
             this.selectedPeriod  = period;
             this.modPeriod       = JSON.parse(JSON.stringify(period));
+            const start          = this.modPeriod.start;
+            const end            = this.modPeriod.end;
             this.modPeriod.start = parseDate(this.modPeriod.start);
             this.modPeriod.end   = parseDate(this.modPeriod.end);
 
-            this.openEditModal   = true;
+            this.updateEditModal(true);
+
+            this.$nextTick(() => {
+                const $editdateStart   = this.$refs.editdatestart.$el;
+                const $editdateEnd     = this.$refs.editdateend.$el;
+
+                console.log(start);
+                jQuery($editdateEnd).datetimepicker({
+                    onChangeDateTime: ct => {
+                        this.modPeriod.end = parseDate(ct);
+                    },
+                    format:'d/m/Y H:i'
+                });
+
+                jQuery($editdateStart).datetimepicker({
+                    onChangeDateTime: ct => {
+                        this.modPeriod.start = parseDate(ct);
+                    },
+                    format:'d/m/Y H:i'
+                });
+            });
         },
         closeModal() {
-            this.openEditModal   = false;
+            this.updateEditModal(false);
         }
     },
 
@@ -131,38 +158,25 @@ export default {
         }
     },
 
-    attached () {
-        const $createdateStart = this.$els.createdatestart;
-        const $createdateEnd   = this.$els.createdateend;
-        const $editdateStart   = this.$els.editdatestart;
-        const $editdateEnd     = this.$els.editdateend;
+    mounted () {
+        this.$nextTick(() => {
+            console.log(this.$refs);
+            const $createdateStart = this.$refs.createdatestart.$el;
+            const $createdateEnd   = this.$refs.createdateend.$el;
 
-        jQuery($createdateStart).datetimepicker({
-            onChangeDateTime: ct => {
-                this.$data.dateStart = parseDate(ct);
-            },
-            format:'d/m/Y H:i'
-        });
+            jQuery($createdateStart).datetimepicker({
+                onChangeDateTime: ct => {
+                    this.dateStart = parseDate(ct);
+                },
+                format:'d/m/Y H:i'
+            });
 
-        jQuery($editdateStart).datetimepicker({
-            onChangeDateTime: ct => {
-                this.$data.modPeriod.start = parseDate(ct);
-            },
-            format:'d/m/Y H:i'
-        });
-
-        jQuery($createdateEnd).datetimepicker({
-            onChangeDateTime: ct => {
-                this.$data.dateEnd = parseDate(ct);
-            },
-            format:'d/m/Y H:i'
-        });
-
-        jQuery($editdateEnd).datetimepicker({
-            onChangeDateTime: ct => {
-                this.$data.modPeriod.end = parseDate(ct);
-            },
-            format:'d/m/Y H:i'
+            jQuery($createdateEnd).datetimepicker({
+                onChangeDateTime: ct => {
+                    this.dateEnd = parseDate(ct);
+                },
+                format:'d/m/Y H:i'
+            });
         });
     }
 }

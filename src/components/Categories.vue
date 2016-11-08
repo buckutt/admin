@@ -1,74 +1,78 @@
 <template>
-    <div class="categories" v-show="currentEvent">
+    <div class="categories" v-if="currentEvent">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Catégories</h3>
-            <div v-show="selectedCategory.name" transition="fade">
-                <h5>Modifier la catégorie {{ selectedCategory.name }}:</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="modCategory.name"></mdl-textfield>
+            <transition name="fade">
+                <div v-if="selectedCategory.name">
+                    <h5>Modifier la catégorie {{ selectedCategory.name }}:</h5>
+                    <form v-on:submit.prevent>
+                        <mdl-textfield floating-label="Nom" v-model="modCategory.name"></mdl-textfield>
+                        <br />
+                        <mdl-button colored raised @click="updateCategory(selectedCategory, modCategory)">Modifier</mdl-button>
+                    </form>
                     <br />
-                    <mdl-button colored raised @click="updateCategory(selectedCategory, modCategory)">Modifier</mdl-button>
-                </form>
-                <br />
 
-                <div v-show="detailsCategory.articles">
-                    <h5>Articles dans la catégorie:</h5>
-                    <mdl-button v-for="article in detailsCategory.articles" @click="search(article)">{{ article.name }}</mdl-button>
+                    <div v-show="detailsCategory.articles">
+                        <h5>Articles dans la catégorie:</h5>
+                        <mdl-button v-for="article in detailsCategory.articles" @click.native="search(article)">{{ article.name }}</mdl-button>
+                        <br />
+                    </div>
+
+                    <h5>Rechercher un article:</h5>
+                    <form v-on:submit.prevent>
+                        <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>
+                    </form>
+
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="articleName.length > 0 && filteredArticles.length > 0">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Objet</th>
+                                <th class="mdl-data-table__cell--non-numeric">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="article in filteredArticles">
+                                <td class="mdl-data-table__cell--non-numeric name">{{ article.name }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-button @click.native="addToCategory(article)" v-show="!isInCategory(article)">Ajouter</mdl-button>
+                                    <mdl-button @click.native="removeFromCategory(article)" v-show="isInCategory(article)">Enlever</mdl-button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <br />
+                    <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
                 </div>
+            </transition>
+            <transition name="fade">
+                <div v-if="!selectedCategory.name">
+                    <form @submit.prevent="createCategory(inputCategory)">
+                        <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
+                        <br>
+                        <mdl-button colored raised>Créer</mdl-button>
+                    </form>
 
-                <h5>Rechercher un article:</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="articleName"></mdl-textfield>
-                </form>
-
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="articleName.length > 0 && filteredArticles.length > 0">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Objet</th>
-                            <th class="mdl-data-table__cell--non-numeric">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="article in filteredArticles">
-                            <td class="mdl-data-table__cell--non-numeric name">{{ article.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="addToCategory(article)" v-show="!isInCategory(article)">Ajouter</mdl-button>
-                                <mdl-button @click="removeFromCategory(article)" v-show="isInCategory(article)">Enlever</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br />
-                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
-            </div>
-            <div v-show="!selectedCategory.name" transition="fade">
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
                     <br>
-                    <mdl-button colored raised @click="createCategory(inputCategory)">Créer</mdl-button>
-                </form>
 
-                <br>
-
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Catégorie</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="category in categories">
-                            <td class="mdl-data-table__cell--non-numeric">{{ category.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="editCategory(category)">Modifier</mdl-button>
-                                <mdl-button @click="removeCategory(category)">Supprimer</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Catégorie</th>
+                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="category in categories">
+                                <td class="mdl-data-table__cell--non-numeric">{{ category.name }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-button @click.native="editCategory(category)">Modifier</mdl-button>
+                                    <mdl-button @click.native="removeCategory(category)">Supprimer</mdl-button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </transition>
         </div>
     </div>
 </template>
@@ -86,9 +90,9 @@ export default {
             currentEvent: state => state.global.currentEvent
         },
         actions: {
-            createCategory: createCategory,
-            updateCategory: updateCategory,
-            removeCategory: removeCategory
+            createCategory,
+            updateCategory,
+            removeCategory
         }
     },
 
@@ -213,18 +217,6 @@ export default {
 
         .name {
             text-transform: capitalize;
-        }
-
-        .fade-transition {
-            transition: opacity .4s ease;
-        }
-
-        .fade-enter {
-            opacity: 0;
-        }
-
-        .fade-leave {
-            display: none;
         }
     }
 </style>

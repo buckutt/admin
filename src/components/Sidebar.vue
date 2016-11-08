@@ -1,106 +1,110 @@
 <template>
-    <div class="sidebar" v-show="logged" transition="slide">
-        <h1>Buckless</h1>
-        <ul class="eventSelector">
-            <li>
-                <form v-on:submit.prevent>
-                    <mdl-select label="Évenement" id="event-select" :value.sync="selectedEvent" :options="eventOptions" v-on:click="changeEvent"></mdl-select>
-                </form>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/' }">
-                    <i class="material-icons">home</i>
-                    Accueil
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/logout' }">
-                    <i class="material-icons">power_settings_new</i>
-                    Déconnexion
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/events' }">
-                    <i class="material-icons">cake</i>
-                    Évenements
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/treasury' }">
-                    <i class="material-icons">attach_money</i>
-                    Trésorerie
-                </a>
-            </li>
-        </ul>
-        <ul v-show="currentEvent" transition="fade">
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/stats' }">
-                    <i class="material-icons">insert_chart</i>
-                    Statistiques
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/purchases' }">
-                    <i class="material-icons">shopping_cart</i>
-                    Achats
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/devices' }">
-                    <i class="material-icons">devices</i>
-                    Équipements
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/points' }">
-                    <i class="material-icons">location_on</i>
-                    Points
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/periods' }">
-                    <i class="material-icons">alarm</i>
-                    Périodes
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/items' }">
-                    <i class="material-icons">view_module</i>
-                    Articles
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/promotions' }">
-                    <i class="material-icons">stars</i>
-                    Promotions
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/categories' }">
-                    <i class="material-icons">format_list_numbered</i>
-                    Catégories
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/users' }">
-                    <i class="material-icons">person</i>
-                    Utilisateurs
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/groups' }">
-                    <i class="material-icons">group</i>
-                    Groupes
-                </a>
-            </li>
-            <li>
-                <a class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect" v-link="{ path: '/cardBlock' }">
-                    <i class="material-icons">credit_card</i>
-                    Blocage de carte
-                </a>
-            </li>
-        </ul>
-    </div>
+    <transition name="slide">
+        <div class="sidebar" v-show="logged">
+            <h1>Buckless</h1>
+            <ul class="eventSelector">
+                <li>
+                    <form v-on:submit.prevent>
+                        <mdl-select label="Évenement" id="event-select" v-model="selectedEvent" :options="eventOptions" @click.native="changeEvent"></mdl-select>
+                    </form>
+                </li>
+                <li>
+                    <router-link to="/" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                        <i class="material-icons">home</i>
+                        Accueil
+                    </router-link>
+                </li>
+                <li>
+                    <router-link to="/logout" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                        <i class="material-icons">power_settings_new</i>
+                        Déconnexion
+                    </router-link>
+                </li>
+                <li>
+                    <router-link to="/events" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                        <i class="material-icons">cake</i>
+                        Évenements
+                    </router-link>
+                </li>
+                <li>
+                    <router-link to="/treasury" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                        <i class="material-icons">attach_money</i>
+                        Trésorerie
+                    </router-link>
+                </li>
+            </ul>
+            <transition name="fade">
+                <ul v-show="currentEvent">
+                    <li>
+                        <router-link to="/stats" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">insert_chart</i>
+                            Statistiques
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/purchases" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">shopping_cart</i>
+                            Achats
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/devices" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">devices</i>
+                            Équipements
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/points" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">location_on</i>
+                            Points
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/periods" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">alarm</i>
+                            Périodes
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/items" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">view_module</i>
+                            Articles
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/promotions" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">stars</i>
+                            Promotions
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/categories" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">format_list_numbered</i>
+                            Catégories
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/users" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">person</i>
+                            Utilisateurs
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/groups" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">group</i>
+                            Groupes
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/cardBlock" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">credit_card</i>
+                            Blocage de carte
+                        </router-link>
+                    </li>
+                </ul>
+            </transition>
+        </div>
+    </transition>
 </template>
 
 <script>
@@ -115,14 +119,13 @@ export default {
             logged      : state => state.global.logged
         },
         actions: {
-            updateCurrentEvent: updateCurrentEvent
+            updateCurrentEvent
         }
     },
 
     data () {
         return {
-            selectedEvent: null,
-            test: true
+            selectedEvent: null
         };
     },
 
@@ -130,8 +133,8 @@ export default {
         changeEvent() {
             if(this.selectedEvent) {
                 if(this.currentEvent) {
-                    if(this.selectedEvent.id != this.currentEvent.id) {
-                        this.$route.router.go('/stats');
+                    if(this.selectedEvent != this.currentEvent.id) {
+                        this.$router.push('/stats');
                     }
                 }
 
@@ -146,12 +149,10 @@ export default {
                                 return !period.isRemoved;
                             });
                         }
+                        sessionStorage.setItem('event', JSON.stringify(result));
                         this.updateCurrentEvent(result);
                     });
             }
-        },
-        changeTest() {
-            this.test = !this.test;
         }
     },
 
@@ -160,6 +161,14 @@ export default {
             return this.events.map(event => {
                 return { name: event.name, value: event };
             });
+        }
+    },
+
+    mounted() {
+        if (sessionStorage.hasOwnProperty('event')) {
+            const parsedEvent  = JSON.parse(sessionStorage.getItem('event'));
+            this.selectedEvent = parsedEvent.name;
+            this.updateCurrentEvent(parsedEvent);
         }
     }
 }
@@ -237,31 +246,19 @@ export default {
         margin-left: $sidebarWidth;
     }
 
-    .fade-transition {
-        transition: opacity .4s ease;
-    }
-
-    .fade-enter {
-        opacity: 0;
-    }
-
-    .fade-leave {
-        display: none;
-    }
-
-    .slide-transition {
+    .slide-enter-active, .slide-leave-active {
         transition: all .5s ease;
     }
 
-    .slide-transition + .container {
+    .slide-enter-active + .container, .slide-leave-active + .container {
         transition: all .5s ease;
     }
 
-    .slide-enter, .slide-leave {
+    .slide-enter, .slide-leave-active {
         margin-left: -200px;
     }
 
-    .slide-enter + .container, .slide-leave + .container {
+    .slide-enter + .container, .slide-leave-active + .container {
         margin-left: 0;
         width: 100%;
     }

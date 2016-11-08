@@ -17,11 +17,11 @@ export default {
         }
     },
 
-    attached () {
+    mounted () {
         sessionStorage.clear();
         this.updateLogged(false);
 
-        this.$route.router.go('/');
+        this.$router.push('/');
     }
 }
 </script>

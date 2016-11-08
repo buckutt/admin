@@ -8,10 +8,24 @@ import {
     fetchCategories,
     fetchEvents,
     fetchPromotions,
-    fetchSets
+    fetchSets,
+    listenChanges
 } from '../store/actions';
 
 export function load(store) {
+    listenChanges(store, sessionStorage.getItem('token'), [
+        'points',
+        'devices',
+        'periods',
+        'articles',
+        'fundations',
+        'groups',
+        'categories',
+        'promotions',
+        'sets',
+        'events'
+    ]);
+
     fetchPoints(store);
     fetchDevices(store);
     fetchPeriods(store);

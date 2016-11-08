@@ -1,79 +1,86 @@
 <template>
-    <div class="articles" v-show="currentEvent">
-        <div class="mdl-card mdl-shadow--2dp">
-            <h3>Articles</h3>
-            <div v-show="selectedArticle.name" transition="fade">
-                <h5>Modifier l'article {{ selectedArticle.name }}</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="modArticle.name"></mdl-textfield>
-                    <mdl-textfield floating-label="Stock" :value.sync="modArticle.stock"></mdl-textfield><br />
-                    <mdl-textfield floating-label="Alcool" :value.sync="modArticle.alchohol"></mdl-textfield>
-                    <mdl-textfield floating-label="TVA" :value.sync="modArticle.vat"></mdl-textfield><br />
-                    <mdl-button colored raised @click="updateArticle(selectedArticle, modArticle)">Modifier</mdl-button>
-                </form>
-                <br />
-                <h5>Prix</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Montant TTC (centimes)" :value.sync="amount"></mdl-textfield>
-                    <mdl-select label="Point" id="point-select" :value.sync="selectedPoint" :options="pointOptions"></mdl-select>
-                    <mdl-select label="Fondation" id="fundation-select" :value.sync="selectedFundation" :options="fundationOptions"></mdl-select><br />
-                    <mdl-select label="Groupe" id="group-select" :value.sync="selectedGroup" :options="groupOptions"></mdl-select>
-                    <mdl-select label="Période" id="period-select" :value.sync="selectedPeriod" :options="periodOptions"></mdl-select><br />
-                    <mdl-button colored raised @click="createArticlePrice(selectedArticle, inputPrice)">Ajouter</mdl-button>
-                </form>
-                <br />
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Montant</th>
-                            <th class="mdl-data-table__cell--non-numeric">Point</th>
-                            <th class="mdl-data-table__cell--non-numeric">Fondation</th>
-                            <th class="mdl-data-table__cell--non-numeric">Groupe</th>
-                            <th class="mdl-data-table__cell--non-numeric">Période</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="price in detailsArticle.prices" v-show="price.period.Event_id == currentEvent.id">
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.amount | price true }} TTC <span v-show="modArticle.vat > 0">({{ price.amount/(1+modArticle.vat/100) | price true }} HT)</span></td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric"><mdl-button @click="deletePrice(price)">Supprimer</mdl-button></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br />
-                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
-            </div>
-            <div v-show="!selectedArticle.name" transition="fade">
-                <h5>Ajouter un article</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="nameAdd"></mdl-textfield> <mdl-button colored raised @click="createArticle(inputArticle)">Créer</mdl-button>
-                </form>
+    <div class="container">
+        <div class="articles" v-if="currentEvent">
+            <div class="mdl-card mdl-shadow--2dp">
+                <h3>Articles</h3>
+                <transition name="fade">
+                    <div v-if="selectedArticle.name">
+                        <h5>Modifier l'article {{ selectedArticle.name }}</h5>
+                        <form @submit.prevent="updateArticle(selectedArticle, modArticle)">
+                            <mdl-textfield floating-label="Nom" v-model="modArticle.name"></mdl-textfield>
+                            <mdl-textfield floating-label="Stock" v-model="modArticle.stock"></mdl-textfield><br />
+                            <mdl-textfield floating-label="Alcool" v-model="modArticle.alchohol"></mdl-textfield>
+                            <mdl-textfield floating-label="TVA" v-model="modArticle.vat"></mdl-textfield><br />
+                            <mdl-button colored raised>Modifier</mdl-button>
+                        </form>
+                        <br />
+                        <h5>Prix</h5>
+                        <form @submit.prevent="createArticlePrice(selectedArticle, inputPrice)">
+                            <mdl-textfield floating-label="Montant TTC (centimes)" v-model="amount"></mdl-textfield>
+                            <mdl-select label="Point" id="point-select" v-model="selectedPoint" :options="pointOptions"></mdl-select>
+                            <mdl-select label="Fondation" id="fundation-select" v-model="selectedFundation" :options="fundationOptions"></mdl-select><br />
+                            <mdl-select label="Groupe" id="group-select" v-model="selectedGroup" :options="groupOptions"></mdl-select>
+                            <mdl-select label="Période" id="period-select" v-model="selectedPeriod" :options="periodOptions"></mdl-select><br />
+                            <mdl-button colored raised>Ajouter</mdl-button>
+                        </form>
+                        <br />
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Montant</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Point</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Fondation</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Groupe</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Période</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="price in detailsArticle.prices" v-if="price.period.Event_id == currentEvent.id">
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.amount | price(true) }} TTC <span v-if="modArticle.vat > 0">({{ price.amount/(1+modArticle.vat/100) | price(true) }} HT)</span></td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"><mdl-button @click.native="deletePrice(price)">Supprimer</mdl-button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br />
+                        <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
+                    </div>
+                </transition>
+                <transition name="fade">
+                    <div v-if="!selectedArticle.name">
+                        <h5>Ajouter un article</h5>
+                        <form @submit.prevent="createArticle(inputArticle)">
+                            <mdl-textfield floating-label="Nom" v-model="nameAdd"></mdl-textfield> <mdl-button colored raised>Créer</mdl-button>
+                        </form>
 
-                <h5>Rechercher un article</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield>
-                </form>
+                        <h5>Rechercher un article</h5>
+                        <form @submit.prevent>
+                            <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
+                        </form>
 
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="name.length > 0 && filteredArticles.length > 0">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Objet</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="article in filteredArticles">
-                            <td class="mdl-data-table__cell--non-numeric">{{ article.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric"><mdl-button @click="editArticle(article)">Modifier</mdl-button><mdl-button @click="removeArticle(article)">Supprimer</mdl-button></td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="name.length > 0 && filteredArticles.length > 0">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Objet</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="article in filteredArticles">
+                                    <td class="mdl-data-table__cell--non-numeric">{{ article.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"><mdl-button @click.native="editArticle(article)">Modifier</mdl-button><mdl-button @click.native="removeArticle(article)">Supprimer</mdl-button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </transition>
             </div>
         </div>
+        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
 </template>
 
@@ -94,9 +101,9 @@ export default {
             currentEvent: state => state.global.currentEvent
         },
         actions: {
-            createArticle: createArticle,
-            updateArticle: updateArticle,
-            removeArticle: removeArticle
+            createArticle,
+            updateArticle,
+            removeArticle
         }
     },
     data () {
@@ -108,20 +115,20 @@ export default {
             detailsArticle   : {},
             selectedPoint    : {},
             amount           : 0,
-            selectedPeriod   : {},
-            selectedGroup    : {},
-            selectedFundation: {},
-            selectedPoint    : {}
+            selectedPeriod   : null,
+            selectedGroup    : null,
+            selectedFundation: null,
+            selectedPoint    : null
         };
     },
     methods: {
         editArticle(article) {
             this.selectedArticle   = article;
             this.modArticle        = JSON.parse(JSON.stringify(article));
-            this.selectedPoint     = this.$store.state.app.points[0];
-            this.selectedPeriod    = this.$store.state.app.periods[0];
-            this.selectedGroup     = this.$store.state.app.groups[0];
-            this.selectedFundation = this.$store.state.app.fundations[0];
+            this.selectedPeriod    = null;
+            this.selectedGroup     = null;
+            this.selectedFundation = null;
+            this.selectedPoint     = null;
 
             const embedArticles = encodeURIComponent(JSON.stringify({
                 prices: {
@@ -181,6 +188,15 @@ export default {
                 });
         },
         createArticlePrice(article, price) {
+            if (!price.Fundation_id || !price.Period_id || !price.Group_id || !price.Fundation_id) {
+                const data = {
+                    message: 'Un des champs a mal été renseigné.',
+                    timeout: 2000
+                };
+
+                return this.$root.$emit('snackfilter', data);
+            }
+
             let currentPrice  = {};
             const embedPrices = encodeURIComponent(JSON.stringify({
                 fundation: true,
@@ -196,6 +212,11 @@ export default {
                 })
                 .then(result => {
                     this.detailsArticle.prices.push(currentPrice);
+
+                    this.selectedFundation = null;
+                    this.selectedGroup     = null;
+                    this.selectedPeriod    = null;
+                    this.selectedPoint     = null;
                 });
         }
     },
@@ -219,19 +240,24 @@ export default {
             };
         },
         inputPrice() {
-            const amount            = this.amount;
-            const selectedFundation = this.selectedFundation;
-            const selectedGroup     = this.selectedGroup;
-            const selectedPeriod    = this.selectedPeriod;
-            const selectedPoint     = this.selectedPoint;
-
-            return {
-                amount      : amount,
-                Fundation_id: selectedFundation.id,
-                Group_id    : selectedGroup.id,
-                Period_id   : selectedPeriod.id,
-                Point_id    : selectedPoint.id
+            const price = {
+                amount: this.amount
             };
+
+            if (this.selectedFundation) {
+                price.Fundation_id = this.selectedFundation.id;
+            }
+            if (this.selectedGroup) {
+                price.Group_id = this.selectedGroup.id;
+            }
+            if (this.selectedPeriod) {
+                price.Period_id = this.selectedPeriod.id;
+            }
+            if (this.selectedPoint) {
+                price.Point_id = this.selectedPoint.id;
+            }
+
+            return price;
         },
         periodOptions() {
             let periods = this.periods.map(period => {
@@ -288,16 +314,8 @@ export default {
             }
         }
 
-        .fade-transition {
-            transition: opacity .4s ease;
-        }
-
-        .fade-enter {
-            opacity: 0;
-        }
-
-        .fade-leave {
-            display: none;
+        & + .mdl-snackbar {
+            margin-left: $sidebarWidth / 2;
         }
     }
 </style>

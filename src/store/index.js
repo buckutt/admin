@@ -7,19 +7,10 @@ import global from './modules/global';
 
 Vue.use(Vuex);
 
-// Restore mdl after each mutation
-const middlewareMDL = {
-    onMutation () {
-        /* global componentHandler */
-        setTimeout(() => componentHandler.upgradeAllRegistered());
-    }
-};
-
 export default new Vuex.Store({
     modules: {
         app,
         cardBlock,
         global
-    },
-    middlewares: [ middlewareMDL ]
+    }
 });

@@ -1,11 +1,17 @@
 <template>
-    <div>
-        <canvas v-el:chart width="400" height="400"></canvas>
+    <div v-if="currentEvent">
+        <canvas ref="chart" width="400" height="400"></canvas>
     </div>
 </template>
 
 <script>
 export default {
+    vuex: {
+        getters: {
+            currentEvent : state => state.global.currentEvent
+        }
+    },
+
     data () {
         return {
             graph: {
@@ -36,7 +42,7 @@ export default {
         };
     },
 
-    attached () {
+    mounted () {
         let es = new EventSource("https://localhost:3000/changes?models=purchases", {
             withCredentials: true,
         });

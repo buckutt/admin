@@ -43,7 +43,10 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['', '.js']
+        extensions: ['', '.js'],
+        alias     : {
+            vue: 'vue/dist/vue.js'
+        }
     },
 
     devServer: {

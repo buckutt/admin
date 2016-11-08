@@ -1,134 +1,150 @@
 <template>
-    <div class="promotions" v-show="currentEvent">
-        <div class="mdl-card mdl-shadow--2dp">
-            <h3>Promotions</h3>
-            <div v-show="selectedPromotion.name" transition="fade">
-                <h5>Modifier la promotion {{ selectedPromotion.name }}:</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="modPromotion.name"></mdl-textfield><br />
-                    <mdl-button colored raised @click="updatePromotion(selectedPromotion, modPromotion)">Modifier</mdl-button>
-                </form>
-                <br />
-                <h5>Prix:</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Montant TTC (centimes)" :value.sync="amount"></mdl-textfield>
-                    <mdl-select label="Point" id="point-select" :value.sync="selectedPoint" :options="pointOptions"></mdl-select>
-                    <mdl-select label="Fondation" id="fundation-select" :value.sync="selectedFundation" :options="fundationOptions"></mdl-select><br />
-                    <mdl-select label="Groupe" id="group-select" :value.sync="selectedGroup" :options="groupOptions"></mdl-select>
-                    <mdl-select label="Période" id="period-select" :value.sync="selectedPeriod" :options="periodOptions"></mdl-select><br />
-                    <mdl-button colored raised @click="createPromotionPrice(selectedPromotion, inputPrice)">Ajouter</mdl-button>
-                </form>
-                <br />
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Montant</th>
-                            <th class="mdl-data-table__cell--non-numeric">Point</th>
-                            <th class="mdl-data-table__cell--non-numeric">Fondation</th>
-                            <th class="mdl-data-table__cell--non-numeric">Groupe</th>
-                            <th class="mdl-data-table__cell--non-numeric">Période</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="price in detailsPromotion.prices" v-show="price.period.Event_id == currentEvent.id">
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.amount | price true }} TTC <span v-show="modPromotion.vat > 0">({{ price.amount/(1+modPromotion.vat/100) | price true }} HT)</span></td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric"><mdl-button @click="deletePrice(price)">Supprimer</mdl-button></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br />
-                <div class="promotionContent">
-                    <h5>Contenu de la promotion :</h5>
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="formatPromo.length > 0" transition="fade">
-                       <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Ensemble</th>
-                                <th class="mdl-data-table__cell--non-numeric">Choix possibles</th>
-                                <th class="mdl-data-table__cell--non-numeric" v-show="typeof displayRemove === 'number' || displayChoose">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="set in formatPromo">
-                                <td class="mdl-data-table__cell--non-numeric">
-                                    <strong>{{ $index }}</strong>
-                                </td>
-                                <td class="mdl-data-table__cell--non-numeric" transition="fade">
-                                    <mdl-button v-for="article in set.articles" @click="chooseArticle(article, $parent.$index)">{{ article.name }}</mdl-button>
-                                </td>
-                                <td class="mdl-data-table__cell--non-numeric right" v-show="displayChoose" transition="fade">
-                                    <mdl-button @click="addChosenArticleToStep($index)"><i class="material-icons">add</i></mdl-button>
-                                </td>
-                                <td class="mdl-data-table__cell--non-numeric right" v-show="displayRemove === $index" transition="fade">
-                                    <mdl-button @click="removeChosenArticleFromStep($index)"><i class="material-icons">remove</i></mdl-button>
-                                </td>
-                                <td v-show="typeof displayRemove === 'number' && displayRemove !== $index"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p v-show="formatPromo.length == 0" transition="fade">La promotion est vide.</p>
-                </div>
-                <div class="articlesManagement">
-                    <h5>Rechercher un article:</h5>
-                    <form v-on:submit.prevent>
-                        <mdl-textfield floating-label="Nom" :value.sync="articleName"></mdl-textfield>
-                    </form>
+    <div>
+        <div class="promotions" v-if="currentEvent">
+            <div class="mdl-card mdl-shadow--2dp">
+                <h3>Promotions</h3>
+                <transition name="fade">
+                    <div v-if="selectedPromotion.name">
+                        <h5>Modifier la promotion {{ selectedPromotion.name }}:</h5>
+                        <form @submit.prevent="updatePromotion(selectedPromotion, modPromotion)">
+                            <mdl-textfield floating-label="Nom" v-model="modPromotion.name"></mdl-textfield><br />
+                            <mdl-button colored raised>Modifier</mdl-button>
+                        </form>
+                        <br />
+                        <h5>Prix:</h5>
+                        <form v-on:submit.prevent="createPromotionPrice(selectedPromotion, inputPrice)">
+                            <mdl-textfield floating-label="Montant TTC (centimes)" v-model="amount"></mdl-textfield>
+                            <mdl-select label="Point" id="point-select" v-model="selectedPoint" :options="pointOptions"></mdl-select>
+                            <mdl-select label="Fondation" id="fundation-select" v-model="selectedFundation" :options="fundationOptions"></mdl-select><br />
+                            <mdl-select label="Groupe" id="group-select" v-model="selectedGroup" :options="groupOptions"></mdl-select>
+                            <mdl-select label="Période" id="period-select" v-model="selectedPeriod" :options="periodOptions"></mdl-select><br />
+                            <mdl-button colored raised>Ajouter</mdl-button>
+                        </form>
+                        <br />
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Montant</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Point</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Fondation</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Groupe</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Période</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="price in detailsPromotion.prices" v-show="price.period.Event_id == currentEvent.id">
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.amount | price(true) }} TTC <span v-if="modPromotion.vat > 0">({{ price.amount/(1+modPromotion.vat/100) | price(true) }} HT)</span></td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"><mdl-button @click.native="deletePrice(price)">Supprimer</mdl-button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br />
+                        <div class="promotionContent">
+                            <h5>Contenu de la promotion :</h5>
+                            <transition name="fade">
+                                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="formatPromo.length > 0">
+                                   <thead>
+                                        <tr>
+                                            <th class="mdl-data-table__cell--non-numeric">Ensemble</th>
+                                            <th class="mdl-data-table__cell--non-numeric">Choix possibles</th>
+                                            <th class="mdl-data-table__cell--non-numeric" v-show="typeof displayRemove === 'number' || displayChoose">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(set, index) in formatPromo">
+                                            <td class="mdl-data-table__cell--non-numeric">
+                                                <strong>{{ index+1 }}</strong>
+                                            </td>
+                                            <td class="mdl-data-table__cell--non-numeric">
+                                                <transition-group name="fade">
+                                                    <mdl-button v-for="(article, indexA) in set.articles" :key="index+'_'+indexA" @click.native="chooseArticle(article, index)">{{ article.name }}</mdl-button>
+                                                </transition-group>
+                                            </td>
+                                            <transition name="fade">
+                                                <td class="mdl-data-table__cell--non-numeric right" v-show="displayChoose">
+                                                    <mdl-button @click.native="addChosenArticleToStep(index)"><i class="material-icons">add</i></mdl-button>
+                                                </td>
+                                            </transition>
+                                            <transition name="fade">
+                                                <td class="mdl-data-table__cell--non-numeric right" v-show="displayRemove === index">
+                                                    <mdl-button @click.native="removeChosenArticleFromStep(index)"><i class="material-icons">remove</i></mdl-button>
+                                                </td>
+                                            </transition>
+                                            <td v-show="typeof displayRemove === 'number' && displayRemove !== index"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </transition>
+                            <transition name="fade">
+                                <p v-if="formatPromo.length == 0">La promotion est vide.</p>
+                            </transition>
+                        </div>
+                        <div class="articlesManagement">
+                            <h5>Rechercher un article:</h5>
+                            <form @submit.prevent>
+                                <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>
+                            </form>
 
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="articleName.length > 0 && filteredArticles.length > 0">
-                        <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Article</th>
-                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="article in filteredArticles">
-                                <td class="mdl-data-table__cell--non-numeric name">{{ article.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">
-                                    <mdl-button @click="addArticleToPromotion(article)">Nouvel ensemble</mdl-button>
-                                    <mdl-button @click="chooseStepToAdd(article)" v-show="formatPromo.length > 0">Ajouter à un ensemble</mdl-button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="clear"></div>
-                <br />
-                <mdl-button colored raised @click="goBack()">Retour</mdl-button>
-            </div>
-            <div v-show="!selectedPromotion.name" transition="fade">
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="name"></mdl-textfield><br />
-                    <mdl-button colored raised @click="createPromotion(inputPromotion)">Créer</mdl-button>
-                </form>
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="articleName.length > 0 && filteredArticles.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Article</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="article in filteredArticles">
+                                        <td class="mdl-data-table__cell--non-numeric name">{{ article.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-button @click.native="addArticleToPromotion(article)">Nouvel ensemble</mdl-button>
+                                            <mdl-button @click.native="chooseStepToAdd(article)" v-show="formatPromo.length > 0">Ajouter à un ensemble</mdl-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="clear"></div>
+                        <br />
+                        <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
+                    </div>
+                </transition>
+                <transition name="fade">
+                    <div v-if="!selectedPromotion.name">
+                        <form @submit.prevent="createPromotion(inputPromotion)">
+                            <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield><br />
+                            <mdl-button colored raised>Créer</mdl-button>
+                        </form>
 
-                <br>
+                        <br>
 
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Promotion</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="promotion in promotions">
-                            <td class="mdl-data-table__cell--non-numeric">{{ promotion.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="editPromotion(promotion)">Modifier</mdl-button>
-                                <mdl-button @click="removePromotion(promotion)">Supprimer</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Promotion</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="promotion in promotions">
+                                    <td class="mdl-data-table__cell--non-numeric">{{ promotion.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-button @click.native="editPromotion(promotion)">Modifier</mdl-button>
+                                        <mdl-button @click.native="removePromotion(promotion)">Supprimer</mdl-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </transition>
             </div>
         </div>
+        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
-    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>
@@ -150,11 +166,11 @@ export default {
             currentEvent: state => state.global.currentEvent
         },
         actions: {
-            createPromotion      : createPromotion,
-            updatePromotion      : updatePromotion,
-            removePromotion      : removePromotion,
-            createSetWithArticles: createSetWithArticles,
-            removeSet            : removeSet
+            createPromotion,
+            updatePromotion,
+            removePromotion,
+            createSetWithArticles,
+            removeSet
         }
     },
 
@@ -165,10 +181,10 @@ export default {
             modPromotion     : {},
             detailsPromotion : {},
             amount           : 0,
-            selectedPeriod   : {},
-            selectedGroup    : {},
-            selectedFundation: {},
-            selectedPoint    : {},
+            selectedPeriod   : null,
+            selectedGroup    : null,
+            selectedFundation: null,
+            selectedPoint    : null,
             articleName      : '',
             displayChoose    : false,
             chosenArticle    : {},
@@ -190,10 +206,10 @@ export default {
         editPromotion(promotion) {
             this.selectedPromotion = promotion;
             this.modPromotion      = JSON.parse(JSON.stringify(promotion));
-            this.selectedPeriod    = this.$store.state.app.periods[0];
-            this.selectedGroup     = this.$store.state.app.groups[0];
-            this.selectedFundation = this.$store.state.app.fundations[0];
-            this.selectedPoint     = this.$store.state.app.points[0];
+            this.selectedPeriod    = null;
+            this.selectedGroup     = null;
+            this.selectedFundation = null;
+            this.selectedPoint     = null;
 
             const embedPromotions = encodeURIComponent(JSON.stringify({
                 prices: {
@@ -217,6 +233,15 @@ export default {
                 });
         },
         createPromotionPrice(promotion, price) {
+            if (!price.Fundation_id || !price.Period_id || !price.Group_id || !price.Fundation_id) {
+                const data = {
+                    message: 'Un des champs a mal été renseigné.',
+                    timeout: 2000
+                };
+
+                return this.$root.$emit('snackfilter', data);
+            }
+
             let currentPrice  = {};
             const embedPrices = encodeURIComponent(JSON.stringify({
                 fundation: true,
@@ -354,7 +379,7 @@ export default {
                         timeout: 2000
                     };
 
-                    this.$broadcast('snackfilter', data);
+                    this.$root.$emit('snackfilter', data);
                 }
             } else if(step.type == 'set') {
                 const articlesIds = step.set.articles.map(article => article.id);
@@ -367,7 +392,7 @@ export default {
                         timeout: 2000
                     };
 
-                    this.$broadcast('snackfilter', data);
+                    this.$root.$emit('snackfilter', data);
                 }
             }
 
@@ -461,19 +486,24 @@ export default {
             };
         },
         inputPrice() {
-            const amount            = this.amount;
-            const selectedFundation = this.selectedFundation;
-            const selectedGroup     = this.selectedGroup;
-            const selectedPeriod    = this.selectedPeriod;
-            const selectedPoint     = this.selectedPoint;
-
-            return {
-                amount      : amount,
-                Point_id    : selectedPoint.id,
-                Fundation_id: selectedFundation.id,
-                Group_id    : selectedGroup.id,
-                Period_id   : selectedPeriod.id
+            const price = {
+                amount: this.amount
             };
+
+            if (this.selectedFundation) {
+                price.Fundation_id = this.selectedFundation.id;
+            }
+            if (this.selectedGroup) {
+                price.Group_id = this.selectedGroup.id;
+            }
+            if (this.selectedPeriod) {
+                price.Period_id = this.selectedPeriod.id;
+            }
+            if (this.selectedPoint) {
+                price.Point_id = this.selectedPoint.id;
+            }
+
+            return price;
         },
         periodOptions() {
             let periods = this.periods.map(period => {
@@ -536,18 +566,6 @@ export default {
 
         & + .mdl-snackbar {
             margin-left: $sidebarWidth / 2;
-        }
-
-        .fade-transition {
-            transition: opacity .4s ease;
-        }
-
-        .fade-enter {
-            opacity: 0;
-        }
-
-        .fade-leave {
-            display: none;
         }
 
         .articlesManagement {

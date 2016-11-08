@@ -41,3 +41,16 @@ html, body, main {
 .anytime-picker--is-visible { display: block; }
 .anytime-picker__dates { width: 200px; }
 .anytime-picker__dates > * { box-sizing: border-box; width: 14.28%; display: inline-block; }
+
+// Transitions
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .4s ease;
+}
+
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-leave-active {
+    display: none;
+}

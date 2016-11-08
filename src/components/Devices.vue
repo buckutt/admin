@@ -1,89 +1,96 @@
 <template>
-    <div class="devices" v-show="currentEvent">
+    <div class="devices" v-if="currentEvent">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Equipements</h3>
-            <div v-show="selectedDevice.name" transition="fade">
-                <h5>Modifier {{ selectedDevice.name }}</h5>
-                <form v-on:submit.prevent>
-                    <mdl-textfield floating-label="Nom" :value.sync="modDevice.name"></mdl-textfield>
-                    <mdl-switch :checked.sync="modDevice.offlineSupport" class="mdl-js-ripple-effect">Support hors-ligne</mdl-switch><br />
-                    <mdl-switch :checked.sync="modDevice.doubleValidation" class="mdl-js-ripple-effect">Revalidation post-achats</mdl-switch><br />
-                    <mdl-switch :checked.sync="modDevice.alcohol" class="mdl-js-ripple-effect">Avertissement alcool</mdl-switch><br />
-                    <mdl-switch :checked.sync="modDevice.showCategories" class="mdl-js-ripple-effect">Afficher les catégories</mdl-switch><br />
-                    <mdl-switch :checked.sync="modDevice.showPicture" class="mdl-js-ripple-effect">Afficher l'image utilisateur</mdl-switch><br />
+            <transition name="fade">
+                <div v-if="selectedDevice.name">
+                    <h5>Modifier {{ selectedDevice.name }}</h5>
+                    <form @submit.prevent="updateDevice(selectedDevice, modDevice)">
+                        <mdl-textfield floating-label="Nom" v-model="modDevice.name"></mdl-textfield>
+                        <mdl-textfield floating-label="Intervalle de rafraichissement" v-model="modDevice.refreshInterval"></mdl-textfield>
+                        <mdl-switch v-model="modDevice.realtime" class="mdl-js-ripple-effect">Temps réel</mdl-switch><br />
+                        <mdl-switch v-model="modDevice.doubleValidation" class="mdl-js-ripple-effect">Revalidation post-achats</mdl-switch><br />
+                        <mdl-switch v-model="modDevice.alcohol" class="mdl-js-ripple-effect">Avertissement alcool</mdl-switch><br />
+                        <mdl-switch v-model="modDevice.showCategories" class="mdl-js-ripple-effect">Afficher les catégories</mdl-switch><br />
+                        <mdl-switch v-model="modDevice.showPicture" class="mdl-js-ripple-effect">Afficher l'image utilisateur</mdl-switch><br />
 
-                    <mdl-button colored raised @click="updateDevice(selectedDevice, modDevice)">Modifier</mdl-button>
-                </form>
-                <br />
-                <h5>Assigner l'équipement</h5>
-                <br />
-                <form v-on:submit.prevent>
-                    <mdl-select label="Point" id="point-select" :value.sync="selectedPoint" :options="pointOptions"></mdl-select>
-                    <mdl-select label="Période" id="period-select" :value.sync="selectedPeriod" :options="periodOptions"></mdl-select>
+                        <mdl-button colored raised>Modifier</mdl-button>
+                    </form>
+                    <br />
+                    <h5>Assigner l'équipement</h5>
+                    <br />
+                    <form @submit.prevent="createPeriodPoint(selectedDevice, inputPeriodPoint)">
+                        <mdl-select label="Point" id="point-select" v-model="selectedPoint" :options="pointOptions"></mdl-select>
+                        <mdl-select label="Période" id="period-select" v-model="selectedPeriod" :options="periodOptions"></mdl-select>
 
-                    <mdl-button colored raised @click="createPeriodPoint(selectedDevice, inputPeriodPoint)">Ajouter</mdl-button>
-                </form>
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Point</th>
-                            <th class="mdl-data-table__cell--non-numeric">Période</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="periodPoint in detailsDevice.periodPoints" v-show="periodPoint.period.Event_id == currentEvent.id">
-                            <td class="mdl-data-table__cell--non-numeric" v-if="periodPoint.point">{{ periodPoint.point.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ periodPoint.period.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="removePeriodPoint(periodPoint)">Supprimer</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br />
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" @click="goBack()">Retour</button>
-            </div>
-            <div v-if="!selectedDevice.name" transition="fade">
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Equipement</th>
-                            <th class="mdl-data-table__cell--non-numeric">Hors-ligne</th>
-                            <th class="mdl-data-table__cell--non-numeric">Revalidation</th>
-                            <th class="mdl-data-table__cell--non-numeric">Alcool</th>
-                            <th class="mdl-data-table__cell--non-numeric">Catégories</th>
-                            <th class="mdl-data-table__cell--non-numeric">Image</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="device in devices">
-                            <td class="mdl-data-table__cell--non-numeric">{{ device.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-checkbox :checked.sync="device.offlineSupport" disabled></mdl-checkbox>
-                            </td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-checkbox :checked.sync="device.doubleValidation" disabled></mdl-checkbox>
-                            </td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-checkbox :checked.sync="device.alcohol" disabled></mdl-checkbox>
-                            </td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-checkbox :checked.sync="device.showCategories" disabled></mdl-checkbox>
-                            </td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-checkbox :checked.sync="device.showPicture" disabled></mdl-checkbox>
-                            </td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click="editDevice(device)">Modifier</mdl-button>
-                                <mdl-button @click="removeDevice(device)">Supprimer</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                        <mdl-button colored raised>Ajouter</mdl-button>
+                    </form>
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Point</th>
+                                <th class="mdl-data-table__cell--non-numeric">Période</th>
+                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="periodPoint in detailsDevice.periodPoints" v-show="periodPoint.period.Event_id == currentEvent.id">
+                                <td class="mdl-data-table__cell--non-numeric" v-if="periodPoint.point">{{ periodPoint.point.name }}</td>
+                                <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ periodPoint.period.name }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-button @click.native="removePeriodPoint(periodPoint)">Supprimer</mdl-button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br />
+                    <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
+                </div>
+            </transition>
+            <transition name="fade">
+                <div v-if="!selectedDevice.name">
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Equipement</th>
+                                <th class="mdl-data-table__cell--non-numeric">Temps réel</th>
+                                <th class="mdl-data-table__cell--non-numeric">Intervalle</th>
+                                <th class="mdl-data-table__cell--non-numeric">Revalidation</th>
+                                <th class="mdl-data-table__cell--non-numeric">Alcool</th>
+                                <th class="mdl-data-table__cell--non-numeric">Catégories</th>
+                                <th class="mdl-data-table__cell--non-numeric">Image</th>
+                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="device in devices">
+                                <td class="mdl-data-table__cell--non-numeric">{{ device.name }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-checkbox v-model="device.realtime" disabled></mdl-checkbox>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ device.refreshInterval }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-checkbox v-model="device.doubleValidation" disabled></mdl-checkbox>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-checkbox v-model="device.alcohol" disabled></mdl-checkbox>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-checkbox v-model="device.showCategories" disabled></mdl-checkbox>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-checkbox v-model="device.showPicture" disabled></mdl-checkbox>
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-button @click.native="editDevice(device)">Modifier</mdl-button>
+                                    <mdl-button @click.native="removeDevice(device)">Supprimer</mdl-button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </transition>
         </div>
     </div>
 </template>
@@ -101,17 +108,16 @@ export default {
             currentEvent: state => state.global.currentEvent
         },
         actions: {
-            updateDevice: updateDevice,
-            removeDevice: removeDevice
+            updateDevice,
+            removeDevice
         }
     },
 
     data () {
         return {
-            name          : '',
             selectedDevice: {},
             modDevice     : {
-                offlineSupport  : false,
+                realtime        : false,
                 doubleValidation: false,
                 alcohol         : false,
                 showCategories  : false,
@@ -127,7 +133,7 @@ export default {
         goBack() {
             this.selectedDevice = {};
             this.modDevice      = {
-                offlineSupport  : false,
+                realtime        : false,
                 doubleValidation: false,
                 alcohol         : false,
                 showCategories  : false,
@@ -252,16 +258,6 @@ export default {
                 width: 100%;
                 white-space: normal;
             }
-        }
-
-        .fade-transition {
-            transition: opacity .4s ease;
-        }
-        .fade-enter {
-            opacity: 0;
-        }
-        .fade-leave {
-            display: none;
         }
     }
 </style>

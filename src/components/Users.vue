@@ -1,154 +1,176 @@
 <template>
-    <div v-show="currentEvent">
-        <div class="users">
-            <div class="mdl-card mdl-shadow--2dp">
-                <h3>Utilisateurs</h3>
-                <div v-show="selectedUser.firstname" transition="fade">
-                    <h5 class="name">Modifier {{ selectedUser.firstname }} {{ selectedUser.lastname }}</h5>
-                    <form v-on:submit.prevent>
-                        <mdl-textfield floating-label="Nom" :value.sync="modUser.lastname"></mdl-textfield>
-                        <mdl-textfield floating-label="Prénom" :value.sync="modUser.firstname"></mdl-textfield><br />
-                        <mdl-textfield floating-label="Surnom" :value.sync="modUser.nickname"></mdl-textfield><br />
-                        <mdl-textfield floating-label="Mail" :value.sync="modUser.mail"></mdl-textfield><br />
-                        <mdl-button colored raised @click="updateUser(selectedUser, modUser)">Modifier</mdl-button>
-                    </form>
-                    <br />
-                    <mdl-button @click="regenPin(selectedUser)">Regénérer le code PIN</mdl-button>
-                    <mdl-button @click="regenPassword(selectedUser)">Regénérer le mot de passe</mdl-button>
-                    <br />
-                    <p v-show="newPin" transition="fade">Le nouveau code PIN généré est <strong>{{ newPin }}</strong></p>
-                    <p v-show="newPassword" transition="fade">Le nouveau mot de passe généré est <strong>{{ newPassword }}</strong></p>
+    <div>
+        <div v-if="currentEvent">
+            <div class="users">
+                <div class="mdl-card mdl-shadow--2dp">
+                    <h3>Utilisateurs</h3>
+                    <transition name="fade">
+                        <div v-if="selectedUser.firstname">
+                            <h5 class="name">Modifier {{ selectedUser.firstname }} {{ selectedUser.lastname }}</h5>
+                            <form @submit.prevent="updateUser(selectedUser, modUser)">
+                                <mdl-textfield floating-label="Nom" v-model="modUser.lastname"></mdl-textfield>
+                                <mdl-textfield floating-label="Prénom" v-model="modUser.firstname"></mdl-textfield><br />
+                                <mdl-textfield floating-label="Surnom" v-model="modUser.nickname"></mdl-textfield><br />
+                                <mdl-textfield floating-label="Mail" v-model="modUser.mail"></mdl-textfield><br />
+                                <mdl-button colored raised>Modifier</mdl-button>
+                            </form>
+                            <br />
+                            <mdl-button @click.native="regenPin(selectedUser)">Regénérer le code PIN</mdl-button>
+                            <mdl-button @click.native="regenPassword(selectedUser)">Regénérer le mot de passe</mdl-button>
+                            <br />
+                            <transition name="fade">
+                                <p v-show="newPin">Le nouveau code PIN généré est <strong>{{ newPin }}</strong></p>
+                            </transition>
+                            <transition name="fade">
+                                <p v-show="newPassword">Le nouveau mot de passe généré est <strong>{{ newPassword }}</strong></p>
+                            </transition>
 
-                    <h5>Identifiants de connexion</h5>
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="detailsUser.meansOfLogin">
-                        <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Type</th>
-                                <th class="mdl-data-table__cell--non-numeric">Contenu</th>
-                                <th class="mdl-data-table__cell--non-numeric">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="meanOfLogin in detailsUser.meansOfLogin">
-                                <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.type }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.data }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">
-                                    <mdl-button @click="deleteMol(meanOfLogin)">Désactiver</mdl-button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <h5>Droits</h5>
-                    <form v-on:submit.prevent>
-                        <mdl-select label="Droit" id="right-select" :value.sync="rightChoice" :options="rightsList"></mdl-select>
-                        <mdl-select label="Point" id="point-select" :value.sync="rightPoint" :options="pointOptions"></mdl-select>
-                        <mdl-select label="Période" id="period-select" :value.sync="rightPeriod" :options="periodOptions"></mdl-select><br />
-                        <mdl-button colored raised @click="createUserRight(selectedUser, inputRight)">Ajouter</mdl-button>
-                    </form>
-                    <br />
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="detailsUser.rights">
-                        <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Droit</th>
-                                <th class="mdl-data-table__cell--non-numeric">Point</th>
-                                <th class="mdl-data-table__cell--non-numeric">Période</th>
-                                <th class="mdl-data-table__cell--non-numeric">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="right in detailsUser.rights" v-show="right.period.Event_id == currentEvent.id">
-                                <td class="mdl-data-table__cell--non-numeric name">{{ right.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric" v-if="right.point">{{ right.point.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
-                                <td class="mdl-data-table__cell--non-numeric">{{ right.period.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">
-                                    <mdl-button @click="openModal(right)">Modifier</mdl-button>
-                                    <mdl-button @click="deleteRight(right)">Supprimer</mdl-button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <br />
-                    <mdl-button colored raised @click="goBack()">Retour</mdl-button>
-                </div>
-                <div v-show="!selectedUser.firstname" transition="fade">
-                    <h5>Créer un utilisateur</h5>
-                    <p v-show="newPin" transition="fade">Le code PIN de l'utilisateur est <strong>{{ newPin }}</strong></p>
-                    <p v-show="newPassword" transition="fade">Le mot de passe de l'utilisateur est <strong>{{ newPassword }}</strong></p>
-                    <form v-on:submit.prevent>
-                        <mdl-textfield floating-label="Nom" :value.sync="lastname"></mdl-textfield>
-                        <mdl-textfield floating-label="Prénom" :value.sync="firstname"></mdl-textfield><br />
-                        <mdl-textfield floating-label="Surnom" :value.sync="nickname"></mdl-textfield><br />
-                        <mdl-textfield floating-label="Mail" :value.sync="mail"></mdl-textfield><br />
-                        <mdl-button colored raised @click="createUser(inputUser)">Créer</mdl-button>
-                    </form>
+                            <h5>Identifiants de connexion</h5>
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="detailsUser.meansOfLogin">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Type</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Contenu</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="meanOfLogin in detailsUser.meansOfLogin">
+                                        <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.type }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.data }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-button @click.native="deleteMol(meanOfLogin)">Désactiver</mdl-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <h5>Droits</h5>
+                            <form @submit.prevent="createUserRight(selectedUser, inputRight)">
+                                <mdl-select label="Droit" id="right-select" v-model="rightChoice" :options="rightsList"></mdl-select>
+                                <mdl-select label="Point" id="point-select" v-model="rightPoint" :options="pointOptions"></mdl-select>
+                                <mdl-select label="Période" id="period-select" v-model="rightPeriod" :options="periodOptions"></mdl-select><br />
+                                <mdl-button colored raised>Ajouter</mdl-button>
+                            </form>
+                            <br />
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="detailsUser.rights">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Droit</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Point</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Période</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="right in detailsUser.rights" v-show="right.period.Event_id == currentEvent.id">
+                                        <td class="mdl-data-table__cell--non-numeric name">{{ right.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric" v-if="right.point">{{ right.point.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
+                                        <td class="mdl-data-table__cell--non-numeric">{{ right.period.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-button @click.native="openModal(right)">Modifier</mdl-button>
+                                            <mdl-button @click.native="deleteRight(right)">Supprimer</mdl-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br />
+                            <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
+                        </div>
+                    </transition>
+                    <transition name="fade">
+                        <div v-if="!selectedUser.firstname">
+                            <h5>Créer un utilisateur</h5>
+                            <transition name="fade">
+                                <p v-show="newPin">Le code PIN de l'utilisateur est <strong>{{ newPin }}</strong></p>
+                            </transition>
+                            <transition name="fade">
+                                <p v-show="newPassword">Le mot de passe de l'utilisateur est <strong>{{ newPassword }}</strong></p>
+                            </transition>
+                            <form @submit.prevent="createUser(inputUser)">
+                                <mdl-textfield floating-label="Nom" v-model="lastname"></mdl-textfield>
+                                <mdl-textfield floating-label="Prénom" v-model="firstname"></mdl-textfield><br />
+                                <mdl-textfield floating-label="Surnom" v-model="nickname"></mdl-textfield><br />
+                                <mdl-textfield floating-label="Mail" v-model="mail"></mdl-textfield><br />
+                                <mdl-button colored raised>Créer</mdl-button>
+                            </form>
 
-                    <h5>Rechercher un utilisateur</h5>
-                    <form v-on:submit.prevent>
-                        <mdl-textfield floating-label="Prénom" :value.sync="userName"></mdl-textfield>
-                        <mdl-button colored raised @click="searchUser()">Rechercher</mdl-button>
-                    </form>
+                            <h5>Rechercher un utilisateur</h5>
+                            <form @submit.prevent="searchUser()">
+                                <mdl-textfield floating-label="Prénom" v-model="userName"></mdl-textfield>
+                                <mdl-button colored raised>Rechercher</mdl-button>
+                            </form>
 
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="users.length > 0">
-                        <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Utilisateur</th>
-                                <th class="mdl-data-table__cell--non-numeric">Surnom</th>
-                                <th class="mdl-data-table__cell--non-numeric">Mail</th>
-                                <th class="mdl-data-table__cell--non-numeric">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="user in users">
-                                <td class="mdl-data-table__cell--non-numeric name">{{ user.firstname }} {{ user.lastname }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">{{ user.nickname }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">{{ user.mail }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">
-                                    <mdl-button @click="editUser(user)">Modifier</mdl-button>
-                                    <mdl-button @click="deleteUser(user)">Supprimer</mdl-button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="users.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Utilisateur</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Surnom</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Mail</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="user in users">
+                                        <td class="mdl-data-table__cell--non-numeric name">{{ user.firstname }} {{ user.lastname }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">{{ user.nickname }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">{{ user.mail }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-button @click.native="editUser(user)">Modifier</mdl-button>
+                                            <mdl-button @click.native="deleteUser(user)">Supprimer</mdl-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </transition>
                 </div>
             </div>
-        </div>
-        <div class="modal modal__bg" v-modal="openEditModal" v-el:editmodal>
-            <div class="modal__dialog">
-                <div class="modal__header">
-                    <h3>Modifier le droit {{ selectedRight.name }}</h3>
+
+            <modal>
+                <div class="modal__dialog">
+                    <div class="modal__header">
+                        <h3>Modifier le droit {{ selectedRight.name }}</h3>
+                    </div>
+                    <form @submit.prevent="updateRight(selectedRight, editRight)">
+                        <div class="modal__body">
+                            <mdl-select label="Droit" id="modright-select" v-model="modRight.name" :options="rightsList"></mdl-select><br />
+                            <mdl-select label="Point" id="modpoint-select" v-model="modRight.Point_id" :options="pointOptionsIds"></mdl-select><br />
+                            <mdl-select label="Période" id="modperiod-select" v-model="modRight.Period_id" :options="periodOptionsIds"></mdl-select><br />
+                        </div>
+                        <div class="modal__footer">
+                            <mdl-button>Valider</mdl-button>
+                            <mdl-button @click.native="closeModal()">Annuler</mdl-button>
+                        </div>
+                    </form>
                 </div>
-                <form v-on:submit.prevent>
-                    <div class="modal__body">
-                        <mdl-select label="Droit" id="modright-select" :value.sync="modRight.name" :options="rightsList"></mdl-select><br />
-                        <mdl-select label="Point" id="modpoint-select" :value.sync="modRight.Point_id" :options="pointOptionsIds"></mdl-select><br />
-                        <mdl-select label="Période" id="modperiod-select" :value.sync="modRight.Period_id" :options="periodOptionsIds"></mdl-select><br />
-                    </div>
-                    <div class="modal__footer">
-                        <mdl-button @click="updateRight(selectedRight, editRight)">Valider</mdl-button>
-                        <mdl-button @click="closeModal()">Annuler</mdl-button>
-                    </div>
-                </form>
-            </div>
+            </modal>
         </div>
+        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
-    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>
+import Modal from './Modal.vue';
 import { get, post, put } from '../lib/fetch';
-import modal from '../lib/modal';
 import bcrypt from 'bcryptjs';
+import { updateEditModal } from '../store/actions';
 
 export default {
     vuex: {
         getters: {
-            points      : state => state.app.points,
-            periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent
+            points       : state => state.app.points,
+            periods      : state => state.app.periods,
+            currentEvent : state => state.global.currentEvent,
+            openEditModal: state => state.global.openEditModal
         },
         actions: {
+            updateEditModal
         }
+    },
+
+    components: {
+        Modal
     },
 
     data () {
@@ -168,7 +190,6 @@ export default {
             modUser      : {},
             selectedRight: {},
             modRight     : {},
-            openEditModal: false,
             newPin       : '',
             newPassword  : ''
         };
@@ -390,7 +411,7 @@ export default {
                     timeout: 2000
                 };
 
-                this.$broadcast('snackfilter', data);
+                this.$root.$emit('snackfilter', data);
 
                 return;
             }
@@ -438,10 +459,10 @@ export default {
             delete this.modRight.point;
             delete this.modRight.period;
 
-            this.openEditModal = true;
+            this.updateEditModal(true);
         },
         closeModal() {
-            this.openEditModal = false;
+            this.updateEditModal(false);
         },
         pointById(id) {
             let point = null;
@@ -607,18 +628,6 @@ export default {
 
         .name {
             text-transform: capitalize;
-        }
-
-        .fade-transition {
-            transition: opacity .4s ease;
-        }
-
-        .fade-enter {
-            opacity: 0;
-        }
-
-        .fade-leave {
-            display: none;
         }
     }
 </style>

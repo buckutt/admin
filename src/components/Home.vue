@@ -1,28 +1,30 @@
 <template>
     <div class="container" :class="{ 'container--login': !isToken }">
-        <div class="login" v-show="!isToken">
+        <div class="login" v-if="!isToken">
             <div class="mdl-card mdl-shadow--2dp">
                 <div class="mdl-card__title">
                     <h2 class="mdl-card__title-text">Connexion</h2>
                 </div>
-                <form v-on:submit.prevent>
+                <form @submit.prevent="login(mail, password)">
                     <div class="mdl-card__supporting-text">
-                        <mdl-textfield floating-label="Mail" :value.sync="mail"></mdl-textfield><br />
-                        <mdl-textfield type="password" floating-label="Mot de passe" :value.sync="password"></mdl-textfield>
+                        <mdl-textfield floating-label="Mail" v-model="mail"></mdl-textfield><br />
+                        <mdl-textfield type="password" floating-label="Mot de passe" v-model="password"></mdl-textfield>
                     </div>
                     <div class="mdl-card__actions mdl-card--border">
-                        <mdl-button colored @click="login(mail, password)">Connexion</mdl-button>
+                        <mdl-button colored>Connexion</mdl-button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div class="home" v-show="isToken" transition="fade">
-            <div class="mdl-card mdl-shadow--2dp">
-                <h3>Bonjour {{ user.firstname }} {{ user.lastname }} !</h3>
-                Stats générales de buckless + proposition de sélection d'événement + help ?
+        <transition name="fade">
+            <div class="home" v-if="isToken">
+                <div class="mdl-card mdl-shadow--2dp">
+                    <h3>Bonjour {{ user.firstname }} {{ user.lastname }} !</h3>
+                    Stats générales de buckless + proposition de sélection d'événement + help ?
+                </div>
             </div>
-        </div>
+        </transition>
 
         <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
@@ -44,11 +46,13 @@ export default {
     },
 
     data () {
+        const isToken = this.$options.methods.getIsToken();
+        const user    = this.$options.methods.getUser();
         return {
             mail    : null,
             password: null,
-            isToken : this.isToken(),
-            user    : this.user()
+            isToken,
+            user
         };
     },
 
@@ -65,14 +69,14 @@ export default {
                             this.updateLogged(true);
                             updateBearer(result.token);
 
-                            load(this.$route.router.app.$store);
+                            load(this.$router.app.$store);
                         } else {
                             const dataAdmin = {
                                 message: 'Vous n\'êtes pas administrateur.',
                                 timeout: 2000
                             };
 
-                            this.$broadcast('snackfilter', dataAdmin);
+                            this.$root.$emit('snackfilter', dataAdmin);
                         }
                     } else {
                         const data = {
@@ -80,14 +84,14 @@ export default {
                             timeout: 2000
                         };
 
-                        this.$broadcast('snackfilter', data);
+                        this.$root.$emit('snackfilter', data);
                     }
                 });
         },
-        isToken() {
+        getIsToken() {
             return sessionStorage.hasOwnProperty('token');
         },
-        user() {
+        getUser() {
             if(sessionStorage.hasOwnProperty('user')) {
                 return JSON.parse(sessionStorage.getItem('user'));
             }
@@ -95,11 +99,13 @@ export default {
         },
         isAdmin(user) {
             let admin = false;
-            user.rights.forEach(right => {
-                if (right.name == 'admin' && !right.isRemoved && new Date(right.period.start).getTime() <= Date.now() && new Date(right.period.end).getTime() >= Date.now()) {
-                    admin = true;
-                }
-            });
+            if(user) {
+                user.rights.forEach(right => {
+                    if (right.name == 'admin' && !right.isRemoved && new Date(right.period.start).getTime() <= Date.now() && new Date(right.period.end).getTime() >= Date.now()) {
+                        admin = true;
+                    }
+                });
+            }
 
             return admin;
         }
@@ -118,22 +124,6 @@ export default {
 
         .mdl-snackbar {
             margin-left: $sidebarWidth / 2;
-        }
-
-        .fade-transition {
-            transition: opacity .4s ease;
-        }
-
-        .fade-enter {
-            opacity: 0;
-        }
-
-        .fade-leave {
-            display: none;
-        }
-
-        .width-transition {
-
         }
     }
 

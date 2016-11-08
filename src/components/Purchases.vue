@@ -1,51 +1,55 @@
 <template>
-    <div class="treasury" v-show="currentEvent">
-        <div class="mdl-card mdl-shadow--2dp">
-            <h3 v-if="currentEvent">Achats de "{{ currentEvent.name }}"</h3>
-            <h4>Recherche</h4>
-            <div>
-                <mdl-select label="Point" id="point-select" :value.sync="point" :options="pointOptions"></mdl-select>
-                <mdl-select label="Fondation" id="select-fundations" :value.sync="fundation" :options="fundationOptions"></mdl-select>
-            </div>
-            <div>
-                Recherche par:<br />
-                <mdl-radio :checked.sync="dateChoice" class="mdl-js-ripple-effect" value="0">Achats liés à une période en particulier</mdl-radio><br />
-                <mdl-radio :checked.sync="dateChoice" class="mdl-js-ripple-effect" value="1">Achats compris entre deux dates</mdl-radio>
+    <div>
+        <div class="treasury" v-if="currentEvent">
+            <div class="mdl-card mdl-shadow--2dp">
+                <h3 v-if="currentEvent">Achats de "{{ currentEvent.name }}"</h3>
+                <h4>Recherche</h4>
+                <form @submit.prevent="filter()">
+                    <div>
+                        <mdl-select label="Point" id="point-select" v-model="point" :options="pointOptions"></mdl-select>
+                        <mdl-select label="Fondation" id="select-fundations" v-model="fundation" :options="fundationOptions"></mdl-select>
+                    </div>
+                    <div>
+                        Recherche par:<br />
+                        <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="0">Achats liés à une période en particulier</mdl-radio><br />
+                        <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="1">Achats compris entre deux dates</mdl-radio>
 
-                <div v-show="dateChoice == 1">
-                    <mdl-textfield floating-label="Début" :value.sync="dateIn" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" v-el:datein></mdl-textfield>
-                    <mdl-textfield floating-label="Fin" :value.sync="dateOut" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateout" v-el:dateout></mdl-textfield>
-                </div>
-                <div v-show="dateChoice == 0">
-                    <mdl-select label="Periode" id="select-periods" :value.sync="period" :options="periodOptions"></mdl-select>
-                </div>
-            </div>
-            <mdl-button colored raised @click="filter()">Rechercher</mdl-button>
+                        <div v-show="dateChoice == 1">
+                            <mdl-textfield floating-label="Début" v-model="dateIn" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" ref="datein"></mdl-textfield>
+                            <mdl-textfield floating-label="Fin" v-model="dateOut" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateout" ref="dateout"></mdl-textfield>
+                        </div>
+                        <div v-show="dateChoice == 0">
+                            <mdl-select label="Periode" id="select-periods" v-model="period" :options="periodOptions"></mdl-select>
+                        </div>
+                    </div>
+                    <mdl-button colored raised>Rechercher</mdl-button>
+                </form>
 
-            <h4>Ventes <span class="small">(total TTC: {{ totalSell | price true }}, total HT: {{ totalSellWT | price true }})</span></h4>
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                <thead>
-                    <tr>
-                        <th>Quantité</th>
-                        <th class="mdl-data-table__cell--non-numeric">Article</th>
-                        <th>Prix unitaire TTC</th>
-                        <th>Total TTC</th>
-                        <th>Total HT</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="purchase in purchases">
-                        <td>{{ purchase.count }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ purchase.name }}</td>
-                        <td>{{ purchase.price | price true }}</td>
-                        <td>{{ purchase.totalVAT | price true }}</td>
-                        <td>{{ purchase.totalWT | price true }}</td>
-                    </tr>
-                </tbody>
-            </table>
+                <h4>Ventes <span class="small">(total TTC: {{ totalSell | price(true) }}, total HT: {{ totalSellWT | price(true) }})</span></h4>
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <thead>
+                        <tr>
+                            <th>Quantité</th>
+                            <th class="mdl-data-table__cell--non-numeric">Article</th>
+                            <th>Prix unitaire TTC</th>
+                            <th>Total TTC</th>
+                            <th>Total HT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="purchase in purchases">
+                            <td>{{ purchase.count }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ purchase.name }}</td>
+                            <td>{{ purchase.price | price(true) }}</td>
+                            <td>{{ purchase.totalVAT | price(true) }}</td>
+                            <td>{{ purchase.totalWT | price(true) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
-    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>
@@ -102,7 +106,7 @@ export default {
 
             let periods = this.periods.map(period => {
                 if(period.Event_id == this.currentEvent.id) {
-                    return { name: period.name, value: period };
+                    return { name: period.name, value: period.id };
                 } else {
                     return null;
                 }
@@ -166,7 +170,7 @@ export default {
                     timeout: 2000
                 };
 
-                this.$broadcast('snackfilter', data);
+                this.$root.$emit('snackfilter', data);
                 return;
             }
 
@@ -186,20 +190,22 @@ export default {
         }
     },
 
-    attached () {
-        const $dateIn  = this.$els.datein;
-        const $dateOut = this.$els.dateout;
-        jQuery($dateIn).datetimepicker({
-            onChangeDateTime: ct => {
-                this.$data.dateIn = parseDate(ct);
-            },
-            format:'d/m/Y H:i'
-        });
-        jQuery($dateOut).datetimepicker({
-            onChangeDateTime: ct => {
-                this.$data.dateOut = parseDate(ct);
-            },
-            format:'d/m/Y H:i'
+    mounted () {
+        this.$nextTick(() => {
+            const $dateIn  = this.$refs.datein.$el;
+            const $dateOut = this.$refs.dateout.$el;
+            jQuery($dateIn).datetimepicker({
+                onChangeDateTime: ct => {
+                    this.$data.dateIn = parseDate(ct);
+                },
+                format:'d/m/Y H:i'
+            });
+            jQuery($dateOut).datetimepicker({
+                onChangeDateTime: ct => {
+                    this.$data.dateOut = parseDate(ct);
+                },
+                format:'d/m/Y H:i'
+            });
         });
     }
 }
@@ -212,7 +218,7 @@ export default {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);
-            overflow-y: auto;
+            overflow-y: hidden;
             padding: 20px;
             width: $cardSize;
 

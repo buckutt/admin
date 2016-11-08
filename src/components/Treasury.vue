@@ -1,52 +1,56 @@
 <template>
-    <div class="treasury" v-show="logged">
-        <div class="mdl-card mdl-shadow--2dp">
-            <h3>Trésorerie</h3>
-            <h4>Recherche</h4>
-            <div>
-                <mdl-select label="Point" id="point-select" :value.sync="point" :options="pointOptions"></mdl-select>
-            </div>
-            <div>
-                <mdl-textfield floating-label="Début" :value.sync="dateIn" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" v-el:datein></mdl-textfield>
-                <mdl-textfield floating-label="Fin" :value.sync="dateOut" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateout" v-el:dateout></mdl-textfield>
-            </div>
-            <mdl-button colored raised @click="filter()">Rechercher</mdl-button>
+    <div>
+        <div class="treasury" v-if="logged">
+            <div class="mdl-card mdl-shadow--2dp">
+                <h3>Trésorerie</h3>
+                <h4>Recherche</h4>
+                <form @submit.prevent="filter()">
+                    <div>
+                        <mdl-select label="Point" id="point-select" v-model="point" :options="pointOptions"></mdl-select>
+                    </div>
+                    <div>
+                        <mdl-textfield floating-label="Début" v-model="dateIn" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" ref="datein"></mdl-textfield>
+                        <mdl-textfield floating-label="Fin" v-model="dateOut" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateout" ref="dateout"></mdl-textfield>
+                    </div>
+                    <mdl-button colored raised>Rechercher</mdl-button>
+                </form>
 
-            <h4>Rechargements <span class="small">(total: {{ totalReload | price true }})</span></h4>
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                <thead>
-                    <tr>
-                        <th class="mdl-data-table__cell--non-numeric">Moyen de paiement</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="reload in reloads">
-                        <td class="mdl-data-table__cell--non-numeric">{{ reload.group | reload }}</td>
-                        <td>{{ reload.reduction | price true }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <h4>Transferts <span class="small">(total: {{ totalTransfer | price true }})</span></h4>
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                <thead>
-                    <tr>
-                        <th class="mdl-data-table__cell--non-numeric">De</th>
-                        <th class="mdl-data-table__cell--non-numeric">À</th>
-                        <th>Montant</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="transfer in transfers">
-                        <td class="mdl-data-table__cell--non-numeric">{{ transfer.sender.firstname }} {{ transfer.sender.lastname }}</td>
-                        <td class="mdl-data-table__cell--non-numeric">{{ transfer.reciever.firstname }} {{ transfer.reciever.lastname }}</td>
-                        <td>{{ transfer.amount | price true }}</td>
-                    </tr>
-                </tbody>
-            </table>
+                <h4>Rechargements <span class="small">(total: {{ totalReload | price(true) }})</span></h4>
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <thead>
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">Moyen de paiement</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="reload in reloads">
+                            <td class="mdl-data-table__cell--non-numeric">{{ reload.group | reload }}</td>
+                            <td>{{ reload.reduction | price(true) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4>Transferts <span class="small">(total: {{ totalTransfer | price(true) }})</span></h4>
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <thead>
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">De</th>
+                            <th class="mdl-data-table__cell--non-numeric">À</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="transfer in transfers">
+                            <td class="mdl-data-table__cell--non-numeric">{{ transfer.sender.firstname }} {{ transfer.sender.lastname }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ transfer.reciever.firstname }} {{ transfer.reciever.lastname }}</td>
+                            <td>{{ transfer.amount | price(true) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
-    <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
 </template>
 
 <script>
@@ -146,7 +150,7 @@ export default {
                     timeout: 2000
                 };
 
-                this.$broadcast('snackfilter', data);
+                this.$root.$emit('snackfilter', data);
                 return;
             }
 
@@ -174,20 +178,22 @@ export default {
         }
     },
 
-    attached () {
-        const $dateIn  = this.$els.datein;
-        const $dateOut = this.$els.dateout;
-        jQuery($dateIn).datetimepicker({
-            onChangeDateTime: ct => {
-                this.$data.dateIn = parseDate(ct);
-            },
-            format:'d/m/Y H:i'
-        });
-        jQuery($dateOut).datetimepicker({
-            onChangeDateTime: ct => {
-                this.$data.dateOut = parseDate(ct);
-            },
-            format:'d/m/Y H:i'
+    mounted () {
+        this.$nextTick(() => {
+            const $dateIn  = this.$refs.datein.$el;
+            const $dateOut = this.$refs.dateout.$el;
+            jQuery($dateIn).datetimepicker({
+                onChangeDateTime: ct => {
+                    this.$data.dateIn = parseDate(ct);
+                },
+                format:'d/m/Y H:i'
+            });
+            jQuery($dateOut).datetimepicker({
+                onChangeDateTime: ct => {
+                    this.$data.dateOut = parseDate(ct);
+                },
+                format:'d/m/Y H:i'
+            });
         });
     }
 }
