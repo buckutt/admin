@@ -43,7 +43,7 @@
                 <div class="modal__header">
                     <h3>Modifier la période {{ selectedPeriod.name }}</h3>
                 </div>
-                <form @submit.prevent="updatePeriod(selectedPeriod, editPeriod)">
+                <form @submit.prevent="updatePeriod(editPeriod)">
                     <div class="modal__body">
                         <mdl-textfield floating-label="Nom" v-model="modPeriod.name"></mdl-textfield>
 
@@ -65,24 +65,10 @@
 import Modal    from './Modal.vue';
 import { post } from '../lib/fetch';
 import date, { parseDate, convertDate } from '../lib/date';
-import { createPeriod, updatePeriod, removePeriod, updateEditModal } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 
 
 export default {
-    vuex: {
-        getters: {
-            periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent,
-            openEditModal: state => state.global.openEditModal
-        },
-        actions: {
-            createPeriod,
-            updatePeriod,
-            removePeriod,
-            updateEditModal
-        }
-    },
-
     components: {
         Modal
     },
@@ -98,6 +84,12 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'createPeriod',
+            'updatePeriod',
+            'removePeriod',
+            'updateEditModal'
+        ]),
         openModal(period) {
             this.selectedPeriod  = period;
             this.modPeriod       = JSON.parse(JSON.stringify(period));
@@ -112,7 +104,6 @@ export default {
                 const $editdateStart   = this.$refs.editdatestart.$el;
                 const $editdateEnd     = this.$refs.editdateend.$el;
 
-                console.log(start);
                 jQuery($editdateEnd).datetimepicker({
                     onChangeDateTime: ct => {
                         this.modPeriod.end = parseDate(ct);
@@ -134,6 +125,11 @@ export default {
     },
 
    computed: {
+        ...mapState({
+            periods      : state => state.app.periods,
+            currentEvent : state => state.global.currentEvent,
+            openEditModal: state => state.global.openEditModal
+        }),
         inputPeriod() {
             const name     = this.name;
             const start    = convertDate(this.dateStart);

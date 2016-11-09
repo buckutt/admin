@@ -58,18 +58,10 @@ import Vue    from 'vue';
 import price  from '../lib/price';
 import reload from '../lib/reloadType';
 
-import { parseDate, convertDate } from '../lib/date';
+import { mapState, mapActions } from 'vuex';
 import { get } from '../lib/fetch';
 
 export default {
-    vuex: {
-        getters: {
-            points      : state => state.app.points,
-            currentEvent: state => state.global.currentEvent,
-            logged      : state => state.global.logged
-        }
-    },
-
     data () {
         return {
             point    : '',
@@ -81,6 +73,11 @@ export default {
     },
 
     computed: {
+        ...mapState({
+            points      : state => state.app.points,
+            currentEvent: state => state.global.currentEvent,
+            logged      : state => state.global.logged
+        }),
         totalReload() {
             let sum = 0;
 

@@ -57,17 +57,9 @@ import Vue from 'vue';
 import price from '../lib/price';
 import { parseDate, convertDate } from '../lib/date';
 import { get } from '../lib/fetch';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-    vuex: {
-        getters: {
-            points      : state => state.app.points,
-            fundations  : state => state.app.fundations,
-            periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent
-        }
-    },
-
     data () {
         return {
             point     : '',
@@ -81,6 +73,12 @@ export default {
     },
 
     computed: {
+        ...mapState({
+            points      : state => state.app.points,
+            fundations  : state => state.app.fundations,
+            periods     : state => state.app.periods,
+            currentEvent: state => state.global.currentEvent
+        }),
         totalSell() {
             let sum = 0;
 

@@ -16,7 +16,7 @@
 
                         <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
                             :for="'lock-' + index">
-                            <li class="mdl-menu__item" v-for="mol in user.meansOfLogin" @click="blockMOL(mol.id, !mol.isRemoved)">
+                            <li class="mdl-menu__item" v-for="mol in user.meansOfLogin" @click="blockMOL({ molId: mol.id, blockOrRestore: !mol.isRemoved })">
                                 <span v-if="mol.isRemoved">Debloquer {{ mol.type }}</span>
                                 <span v-if="!mol.isRemoved">Bloquer {{ mol.type }}</span>
                             </li>
@@ -29,24 +29,27 @@
 </template>
 
 <script>
-import { searchUser, blockMOL } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-    vuex: {
-        getters: {
-            foundUsers  : state => state.cardBlock.foundUsers,
-            currentEvent: state => state.global.currentEvent
-        },
-        actions: {
-            searchUser,
-            blockMOL
-        }
-    },
-
     data () {
         return {
             username: ''
         };
+    },
+
+    methods: {
+        ...mapActions([
+            'searchUser',
+            'blockMOL'
+        ])
+    },
+
+    computed: {
+        ...mapState({
+            foundUsers  : state => state.cardBlock.foundUsers,
+            currentEvent: state => state.global.currentEvent
+        })
     }
 }
 </script>

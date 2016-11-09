@@ -5,10 +5,10 @@
             <transition name="fade">
                 <div v-if="selectedCategory.name">
                     <h5>Modifier la catégorie {{ selectedCategory.name }}:</h5>
-                    <form v-on:submit.prevent>
+                    <form @submit.preven="updateCategory(modCategory)">
                         <mdl-textfield floating-label="Nom" v-model="modCategory.name"></mdl-textfield>
                         <br />
-                        <mdl-button colored raised @click="updateCategory(selectedCategory, modCategory)">Modifier</mdl-button>
+                        <mdl-button colored raised>Modifier</mdl-button>
                     </form>
                     <br />
 
@@ -19,7 +19,7 @@
                     </div>
 
                     <h5>Rechercher un article:</h5>
-                    <form v-on:submit.prevent>
+                    <form @submit.prevent>
                         <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>
                     </form>
 
@@ -79,23 +79,10 @@
 
 <script>
 import { get, post, del } from '../lib/fetch';
-import { createCategory, updateCategory, removeCategory } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 import fuzzy from 'fuzzy';
 
 export default {
-    vuex: {
-        getters: {
-            categories  : state => state.app.categories,
-            articles    : state => state.app.articles,
-            currentEvent: state => state.global.currentEvent
-        },
-        actions: {
-            createCategory,
-            updateCategory,
-            removeCategory
-        }
-    },
-
     data () {
         return {
             name            : '',
@@ -107,6 +94,11 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'createCategory',
+            'updateCategory',
+            'removeCategory'
+        ]),
         goBack() {
             this.articleName      = '';
             this.selectedCategory = {};
@@ -168,6 +160,11 @@ export default {
     },
 
    computed: {
+        ...mapState({
+            categories  : state => state.app.categories,
+            articles    : state => state.app.articles,
+            currentEvent: state => state.global.currentEvent
+        }),
         filteredArticles() {
             let val           = this.articleName;
             let articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });

@@ -6,7 +6,7 @@
                 <transition name="fade">
                     <div v-if="selectedArticle.name">
                         <h5>Modifier l'article {{ selectedArticle.name }}</h5>
-                        <form @submit.prevent="updateArticle(selectedArticle, modArticle)">
+                        <form @submit.prevent="updateArticle(modArticle)">
                             <mdl-textfield floating-label="Nom" v-model="modArticle.name"></mdl-textfield>
                             <mdl-textfield floating-label="Stock" v-model="modArticle.stock"></mdl-textfield><br />
                             <mdl-textfield floating-label="Alcool" v-model="modArticle.alchohol"></mdl-textfield>
@@ -87,25 +87,10 @@
 <script>
 import price from '../lib/price';
 import { get, post, put, del } from '../lib/fetch';
-import { createArticle, updateArticle, removeArticle } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 import fuzzy from 'fuzzy';
 
 export default {
-    vuex: {
-        getters: {
-            articles    : state => state.app.articles,
-            points      : state => state.app.points,
-            fundations  : state => state.app.fundations,
-            periods     : state => state.app.periods,
-            groups      : state => state.app.groups,
-            currentEvent: state => state.global.currentEvent
-        },
-        actions: {
-            createArticle,
-            updateArticle,
-            removeArticle
-        }
-    },
     data () {
         return {
             nameAdd          : '',
@@ -121,7 +106,13 @@ export default {
             selectedPoint    : null
         };
     },
+
     methods: {
+        ...mapActions([
+            'createArticle',
+            'updateArticle',
+            'removeArticle'
+        ]),
         editArticle(article) {
             this.selectedArticle   = article;
             this.modArticle        = JSON.parse(JSON.stringify(article));
@@ -220,7 +211,16 @@ export default {
                 });
         }
     },
+
     computed: {
+        ...mapState({
+            articles    : state => state.app.articles,
+            points      : state => state.app.points,
+            fundations  : state => state.app.fundations,
+            periods     : state => state.app.periods,
+            groups      : state => state.app.groups,
+            currentEvent: state => state.global.currentEvent
+        }),
         filteredArticles() {
             let val           = this.name;
             let articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });

@@ -43,66 +43,66 @@ const mutations = {
     ADDEVENTS(state_, events) {
         state_.events.push(...events);
     },
-    UPDATEPERIOD(state_, period, data) {
+    UPDATEPERIOD(state_, period) {
         state_.periods.forEach((p, i) => {
             if (p.id === period.id) {
-                state_.periods[i] = Object.assign(state_.periods[i], data);
+                state_.periods[i] = Object.assign(state_.periods[i], period);
             }
         });
     },
-    UPDATEPOINT(state_, point, data) {
+    UPDATEPOINT(state_, point) {
         state_.points.forEach((p, i) => {
             if (p.id === point.id) {
-                state_.points[i] = Object.assign(state_.points[i], data);
+                state_.points[i] = Object.assign(state_.points[i], point);
             }
         });
     },
-    UPDATEDEVICE(state_, device, data) {
+    UPDATEDEVICE(state_, device) {
         state_.devices.forEach((d, i) => {
             if (d.id === device.id) {
-                state_.devices[i] = Object.assign(state_.devices[i], data);
+                state_.devices[i] = Object.assign(state_.devices[i], device);
             }
         });
     },
-    UPDATEARTICLE(state_, article, data) {
+    UPDATEARTICLE(state_, article) {
         state_.articles.forEach((a, i) => {
             if (a.id === article.id) {
-                state_.articles[i] = Object.assign(state_.articles[i], data);
+                state_.articles[i] = Object.assign(state_.articles[i], article);
             }
         });
     },
-    UPDATEGROUP(state_, group, data) {
+    UPDATEGROUP(state_, group) {
         state_.groups.forEach((g, i) => {
             if (g.id === group.id) {
-                state_.groups[i] = Object.assign(state_.groups[i], data);
+                state_.groups[i] = Object.assign(state_.groups[i], group);
             }
         });
     },
-    UPDATECATEGORY(state_, category, data) {
+    UPDATECATEGORY(state_, category) {
         state_.categories.forEach((c, i) => {
             if (c.id === category.id) {
-                state_.categories[i] = Object.assign(state_.categories[i], data);
+                state_.categories[i] = Object.assign(state_.categories[i], category);
             }
         });
     },
-    UPDATEPROMOTION(state_, promotion, data) {
+    UPDATEPROMOTION(state_, promotion) {
         state_.promotions.forEach((p, i) => {
             if (p.id === promotion.id) {
-                state_.promotions[i] = Object.assign(state_.promotions[i], data);
+                state_.promotions[i] = Object.assign(state_.promotions[i], promotion);
             }
         });
     },
-    UPDATESET(state_, set, data) {
+    UPDATESET(state_, set) {
         state_.sets.forEach((s, i) => {
             if (s.id === set.id) {
-                state_.sets[i] = Object.assign(state_.sets[i], data);
+                state_.sets[i] = Object.assign(state_.sets[i], set);
             }
         });
     },
-    UPDATEEVENT(state_, event, data) {
+    UPDATEEVENT(state_, event) {
         state_.events.forEach((e, i) => {
             if (e.id === event.id) {
-                state_.events[i] = Object.assign(state_.events[i], data);
+                state_.events[i] = Object.assign(state_.events[i], event);
             }
         });
     },

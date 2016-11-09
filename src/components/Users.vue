@@ -154,21 +154,9 @@
 import Modal from './Modal.vue';
 import { get, post, put } from '../lib/fetch';
 import bcrypt from 'bcryptjs';
-import { updateEditModal } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-    vuex: {
-        getters: {
-            points       : state => state.app.points,
-            periods      : state => state.app.periods,
-            currentEvent : state => state.global.currentEvent,
-            openEditModal: state => state.global.openEditModal
-        },
-        actions: {
-            updateEditModal
-        }
-    },
-
     components: {
         Modal
     },
@@ -196,6 +184,9 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'updateEditModal'
+        ]),
         goBack() {
             this.selectedUser = {};
             this.modUser      = {};
@@ -493,6 +484,12 @@ export default {
     },
 
    computed: {
+        ...mapState({
+            points       : state => state.app.points,
+            periods      : state => state.app.periods,
+            currentEvent : state => state.global.currentEvent,
+            openEditModal: state => state.global.openEditModal
+        }),
         inputUser() {
             const firstname  = this.firstname;
             const lastname   = this.lastname;

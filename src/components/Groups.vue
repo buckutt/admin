@@ -6,7 +6,7 @@
                 <transition name="fade">
                     <div v-if="selectedGroup.name">
                         <h5>Modifier le groupe {{ selectedGroup.name }}:</h5>
-                        <form @submit.prevent="updateGroup(selectedGroup, modGroup)">
+                        <form @submit.prevent="updateGroup(modGroup)">
                             <mdl-textfield floating-label="Nom" v-model="modGroup.name"></mdl-textfield><br />
                             <mdl-button colored raised>Modifier</mdl-button>
                         </form>
@@ -89,23 +89,9 @@
 
 <script>
 import { get, post, put } from '../lib/fetch';
-import { createGroup, updateGroup, removeGroup } from '../store/actions';
-
+import { mapState, mapActions } from 'vuex';
 
 export default {
-    vuex: {
-        getters: {
-            groups      : state => state.app.groups,
-            periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent
-        },
-        actions: {
-            createGroup,
-            updateGroup,
-            removeGroup
-        }
-    },
-
     data () {
         return {
             name          : '',
@@ -119,6 +105,11 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'createGroup',
+            'updateGroup',
+            'removeGroup'
+        ]),
         goBack() {
             this.selectedGroup = {};
             this.modGroup      = {};
@@ -231,6 +222,11 @@ export default {
     },
 
    computed: {
+        ...mapState({
+            groups      : state => state.app.groups,
+            periods     : state => state.app.periods,
+            currentEvent: state => state.global.currentEvent
+        }),
         inputGroupPeriod() {
             const group         = this.selectedGroup;
             const period        = this.selectedPeriod;

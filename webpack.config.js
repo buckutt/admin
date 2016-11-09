@@ -27,8 +27,8 @@ module.exports = {
                 loader : 'babel',
                 exclude: /node_modules/,
                 query  : {
-                    presets: ['es2015'],
-                    plugins: ['transform-runtime']
+                    presets: ['es2015', 'stage-2'],
+                    plugins: ['transform-runtime', 'add-module-exports']
                 }
             },
             {
@@ -55,8 +55,8 @@ module.exports = {
     },
 
     babel: {
-        presets: ['es2015'],
-        plugins: ['transform-runtime']
+        presets: ['es2015', 'stage-2'],
+        plugins: ['transform-runtime', 'add-module-exports']
     },
 
     plugins: [

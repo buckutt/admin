@@ -31,20 +31,11 @@
 </template>
 
 <script>
-import { updateLogged }       from '../store/actions';
-import { post, updateBearer } from '../lib/fetch';
-import { load }               from '../lib/load';
+import { mapState, mapActions } from 'vuex';
+import { post, updateBearer }   from '../lib/fetch';
+import { load }                 from '../lib/load';
 
 export default {
-    vuex: {
-        getters: {
-            logged: state => state.global.logged
-        },
-        actions: {
-            updateLogged
-        }
-    },
-
     data () {
         const isToken = this.$options.methods.getIsToken();
         const user    = this.$options.methods.getUser();
@@ -57,6 +48,9 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'updateLogged'
+        ]),
         login(mail, password) {
             post('services/login', { meanOfLogin: 'etuMail', data: mail, password })
                 .then(result => {
@@ -109,6 +103,12 @@ export default {
 
             return admin;
         }
+    },
+
+    computed: {
+        ...mapState({
+            logged: state => state.global.logged
+        })
     }
 }
 </script>

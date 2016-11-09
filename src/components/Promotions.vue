@@ -6,7 +6,7 @@
                 <transition name="fade">
                     <div v-if="selectedPromotion.name">
                         <h5>Modifier la promotion {{ selectedPromotion.name }}:</h5>
-                        <form @submit.prevent="updatePromotion(selectedPromotion, modPromotion)">
+                        <form @submit.prevent="updatePromotion(modPromotion)">
                             <mdl-textfield floating-label="Nom" v-model="modPromotion.name"></mdl-textfield><br />
                             <mdl-button colored raised>Modifier</mdl-button>
                         </form>
@@ -150,30 +150,10 @@
 <script>
 import price from '../lib/price';
 import { get, post, put, del } from '../lib/fetch';
-import { createPromotion, updatePromotion, removePromotion, createSetWithArticles, removeSet } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 import fuzzy from 'fuzzy';
 
 export default {
-    vuex: {
-        getters: {
-            promotions  : state => state.app.promotions,
-            points      : state => state.app.points,
-            fundations  : state => state.app.fundations,
-            periods     : state => state.app.periods,
-            groups      : state => state.app.groups,
-            articles    : state => state.app.articles,
-            sets        : state => state.app.sets,
-            currentEvent: state => state.global.currentEvent
-        },
-        actions: {
-            createPromotion,
-            updatePromotion,
-            removePromotion,
-            createSetWithArticles,
-            removeSet
-        }
-    },
-
     data () {
         return {
             name             : '',
@@ -193,6 +173,13 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'createPromotion',
+            'updatePromotion',
+            'removePromotion',
+            'createSetWithArticles',
+            'removeSet'
+        ]),
         goBack() {
             this.selectedPromotion = {};
             this.modPromotion      = {};
@@ -364,8 +351,12 @@ export default {
             if(step.type == 'article') {
                 if(step.articles[0].id != this.chosenArticle.id) {
                     this.createSetWithArticles({
-                        name: this.detailsPromotion.name
-                    }, [step.articles[0], this.chosenArticle], this.selectedPromotion);
+                        set: {
+                            name: this.detailsPromotion.name
+                        },
+                        articles : [step.articles[0], this.chosenArticle],
+                        promotion: this.selectedPromotion
+                    });
 
                     this.detailsPromotion.sets.push({
                         name    : this.detailsPromotion.name,
@@ -427,6 +418,16 @@ export default {
     },
 
     computed: {
+        ...mapState({
+            promotions  : state => state.app.promotions,
+            points      : state => state.app.points,
+            fundations  : state => state.app.fundations,
+            periods     : state => state.app.periods,
+            groups      : state => state.app.groups,
+            articles    : state => state.app.articles,
+            sets        : state => state.app.sets,
+            currentEvent: state => state.global.currentEvent
+        }),
         formatPromo() {
             let promotion = [];
 

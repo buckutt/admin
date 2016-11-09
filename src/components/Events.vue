@@ -5,7 +5,7 @@
             <transition name="fade">
                 <div v-if="selectedEvent.name">
                     <h5>Modifier l'évenement {{ selectedEvent.name }}:</h5>
-                    <form @submit.prevent="updateEvent(selectedEvent, modEvent)">
+                    <form @submit.prevent="updateEvent(modEvent)">
                         <mdl-textfield floating-label="Nom" v-model="modEvent.name"></mdl-textfield><br />
                         <mdl-textfield floating-label="Rechargement minimal (en centimes)" v-model="modEvent.config.minReload"></mdl-textfield><br />
                         <mdl-textfield floating-label="Solde maximal (en centimes)" v-model="modEvent.config.maxPerAccount"></mdl-textfield><br />
@@ -54,22 +54,9 @@
 <script>
 import price from '../lib/price';
 import { get, post, del } from '../lib/fetch';
-import { createEvent, updateEvent, removeEvent } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-    vuex: {
-        getters: {
-            events : state => state.app.events,
-            periods: state => state.app.periods,
-            logged : state => state.global.logged
-        },
-        actions: {
-            createEvent,
-            updateEvent,
-            removeEvent
-        }
-    },
-
     data () {
         return {
             name          : '',
@@ -82,6 +69,11 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'createEvent',
+            'updateEvent',
+            'removeEvent'
+        ]),
         goBack() {
             this.selectedEvent = {};
             this.modEvent      = {};
@@ -107,6 +99,11 @@ export default {
     },
 
     computed: {
+        ...mapState({
+            events : state => state.app.events,
+            periods: state => state.app.periods,
+            logged : state => state.global.logged
+        }),
         inputEvent() {
             const name          = this.name;
             const minReload     = this.minReload;
@@ -114,6 +111,14 @@ export default {
             this.name           = '';
             this.minReload      = 0;
             this.maxPerAccount  = 10000;
+
+            console.log({
+                name: name,
+                config: {
+                    minReload    : minReload,
+                    maxPerAccount: maxPerAccount
+                }
+            });
 
             return {
                 name: name,

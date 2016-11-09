@@ -13,18 +13,21 @@ import {
 } from '../store/actions';
 
 export function load(store) {
-    listenChanges(store, sessionStorage.getItem('token'), [
-        'points',
-        'devices',
-        'periods',
-        'articles',
-        'fundations',
-        'groups',
-        'categories',
-        'promotions',
-        'sets',
-        'events'
-    ]);
+    listenChanges(store, {
+        token : sessionStorage.getItem('token'),
+        models: [
+            'points',
+            'devices',
+            'periods',
+            'articles',
+            'fundations',
+            'groups',
+            'categories',
+            'promotions',
+            'sets',
+            'events'
+        ]
+    });
 
     fetchPoints(store);
     fetchDevices(store);

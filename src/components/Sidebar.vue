@@ -108,21 +108,10 @@
 </template>
 
 <script>
-import { updateCurrentEvent } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 import { get } from '../lib/fetch';
 
 export default {
-    vuex: {
-        getters: {
-            events      : state => state.app.events,
-            currentEvent: state => state.global.currentEvent,
-            logged      : state => state.global.logged
-        },
-        actions: {
-            updateCurrentEvent
-        }
-    },
-
     data () {
         return {
             selectedEvent: null
@@ -130,6 +119,9 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'updateCurrentEvent'
+        ]),
         changeEvent() {
             if(this.selectedEvent) {
                 if(this.currentEvent) {
@@ -157,6 +149,11 @@ export default {
     },
 
     computed: {
+        ...mapState({
+            events      : state => state.app.events,
+            currentEvent: state => state.global.currentEvent,
+            logged      : state => state.global.logged
+        }),
         eventOptions() {
             return this.events.map(event => {
                 return { name: event.name, value: event };

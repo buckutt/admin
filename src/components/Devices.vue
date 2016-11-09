@@ -5,7 +5,7 @@
             <transition name="fade">
                 <div v-if="selectedDevice.name">
                     <h5>Modifier {{ selectedDevice.name }}</h5>
-                    <form @submit.prevent="updateDevice(selectedDevice, modDevice)">
+                    <form @submit.prevent="updateDevice(modDevice)">
                         <mdl-textfield floating-label="Nom" v-model="modDevice.name"></mdl-textfield>
                         <mdl-textfield floating-label="Intervalle de rafraichissement" v-model="modDevice.refreshInterval"></mdl-textfield>
                         <mdl-switch v-model="modDevice.realtime" class="mdl-js-ripple-effect">Temps réel</mdl-switch><br />
@@ -97,22 +97,9 @@
 
 <script>
 import { get, post, put } from '../lib/fetch';
-import { updateDevice, removeDevice } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-    vuex: {
-        getters: {
-            devices     : state => state.app.devices,
-            points      : state => state.app.points,
-            periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent
-        },
-        actions: {
-            updateDevice,
-            removeDevice
-        }
-    },
-
     data () {
         return {
             selectedDevice: {},
@@ -130,6 +117,10 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'updateDevice',
+            'removeDevice'
+        ]),
         goBack() {
             this.selectedDevice = {};
             this.modDevice      = {
@@ -196,6 +187,12 @@ export default {
     },
 
     computed: {
+        ...mapState({
+            devices     : state => state.app.devices,
+            points      : state => state.app.points,
+            periods     : state => state.app.periods,
+            currentEvent: state => state.global.currentEvent
+        }),
         inputPeriodPoint() {
             const point         = this.selectedPoint;
             const period        = this.selectedPeriod;

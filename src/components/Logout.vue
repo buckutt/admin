@@ -5,16 +5,19 @@
 </template>
 
 <script>
-import { updateLogged } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-    vuex: {
-        getters: {
+    methods: {
+        ...mapActions([
+            'updateLogged'
+        ])
+    },
+
+    computed: {
+        ...mapState({
             logged: state => state.global.logged
-        },
-        actions: {
-            updateLogged
-        }
+        })
     },
 
     mounted () {

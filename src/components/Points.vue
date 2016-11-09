@@ -36,7 +36,7 @@
                 <div class="modal__header">
                     <h3>Modifier le point {{ selectedPoint.name }}</h3>
                 </div>
-                <form @submit.prevent="updatePoint(selectedPoint,editPoint)">
+                <form @submit.prevent="updatePoint(editPoint)">
                     <div class="modal__body">
                         <mdl-textfield floating-label="Nom" v-model="modPoint.name"></mdl-textfield>
                     </div>
@@ -53,23 +53,9 @@
 <script>
 import Modal    from './Modal.vue';
 import { post } from '../lib/fetch';
-import { createPoint, updatePoint, removePoint, updateEditModal } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-    vuex: {
-        getters: {
-            points       : state => state.app.points,
-            currentEvent : state => state.global.currentEvent,
-            openEditModal: state => state.global.openEditModal
-        },
-        actions: {
-            createPoint,
-            updatePoint,
-            removePoint,
-            updateEditModal
-        }
-    },
-
     components: {
         Modal
     },
@@ -83,6 +69,12 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'createPoint',
+            'updatePoint',
+            'removePoint',
+            'updateEditModal'
+        ]),
         openModal(point) {
             this.selectedPoint = point;
             this.modPoint      = JSON.parse(JSON.stringify(point));
@@ -95,6 +87,11 @@ export default {
     },
 
    computed: {
+        ...mapState({
+            points       : state => state.app.points,
+            currentEvent : state => state.global.currentEvent,
+            openEditModal: state => state.global.openEditModal
+        }),
         inputPoint() {
             const name = this.name;
             this.name  = '';

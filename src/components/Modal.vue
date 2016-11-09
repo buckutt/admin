@@ -7,22 +7,22 @@
 </template>
 
 <script>
-import { updateEditModal } from '../store/actions';
+import { mapState, mapActions } from 'vuex';
 
 export default {
-    vuex: {
-        getters: {
-            openEditModal: state => state.global.openEditModal
-        },
-        actions: {
-            updateEditModal
-        }
-    },
-
     methods: {
+        ...mapActions([
+            'updateEditModal'
+        ]),
         closeModal() {
             this.updateEditModal(false);
         }
+    },
+
+    computed: {
+        ...mapState({
+            openEditModal: state => state.global.openEditModal
+        })
     }
 }
 </script>

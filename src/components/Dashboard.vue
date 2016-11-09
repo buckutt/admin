@@ -5,13 +5,9 @@
 </template>
 
 <script>
-export default {
-    vuex: {
-        getters: {
-            currentEvent : state => state.global.currentEvent
-        }
-    },
+import { mapState, mapActions } from 'vuex';
 
+export default {
     data () {
         return {
             graph: {
@@ -40,6 +36,12 @@ export default {
                 ]
             }
         };
+    },
+
+    computed: {
+        ...mapState({
+            currentEvent: state => state.global.currentEvent
+        })
     },
 
     mounted () {
