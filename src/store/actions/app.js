@@ -1,3 +1,4 @@
+import { api }            from '../../config.json';
 import { get, post, put } from '../../lib/fetch';
 
 /**
@@ -126,7 +127,7 @@ export function listenChanges({ commit }, payload) {
     const models       = payload.models;
     const modelsString = models.join(',');
 
-    const es = new EventSource(`https://localhost:3000/changes?models=${modelsString}&authorization=Bearer ${token}`, {
+    const es = new EventSource(`${api}/changes?models=${modelsString}&authorization=Bearer ${token}`, {
         withCredentials: true
     });
 

@@ -42,18 +42,6 @@ export default {
         ...mapState({
             currentEvent: state => state.global.currentEvent
         })
-    },
-
-    mounted () {
-        let es = new EventSource("https://localhost:3000/changes?models=purchases", {
-            withCredentials: true,
-        });
-        es.onmessage = function (event) {
-            console.log(event.data);
-        };
-        es.onerror = function (l) {
-            console.log(l);
-        };
     }
 }
 </script>
