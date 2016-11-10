@@ -5,6 +5,10 @@ import { get, post, put } from '../../lib/fetch';
  * App actions
  */
 
+export function clearAppStore({ commit }) {
+    commit('CLEARAPPSTORE');
+}
+
 export function fetchPoints({ commit }) {
     get('points').then(points => {
         commit('ADDPOINTS', points);

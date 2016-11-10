@@ -13,6 +13,11 @@ const state = {
 
 // mutations
 const mutations = {
+    CLEARAPPSTORE(state_) {
+        Object.keys(state_).forEach(key => {
+            state_[key] = [];
+        });
+    },
     ADDPOINTS(state_, points) {
         state_.points.push(...points);
     },

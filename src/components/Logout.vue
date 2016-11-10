@@ -10,7 +10,8 @@ import { mapState, mapActions } from 'vuex';
 export default {
     methods: {
         ...mapActions([
-            'updateLogged'
+            'updateLogged',
+            'clearAppStore'
         ])
     },
 
@@ -23,6 +24,7 @@ export default {
     mounted () {
         sessionStorage.clear();
         this.updateLogged(false);
+        this.clearAppStore();
 
         this.$router.push('/');
     }
