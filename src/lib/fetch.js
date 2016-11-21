@@ -1,4 +1,4 @@
-import { api } from '../config.json';
+import { api } from '../config';
 
 const authData = {
     headers: {

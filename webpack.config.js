@@ -65,6 +65,11 @@ module.exports = {
 
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.optimize.DedupePlugin()
+        new webpack.optimize.DedupePlugin(),
+        new webpack.DefinePlugin({
+            API: JSON.stringify((process.env.API || '').trim())
+        })
     ]
 };
+
+console.log(module.exports.plugins);
