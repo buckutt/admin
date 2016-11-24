@@ -69,7 +69,7 @@
                                         <td class="mdl-data-table__cell--non-numeric">{{ right.period.name }}</td>
                                         <td class="mdl-data-table__cell--non-numeric">
                                             <mdl-button @click.native="openModal(right)">Modifier</mdl-button>
-                                            <mdl-button @click.native="deleteRight(right)">Supprimer</mdl-button>
+                                            <mdl-button @click.native="$root.confirm() && deleteRight(right)">Supprimer</mdl-button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -117,7 +117,7 @@
                                         <td class="mdl-data-table__cell--non-numeric">{{ user.mail }}</td>
                                         <td class="mdl-data-table__cell--non-numeric">
                                             <mdl-button @click.native="editUser(user)">Modifier</mdl-button>
-                                            <mdl-button @click.native="deleteUser(user)">Supprimer</mdl-button>
+                                            <mdl-button @click.native="$root.confirm() && deleteUser(user)">Supprimer</mdl-button>
                                         </td>
                                     </tr>
                                 </tbody>

@@ -106,7 +106,12 @@ const App = Vue.extend({
     router,
     store,
     components: { Sidebar },
-    template  : '<div><Sidebar></Sidebar><router-view></router-view></div>'
+    template  : '<div><Sidebar></Sidebar><router-view></router-view></div>',
+    methods   : {
+        confirm() {
+            return window.confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');
+        }
+    }
 });
 
 new App().$mount('#app');

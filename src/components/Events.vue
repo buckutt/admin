@@ -40,7 +40,7 @@
                                 <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxPerAccount | price(true) }}</td>
                                 <td class="mdl-data-table__cell--non-numeric">
                                     <mdl-button @click.native="editEvent(event)">Modifier</mdl-button>
-                                    <mdl-button @click.native="removeEvent(event)">Supprimer</mdl-button>
+                                    <mdl-button @click.native="$root.confirm() && removeEvent(event)">Supprimer</mdl-button>
                                 </td>
                             </tr>
                         </tbody>
@@ -95,6 +95,9 @@ export default {
                     }
                     this.detailsEvent = result;
                 });
+        },
+        confirm(message) {
+            window.confirm(message);
         }
     },
 

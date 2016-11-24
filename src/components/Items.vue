@@ -42,7 +42,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric"><mdl-button @click.native="deletePrice(price)">Supprimer</mdl-button></td>
+                                    <td class="mdl-data-table__cell--non-numeric"><mdl-button @click.native="$root.confirm() && deletePrice(price)">Supprimer</mdl-button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -72,7 +72,7 @@
                             <tbody>
                                 <tr v-for="article in filteredArticles">
                                     <td class="mdl-data-table__cell--non-numeric">{{ article.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric"><mdl-button @click.native="editArticle(article)">Modifier</mdl-button><mdl-button @click.native="removeArticle(article)">Supprimer</mdl-button></td>
+                                    <td class="mdl-data-table__cell--non-numeric"><mdl-button @click.native="editArticle(article)">Modifier</mdl-button><mdl-button @click.native="$root.confirm() && removeArticle(article)">Supprimer</mdl-button></td>
                                 </tr>
                             </tbody>
                         </table>

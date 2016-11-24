@@ -23,7 +23,7 @@
                             <td class="mdl-data-table__cell--non-numeric">{{ point.name }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
                                 <mdl-button @click.native="openModal(point)">Modifier</mdl-button>
-                                <mdl-button @click.native="removePoint(point)">Supprimer</mdl-button>
+                                <mdl-button @click.native="$root.confirm() && removePoint(point)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>

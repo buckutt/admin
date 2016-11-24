@@ -74,7 +74,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
                                         <mdl-button @click.native="editGroup(group)">Modifier</mdl-button>
-                                        <mdl-button @click.native="removeGroup(group)">Supprimer</mdl-button>
+                                        <mdl-button @click.native="$root.confirm() && removeGroup(group)">Supprimer</mdl-button>
                                     </td>
                                 </tr>
                             </tbody>

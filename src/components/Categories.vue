@@ -66,7 +66,7 @@
                                 <td class="mdl-data-table__cell--non-numeric">{{ category.name }}</td>
                                 <td class="mdl-data-table__cell--non-numeric">
                                     <mdl-button @click.native="editCategory(category)">Modifier</mdl-button>
-                                    <mdl-button @click.native="removeCategory(category)">Supprimer</mdl-button>
+                                    <mdl-button @click.native="$root.confirm() && removeCategory(category)">Supprimer</mdl-button>
                                 </td>
                             </tr>
                         </tbody>

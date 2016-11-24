@@ -30,7 +30,7 @@
                             <td class="mdl-data-table__cell--non-numeric">{{ period.end | date }}</td>
                             <td class="mdl-data-table__cell--non-numeric">
                                 <mdl-button @click.native="openModal(period)">Modifier</mdl-button>
-                                <mdl-button @click.native="removePeriod(period)">Supprimer</mdl-button>
+                                <mdl-button @click.native="$root.confirm() && removePeriod(period)">Supprimer</mdl-button>
                             </td>
                         </tr>
                     </tbody>

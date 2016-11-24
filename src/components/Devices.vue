@@ -40,7 +40,7 @@
                                     <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ periodPoint.period.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button @click.native="removePeriodPoint(periodPoint)">Supprimer</mdl-button>
+                                        <mdl-button @click.native="$root.confirm() && removePeriodPoint(periodPoint)">Supprimer</mdl-button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -85,7 +85,7 @@
                                     </td>
                                     <td class="mdl-data-table__cell--non-numeric">
                                         <mdl-button @click.native="editDevice(device)">Modifier</mdl-button>
-                                        <mdl-button @click.native="removeDevice(device)">Supprimer</mdl-button>
+                                        <mdl-button @click.native="$root.confirm() && removeDevice(device)">Supprimer</mdl-button>
                                     </td>
                                 </tr>
                             </tbody>
