@@ -47,7 +47,7 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['', '.js'],
+        extensions: ['', '.js', '.json'],
         alias     : {
             vue: 'vue/dist/vue.js'
         }
@@ -67,9 +67,7 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.optimize.DedupePlugin(),
         new webpack.DefinePlugin({
-            API: JSON.stringify((process.env.API || '').trim())
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
         })
     ]
 };
-
-console.log(module.exports.plugins);
