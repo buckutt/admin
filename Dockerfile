@@ -16,4 +16,4 @@ RUN npm install
 
 COPY . /usr/src/buckless-admin/
 
-RUN npm build
+RUN npm run build
