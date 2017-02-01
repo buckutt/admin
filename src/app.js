@@ -102,6 +102,14 @@ const routes = [
 
 const router = new VueRouter({ routes });
 
+router.beforeEach((route, from, next) => {
+    if (route.path !== '/' && !router.app.$store.state.global.logged) {
+        next('/');
+    } else {
+        next();
+    }
+});
+
 const App = Vue.extend({
     router,
     store,

@@ -1,5 +1,5 @@
 <template>
-    <div class="events" v-if="logged">
+    <div class="events">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Évenements</h3>
             <transition name="fade">
@@ -104,8 +104,7 @@ export default {
     computed: {
         ...mapState({
             events : state => state.app.events,
-            periods: state => state.app.periods,
-            logged : state => state.global.logged
+            periods: state => state.app.periods
         }),
         inputEvent() {
             const name          = this.name;

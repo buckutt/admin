@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="treasury" v-if="logged">
+        <div class="treasury">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Trésorerie</h3>
                 <h4>Recherche</h4>
@@ -74,9 +74,7 @@ export default {
 
     computed: {
         ...mapState({
-            points      : state => state.app.points,
-            currentEvent: state => state.global.currentEvent,
-            logged      : state => state.global.logged
+            points      : state => state.app.points
         }),
         totalReload() {
             let sum = 0;
