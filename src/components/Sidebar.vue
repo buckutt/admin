@@ -54,6 +54,12 @@
                         </router-link>
                     </li>
                     <li>
+                        <router-link to="/fundations" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">local_atm</i>
+                            Fondations
+                        </router-link>
+                    </li>
+                    <li>
                         <router-link to="/points" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                             <i class="material-icons">location_on</i>
                             Points

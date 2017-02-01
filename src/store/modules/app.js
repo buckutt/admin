@@ -76,6 +76,13 @@ const mutations = {
             }
         });
     },
+    UPDATEFUNDATION(state_, fundation) {
+        state_.fundations.forEach((f, i) => {
+            if (f.id === fundation.id) {
+                state_.fundations[i] = Object.assign(state_.fundations[i], fundation);
+            }
+        });
+    },
     UPDATEGROUP(state_, group) {
         state_.groups.forEach((g, i) => {
             if (g.id === group.id) {
@@ -158,6 +165,18 @@ const mutations = {
         }
 
         state_.articles.splice(i, 1);
+    },
+    DELETEFUNDATION(state_, fundation) {
+        let i = 0;
+        for (const f of state_.fundations) {
+            if (f.id === fundation.id) {
+                break;
+            }
+
+            ++i;
+        }
+
+        state_.fundations.splice(i, 1);
     },
     DELETEGROUP(state_, group) {
         let i = 0;

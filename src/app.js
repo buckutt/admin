@@ -22,6 +22,7 @@ import Treasury   from './components/Treasury.vue';
 import Purchases  from './components/Purchases.vue';
 import Users      from './components/Users.vue';
 import Periods    from './components/Periods.vue';
+import Fundations from './components/Fundations.vue';
 import Points     from './components/Points.vue';
 import Promotions from './components/Promotions.vue';
 import Groups     from './components/Groups.vue';
@@ -77,6 +78,10 @@ const routes = [
     {
         path     : '/periods',
         component: Periods
+    },
+    {
+        path     : '/fundations',
+        component: Fundations
     },
     {
         path     : '/points',

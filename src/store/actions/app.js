@@ -198,6 +198,22 @@ export function removeArticle({ commit }, article) {
 }
 
 /**
+ * Fundations actions
+ */
+
+export function createFundation({ commit }, fundation) {
+    post('fundations', fundation);
+}
+
+export function updateFundation({ commit }, fundation) {
+    put(`fundations/${fundation.id}`, fundation);
+}
+
+export function removeFundation({ commit }, fundation) {
+    put(`fundations/${fundation.id}`, { isRemoved: true });
+}
+
+/**
  * Points actions
  */
 
