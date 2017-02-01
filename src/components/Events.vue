@@ -23,7 +23,7 @@
                         <mdl-textfield floating-label="Solde maximal (en centimes)" v-model="maxPerAccount"></mdl-textfield><br />
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
-                    <br>
+                    <br />
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="events.length > 0">
                         <thead>
                             <tr>

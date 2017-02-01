@@ -217,6 +217,10 @@ export function removePoint({ commit }, point) {
  * Devices actions
  */
 
+export function createDevice({ commit }, device) {
+    post('devices', device);
+}
+
 export function updateDevice({ commit }, device) {
     put(`devices/${device.id}`, device);
 }

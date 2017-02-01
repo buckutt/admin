@@ -85,3 +85,24 @@ export function del (url, opts_) {
     return fetch(`${api}/${url}`, opts)
         .then(res => res.json());
 }
+
+/**
+ * Download a ressource from the API
+ * @param  {String} url   The base URL
+ * @param  {Object} opts_ Options to pass to fetch (headers are already there)
+ * @return {Promise} The result as blob
+ */
+export function download (url, opts_) {
+    const opts = Object.assign({}, authData, {
+        method: 'GET'
+    }, opts_);
+
+    return fetch(`${api}/${url}`, opts)
+        .then(res => {
+            if (res.status !== 200) {
+                return Promise.reject(new Error('Download failed'));
+            }
+
+            return res.blob();
+        });
+}

@@ -46,11 +46,23 @@
                             </tbody>
                         </table>
                         <br />
+                        <h5>Génération du certificat SSL</h5>
+                        <br />
+                        <form v-on:submit.prevent="generateCert(selectedDevice, password)">
+                            <mdl-textfield type="password" floating-label="Mot de passe souhaité" v-model="password"></mdl-textfield>
+                            <mdl-button colored raised>Générer</mdl-button>
+                        </form>
+                        <br />
                         <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
                     </div>
                 </transition>
                 <transition name="fade">
                     <div v-if="!selectedDevice.name">
+                        <form v-on:submit.prevent="createDevice(inputDevice)">
+                            <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield><br />
+                            <mdl-button colored raised>Créer</mdl-button>
+                        </form>
+                        <br />
                         <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                             <thead>
                                 <tr>
@@ -99,12 +111,15 @@
 </template>
 
 <script>
-import { get, post, put } from '../lib/fetch';
+import { get, post, put, download } from '../lib/fetch';
 import { mapState, mapActions } from 'vuex';
+import { saveAs } from 'file-saver';
 
 export default {
     data () {
         return {
+            name          : '',
+            password      : '',
             selectedDevice: {},
             modDevice     : {
                 realtime        : false,
@@ -121,6 +136,7 @@ export default {
 
     methods: {
         ...mapActions([
+            'createDevice',
             'updateDevice',
             'removeDevice'
         ]),
@@ -159,7 +175,6 @@ export default {
                 });
         },
         createPeriodPoint(device, periodPoint) {
-            console.log(this.detailsDevice.periodPoints);
             if (periodPoint.Point_id) {
                 const filteredEvents = this.detailsDevice.periodPoints
                     .filter(pP => {
@@ -213,6 +228,18 @@ export default {
                     }
                     this.detailsDevice.periodPoints.splice(i, 1);
                 });
+        },
+        generateCert(device, password) {
+            download(`services/certificate?deviceId=${device.id}&password=${password}`)
+                .then(result => {
+                    saveAs(result, `${device.name}.p12`);
+                })
+                .catch(e => {
+                    this.$root.$emit('snackfilter', {
+                        message: 'Le téléchargement du certificat a échoué',
+                        timeout: 2000
+                    });
+                });
         }
     },
 
@@ -223,6 +250,21 @@ export default {
             periods     : state => state.app.periods,
             currentEvent: state => state.global.currentEvent
         }),
+        inputDevice() {
+            const name          = this.name;
+            this.name           = '';
+
+            return {
+                name,
+                fingerprint     : '',
+                realtime        : false,
+                refreshInterval : 5,
+                doubleValidation: false,
+                alcohol         : false,
+                showCategories  : false,
+                showPicture     : false
+            };
+        },
         inputPeriodPoint() {
             const point         = this.selectedPoint;
             const period        = this.selectedPeriod;
