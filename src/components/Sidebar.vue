@@ -1,6 +1,6 @@
 <template>
     <transition name="slide">
-        <div class="sidebar" v-show="logged">
+        <div class="b-sidebar" v-show="logged">
             <h1>Buckless</h1>
             <ul class="eventSelector">
                 <li>
@@ -180,7 +180,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .sidebar {
+    .b-sidebar {
         background: $sidebarBackground;
         float: left;
         height: 100%;
@@ -242,7 +242,7 @@ export default {
         }
     }
 
-    .sidebar + div {
+    .b-sidebar + div {
         float: left;
         height: 100%;
         width: calc(100% - #{$sidebarWidth});
@@ -253,7 +253,7 @@ export default {
         transition: all .5s ease;
     }
 
-    .slide-enter-active + .container, .slide-leave-active + .container {
+    .slide-enter-active + .b-container, .slide-leave-active + .b-container {
         transition: all .5s ease;
     }
 
@@ -261,7 +261,7 @@ export default {
         margin-left: -200px;
     }
 
-    .slide-enter + .container, .slide-leave-active + .container {
+    .slide-enter + .b-container, .slide-leave-active + .b-container {
         margin-left: 0;
         width: 100%;
     }
