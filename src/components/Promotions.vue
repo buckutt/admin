@@ -120,7 +120,7 @@
                             <mdl-button colored raised>Créer</mdl-button>
                         </form>
 
-                        <br>
+                        <br />
 
                         <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                             <thead>

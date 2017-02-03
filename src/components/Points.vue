@@ -5,7 +5,7 @@
                 <h3>Points</h3>
                 <form @submit.prevent="createPoint(inputPoint)">
                     <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
-                    <br>
+                    <br />
                     <mdl-button colored raised>Créer</mdl-button>
                 </form>
 

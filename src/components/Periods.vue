@@ -5,14 +5,14 @@
                 <h3>Périodes de "{{ currentEvent.name }}"</h3>
                 <form @submit.prevent="createPeriod(inputPeriod)">
                     <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
-                    <br>
+                    <br />
                     <mdl-textfield floating-label="Début" v-model="dateStart" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="dateStart" ref="createdatestart"></mdl-textfield>
                     <mdl-textfield floating-label="Fin" v-model="dateEnd" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateEnd" ref="createdateend"></mdl-textfield>
-                    <br>
+                    <br />
                     <mdl-button colored raised>Créer</mdl-button>
                 </form>
 
-                <br>
+                <br />
 
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                     <thead>

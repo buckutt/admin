@@ -48,11 +48,11 @@
                 <div v-if="!selectedCategory.name">
                     <form @submit.prevent="createCategory(inputCategory)">
                         <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
-                        <br>
+                        <br />
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
 
-                    <br>
+                    <br />
 
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                         <thead>
