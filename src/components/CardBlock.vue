@@ -1,5 +1,5 @@
 <template>
-    <div class="cardblock" v-if="currentEvent">
+    <div class="b-cardblock" v-if="currentEvent">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Blocage de carte</h3>
             <form @submit.prevent="searchUser(username)">
@@ -57,7 +57,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .cardblock {
+    .b-cardblock {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);

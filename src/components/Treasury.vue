@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="treasury">
+        <div class="b-treasury">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Trésorerie</h3>
                 <h4>Recherche</h4>
@@ -197,7 +197,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .treasury {
+    .b-treasury {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);

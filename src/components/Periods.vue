@@ -1,6 +1,6 @@
 <template>
     <div v-if="currentEvent">
-        <div class="periods">
+        <div class="b-periods">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Périodes de "{{ currentEvent.name }}"</h3>
                 <form @submit.prevent="createPeriod(inputPeriod)">
@@ -181,7 +181,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .periods {
+    .b-periods {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);

@@ -1,5 +1,5 @@
 <template>
-    <div class="events">
+    <div class="b-events">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Évenements</h3>
             <transition name="fade">
@@ -137,7 +137,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .events {
+    .b-events {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);

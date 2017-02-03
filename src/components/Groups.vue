@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="groups" v-if="currentEvent">
+        <div class="b-groups" v-if="currentEvent">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Groupes</h3>
                 <transition name="fade">
@@ -28,8 +28,8 @@
                             </thead>
                             <tbody v-for="member in members">
                                 <tr v-for="groupPeriod in member.groupPeriods" v-show="groupPeriod.period.Event_id == currentEvent.id">
-                                    <td class="mdl-data-table__cell--non-numeric name">{{ member.firstname }} {{ member.lastname }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric name">{{ groupPeriod.period.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ member.firstname }} {{ member.lastname }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ groupPeriod.period.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
                                         <mdl-button @click.native="removeFromGroup(groupPeriod)">Enlever</mdl-button>
                                     </td>
@@ -37,7 +37,7 @@
                             </tbody>
                             <tbody v-show="members">
                                 <tr>
-                                    <td class="mdl-data-table__cell--non-numeric name">
+                                    <td class="mdl-data-table__cell--non-numeric b--capitalized">
                                         <mdl-select label="Utilisateur" id="member-select" v-model="selectedMember" :options="memberOptions" class="name"></mdl-select>
                                     </td>
                                     <td class="mdl-data-table__cell--non-numeric">
@@ -272,7 +272,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .groups {
+    .b-groups {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);
@@ -300,10 +300,6 @@ export default {
 
         & + .mdl-snackbar {
             margin-left: $sidebarWidth / 2;
-        }
-
-        .name {
-            text-transform: capitalize;
         }
     }
 </style>

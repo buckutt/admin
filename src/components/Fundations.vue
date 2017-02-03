@@ -1,6 +1,6 @@
 <template>
     <div v-if="currentEvent">
-        <div class="fundations">
+        <div class="b-fundations">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Fondations</h3>
                 <form @submit.prevent="createFundation(inputFundation)">
@@ -112,7 +112,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .fundations {
+    .b-fundations {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="treasury" v-if="currentEvent">
+        <div class="b-purchases" v-if="currentEvent">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3 v-if="currentEvent">Achats de "{{ currentEvent.name }}"</h3>
                 <h4>Recherche</h4>
@@ -212,7 +212,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .treasury {
+    .b-purchases {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);

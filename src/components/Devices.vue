@@ -1,6 +1,6 @@
 <template>
-    <div class="container">
-        <div class="devices" v-if="currentEvent">
+    <div>
+        <div class="b-devices" v-if="currentEvent">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Equipements</h3>
                 <transition name="fade">
@@ -304,7 +304,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .devices {
+    .b-devices {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);

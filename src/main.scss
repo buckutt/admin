@@ -42,6 +42,18 @@ html, body, main {
 .anytime-picker__dates { width: 200px; }
 .anytime-picker__dates > * { box-sizing: border-box; width: 14.28%; display: inline-block; }
 
+.b--capitalized {
+    text-transform: capitalize;
+}
+
+.b--clear {
+    clear:both;
+}
+
+.b--right {
+    text-align: center;
+}
+
 // Transitions
 .fade-enter-active, .fade-leave-active {
     transition: opacity .4s ease;
