@@ -2,11 +2,14 @@
   "name": "buckless-admin",
   "version": "1.0.0",
   "description": "Buckless Administration Tool",
-  "authors": [
+  "author": "Buckless <contact@buckless.com> https://buckless.com",
+  "contributors": [
     "Gabriel Juchault <gabriel.juchault@gmail.com>",
     "Axel Mousset <axel@mousset.me>",
     "Lucas Soulier <lucas.soulier.utt@gmail.com>"
   ],
+  "repository": "https://github.com/buckless/admin.git",
+  "homepage": "https://buckless.com",
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development npm run watch",
