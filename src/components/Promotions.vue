@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="promotions" v-if="currentEvent">
+        <div class="b-promotions" v-if="currentEvent">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Promotions</h3>
                 <transition name="fade">
@@ -44,7 +44,7 @@
                             </tbody>
                         </table>
                         <br />
-                        <div class="promotionContent">
+                        <div class="b-promotions__content">
                             <h5>Contenu de la promotion :</h5>
                             <transition name="fade">
                                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="formatPromo.length > 0">
@@ -66,12 +66,12 @@
                                                 </transition-group>
                                             </td>
                                             <transition name="fade">
-                                                <td class="mdl-data-table__cell--non-numeric right" v-show="displayChoose">
+                                                <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayChoose">
                                                     <mdl-button @click.native="addChosenArticleToStep(index)"><i class="material-icons">add</i></mdl-button>
                                                 </td>
                                             </transition>
                                             <transition name="fade">
-                                                <td class="mdl-data-table__cell--non-numeric right" v-show="displayRemove === index">
+                                                <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayRemove === index">
                                                     <mdl-button @click.native="removeChosenArticleFromStep(index)"><i class="material-icons">remove</i></mdl-button>
                                                 </td>
                                             </transition>
@@ -84,7 +84,7 @@
                                 <p v-if="formatPromo.length == 0">La promotion est vide.</p>
                             </transition>
                         </div>
-                        <div class="articlesManagement">
+                        <div class="b-promotions__articlesManagement">
                             <h5>Rechercher un article:</h5>
                             <form @submit.prevent>
                                 <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>
@@ -108,7 +108,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="clear"></div>
+                        <div class="b--clear"></div>
                         <br />
                         <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
                     </div>
@@ -120,7 +120,7 @@
                             <mdl-button colored raised>Créer</mdl-button>
                         </form>
 
-                        <br>
+                        <br />
 
                         <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                             <thead>
@@ -539,7 +539,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .promotions {
+    .b-promotions {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);
@@ -569,24 +569,16 @@ export default {
             margin-left: $sidebarWidth / 2;
         }
 
-        .articlesManagement {
+        .b-promotions__articlesManagement {
             display:block;
             float:right;
             width:47%;
         }
 
-        .promotionContent {
+        .b-promotions__content {
             display:block;
             width:47%;
             float:left;
-        }
-
-        .clear {
-            clear:both;
-        }
-
-        .right {
-            text-align:right;
         }
     }
 </style>

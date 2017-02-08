@@ -1,6 +1,6 @@
 <template>
-    <div class="container" :class="{ 'container--login': !isToken }">
-        <div class="login" v-if="!isToken">
+    <div class="b-container" :class="{ 'b-container__display': !isToken }">
+        <div class="b-container__login" v-if="!isToken">
             <div class="mdl-card mdl-shadow--2dp">
                 <div class="mdl-card__title">
                     <h2 class="mdl-card__title-text">Connexion</h2>
@@ -18,7 +18,7 @@
         </div>
 
         <transition name="fade">
-            <div class="home" v-if="isToken">
+            <div class="b-container__home" v-if="isToken">
                 <div class="mdl-card mdl-shadow--2dp">
                     <h3>Bonjour {{ user.firstname }} {{ user.lastname }} !</h3>
                     Stats générales de buckless + proposition de sélection d'événement + help ?
@@ -116,8 +116,8 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .container {
-        &.container--login {
+    .b-container {
+        &.b-container__display {
             margin-left: 0 !important;
             width: 100% !important;
         }
@@ -127,7 +127,7 @@ export default {
         }
     }
 
-    .login {
+    .b-container__login {
         > div {
             width: 500px;
             margin: 50px auto;
@@ -138,7 +138,7 @@ export default {
         }
     }
 
-    .home {
+    .b-container__home {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);

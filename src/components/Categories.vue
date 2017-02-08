@@ -1,5 +1,5 @@
 <template>
-    <div class="categories" v-if="currentEvent">
+    <div class="b-categories" v-if="currentEvent">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Catégories</h3>
             <transition name="fade">
@@ -32,7 +32,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="article in filteredArticles">
-                                <td class="mdl-data-table__cell--non-numeric name">{{ article.name }}</td>
+                                <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ article.name }}</td>
                                 <td class="mdl-data-table__cell--non-numeric">
                                     <mdl-button @click.native="addToCategory(article)" v-show="!isInCategory(article)">Ajouter</mdl-button>
                                     <mdl-button @click.native="removeFromCategory(article)" v-show="isInCategory(article)">Enlever</mdl-button>
@@ -48,11 +48,11 @@
                 <div v-if="!selectedCategory.name">
                     <form @submit.prevent="createCategory(inputCategory)">
                         <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
-                        <br>
+                        <br />
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
 
-                    <br>
+                    <br />
 
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                         <thead>
@@ -186,7 +186,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .categories {
+    .b-categories {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);
@@ -210,10 +210,6 @@ export default {
                 width: 100%;
                 white-space: normal;
             }
-        }
-
-        .name {
-            text-transform: capitalize;
         }
     }
 </style>

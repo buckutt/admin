@@ -1,12 +1,12 @@
 <template>
     <div>
         <div v-if="currentEvent">
-            <div class="users">
+            <div class="b-users">
                 <div class="mdl-card mdl-shadow--2dp">
                     <h3>Utilisateurs</h3>
                     <transition name="fade">
                         <div v-if="selectedUser.firstname">
-                            <h5 class="name">Modifier {{ selectedUser.firstname }} {{ selectedUser.lastname }}</h5>
+                            <h5 class="b--capitalized">Modifier {{ selectedUser.firstname }} {{ selectedUser.lastname }}</h5>
                             <form @submit.prevent="updateUser(selectedUser, modUser)">
                                 <mdl-textfield floating-label="Nom" v-model="modUser.lastname"></mdl-textfield>
                                 <mdl-textfield floating-label="Prénom" v-model="modUser.firstname"></mdl-textfield><br />
@@ -63,7 +63,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="right in detailsUser.rights" v-show="right.period.Event_id == currentEvent.id">
-                                        <td class="mdl-data-table__cell--non-numeric name">{{ right.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ right.name }}</td>
                                         <td class="mdl-data-table__cell--non-numeric" v-if="right.point">{{ right.point.name }}</td>
                                         <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
                                         <td class="mdl-data-table__cell--non-numeric">{{ right.period.name }}</td>
@@ -112,7 +112,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="user in users">
-                                        <td class="mdl-data-table__cell--non-numeric name">{{ user.firstname }} {{ user.lastname }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ user.firstname }} {{ user.lastname }}</td>
                                         <td class="mdl-data-table__cell--non-numeric">{{ user.nickname }}</td>
                                         <td class="mdl-data-table__cell--non-numeric">{{ user.mail }}</td>
                                         <td class="mdl-data-table__cell--non-numeric">
@@ -593,7 +593,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .users {
+    .b-users {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);
@@ -621,10 +621,6 @@ export default {
 
         & + .mdl-snackbar {
             margin-left: $sidebarWidth / 2;
-        }
-
-        .name {
-            text-transform: capitalize;
         }
     }
 </style>

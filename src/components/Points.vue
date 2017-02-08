@@ -1,11 +1,11 @@
 <template>
     <div v-if="currentEvent">
-        <div class="points">
+        <div class="b-points">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Points</h3>
                 <form @submit.prevent="createPoint(inputPoint)">
                     <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
-                    <br>
+                    <br />
                     <mdl-button colored raised>Créer</mdl-button>
                 </form>
 
@@ -112,7 +112,7 @@ export default {
 <style lang="sass">
     @import '../main.scss';
 
-    .points {
+    .b-points {
         > div {
             min-height: calc(100% - 40px);
             margin: 20px ((100% - $cardSize) / 2);
