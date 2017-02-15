@@ -33,7 +33,7 @@
                         <tbody>
                             <tr v-for="article in filteredArticles">
                                 <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ article.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">
+                                <td class="mdl-data-table__cell--non-numeric b-actions-cell">
                                     <mdl-button @click.native="addToCategory(article)" v-show="!isInCategory(article)">Ajouter</mdl-button>
                                     <mdl-button @click.native="removeFromCategory(article)" v-show="isInCategory(article)">Enlever</mdl-button>
                                 </td>
@@ -54,23 +54,25 @@
 
                     <br />
 
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                        <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Catégorie</th>
-                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="category in categories">
-                                <td class="mdl-data-table__cell--non-numeric">{{ category.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">
-                                    <mdl-button @click.native="editCategory(category)">Modifier</mdl-button>
-                                    <mdl-button @click.native="$root.confirm() && removeCategory(category)">Supprimer</mdl-button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="b-responsive-table">
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Catégorie</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="category in categories">
+                                    <td class="mdl-data-table__cell--non-numeric">{{ category.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-button raised colored @click.native="editCategory(category)">Modifier</mdl-button>
+                                        <mdl-button raised accent @click.native="$root.confirm() && removeCategory(category)">Supprimer</mdl-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </transition>
         </div>
@@ -125,10 +127,10 @@ export default {
         },
         isInCategory(article) {
             let isInCategory = false;
-            if(this.detailsCategory.articles) {
-                if(this.detailsCategory.articles.length > 0) {
+            if (this.detailsCategory.articles) {
+                if (this.detailsCategory.articles.length > 0) {
                     this.detailsCategory.articles.forEach((a, i) => {
-                        if(a.id == article.id) {
+                        if (a.id == article.id) {
                             isInCategory = true;
                         }
                     });

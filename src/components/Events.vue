@@ -24,27 +24,29 @@
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
                     <br />
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="events.length > 0">
-                        <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Évenement</th>
-                                <th class="mdl-data-table__cell--non-numeric">Rechargement minimal</th>
-                                <th class="mdl-data-table__cell--non-numeric">Solde maximal</th>
-                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="event in events">
-                                <td class="mdl-data-table__cell--non-numeric">{{ event.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">{{ event.config.minReload | price(true) }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxPerAccount | price(true) }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">
-                                    <mdl-button @click.native="editEvent(event)">Modifier</mdl-button>
-                                    <mdl-button @click.native="$root.confirm() && removeEvent(event)">Supprimer</mdl-button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="b-responsive-table">
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="events.length > 0">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Évenement</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Rechargement minimal</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Solde maximal</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="event in events">
+                                    <td class="mdl-data-table__cell--non-numeric">{{ event.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ event.config.minReload | price(true) }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxPerAccount | price(true) }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                        <mdl-button raised colored @click.native="editEvent(event)">Modifier</mdl-button>
+                                        <mdl-button raised accent @click.native="$root.confirm() && removeEvent(event)">Supprimer</mdl-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </transition>
         </div>
@@ -88,7 +90,7 @@ export default {
 
             get(`events/${event.id}?embed=${embedEvents}`)
                 .then(result => {
-                    if(result.periods) {
+                    if (result.periods) {
                         result.periods = result.periods.filter(period => {
                             return !period.isRemoved;
                         });

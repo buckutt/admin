@@ -42,6 +42,14 @@ html, body, main {
 .anytime-picker__dates { width: 200px; }
 .anytime-picker__dates > * { box-sizing: border-box; width: 14.28%; display: inline-block; }
 
+.b-responsive-table {
+    overflow-x: scroll;
+}
+
+.b-actions-cell {
+    min-width: 250px;
+}
+
 .b--capitalized {
     text-transform: capitalize;
 }

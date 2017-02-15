@@ -62,23 +62,25 @@
 
                         <br />
 
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Groupe</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="group in groups">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button @click.native="editGroup(group)">Modifier</mdl-button>
-                                        <mdl-button @click.native="$root.confirm() && removeGroup(group)">Supprimer</mdl-button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="b-responsive-table">
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Groupe</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="group in groups">
+                                        <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                            <mdl-button raised colored @click.native="editGroup(group)">Modifier</mdl-button>
+                                            <mdl-button raised accent @click.native="$root.confirm() && removeGroup(group)">Supprimer</mdl-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </transition>
             </div>
@@ -120,7 +122,7 @@ export default {
             this.modGroup       = JSON.parse(JSON.stringify(group));
         },
         searchMember(group) {
-            if(this.memberName.length >= 2) {
+            if (this.memberName.length >= 2) {
                 this.selectedPeriod = null;
                 this.selectedMember = null;
 
@@ -148,7 +150,7 @@ export default {
                 get(`users/search?q=${orQ}&embed=${embedUsers}`)
                     .then(result => {
                         this.members = result.map(member => {
-                            if(member.groupPeriods) {
+                            if (member.groupPeriods) {
                                 member.groupPeriods = member.groupPeriods.filter(groupPeriod => {
                                     if (groupPeriod.Group_id != group.id) {
                                         return false;
@@ -172,7 +174,7 @@ export default {
                 }
             });
 
-            if(!exists) {
+            if (!exists) {
                 let currentGroupPeriod  = {};
                 const embedGroupPeriods = encodeURIComponent(JSON.stringify({
                     period: true
@@ -208,7 +210,7 @@ export default {
                     this.members = this.members.map(member => {
                         let i = 0;
                         for(const g of member.groupPeriods) {
-                            if(g.id === groupPeriod.id) {
+                            if (g.id === groupPeriod.id) {
                                 break;
                             }
                             ++i;
@@ -251,12 +253,12 @@ export default {
             return members.filter(a => a);
         },
         periodOptions() {
-            if(!this.currentEvent) {
+            if (!this.currentEvent) {
                 return {};
             }
 
             let periods = this.periods.map(period => {
-                if(period.Event_id == this.currentEvent.id) {
+                if (period.Event_id == this.currentEvent.id) {
                     return { name: period.name, value: period };
                 } else {
                     return null;

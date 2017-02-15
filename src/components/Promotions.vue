@@ -21,67 +21,73 @@
                             <mdl-button colored raised>Ajouter</mdl-button>
                         </form>
                         <br />
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Montant</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Point</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Fondation</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Groupe</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Période</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="price in detailsPromotion.prices" v-show="price.period.Event_id == currentEvent.id">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.amount | price(true) }} TTC <span v-if="modPromotion.vat > 0">({{ price.amount/(1+modPromotion.vat/100) | price(true) }} HT)</span></td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric"><mdl-button @click.native="$root.confirm() && deletePrice(price)">Supprimer</mdl-button></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="b-responsive-table">
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Montant</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Point</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Fondation</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Groupe</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Période</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="price in detailsPromotion.prices" v-show="price.period.Event_id == currentEvent.id">
+                                        <td class="mdl-data-table__cell--non-numeric">{{ price.amount | price(true) }} TTC <span v-if="modPromotion.vat > 0">({{ price.amount/(1+modPromotion.vat/100) | price(true) }} HT)</span></td>
+                                        <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-button raised accent @click.native="$root.confirm() && deletePrice(price)">Supprimer</mdl-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <br />
                         <div class="b-promotions__content">
                             <h5>Contenu de la promotion :</h5>
                             <transition name="fade">
-                                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="formatPromo.length > 0">
-                                   <thead>
-                                        <tr>
-                                            <th class="mdl-data-table__cell--non-numeric">Ensemble</th>
-                                            <th class="mdl-data-table__cell--non-numeric">Choix possibles</th>
-                                            <th class="mdl-data-table__cell--non-numeric" v-show="typeof displayRemove === 'number' || displayChoose">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(set, index) in formatPromo">
-                                            <td class="mdl-data-table__cell--non-numeric">
-                                                <strong>{{ index+1 }}</strong>
-                                            </td>
-                                            <td class="mdl-data-table__cell--non-numeric">
-                                                <transition-group name="fade">
-                                                    <mdl-button v-for="(article, indexA) in set.articles" :key="index+'_'+indexA" @click.native="chooseArticle(article, index)">{{ article.name }}</mdl-button>
-                                                </transition-group>
-                                            </td>
-                                            <transition name="fade">
-                                                <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayChoose">
-                                                    <mdl-button @click.native="addChosenArticleToStep(index)"><i class="material-icons">add</i></mdl-button>
+                                <div class="b-responsive-table">
+                                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="promotionFormat.length > 0">
+                                       <thead>
+                                            <tr>
+                                                <th class="mdl-data-table__cell--non-numeric">Ensemble</th>
+                                                <th class="mdl-data-table__cell--non-numeric">Choix possibles</th>
+                                                <th class="mdl-data-table__cell--non-numeric" v-show="typeof displayRemove === 'number' || displayChoose">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(set, index) in promotionFormat">
+                                                <td class="mdl-data-table__cell--non-numeric">
+                                                    <strong>{{ index + 1 }}</strong>
                                                 </td>
-                                            </transition>
-                                            <transition name="fade">
-                                                <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayRemove === index">
-                                                    <mdl-button @click.native="removeChosenArticleFromStep(index)"><i class="material-icons">remove</i></mdl-button>
+                                                <td class="mdl-data-table__cell--non-numeric">
+                                                    <transition-group name="fade">
+                                                        <mdl-button v-for="(article, indexA) in set.articles" :key="index+'_'+indexA" @click.native="chooseArticle(article, index)">{{ article.name }}</mdl-button>
+                                                    </transition-group>
                                                 </td>
-                                            </transition>
-                                            <td v-show="typeof displayRemove === 'number' && displayRemove !== index"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                <transition name="fade">
+                                                    <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayChoose">
+                                                        <mdl-button raised colored @click.native="addChosenArticleToStep(index)"><i class="material-icons">add</i></mdl-button>
+                                                    </td>
+                                                </transition>
+                                                <transition name="fade">
+                                                    <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayRemove === index">
+                                                        <mdl-button raised accent @click.native="removeChosenArticleFromStep(index)"><i class="material-icons">remove</i></mdl-button>
+                                                    </td>
+                                                </transition>
+                                                <td v-show="typeof displayRemove === 'number' && displayRemove !== index"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </transition>
                             <transition name="fade">
-                                <p v-if="formatPromo.length == 0">La promotion est vide.</p>
+                                <p v-if="promotionFormat.length == 0">La promotion est vide.</p>
                             </transition>
                         </div>
                         <div class="b-promotions__articlesManagement">
@@ -101,8 +107,8 @@
                                     <tr v-for="article in filteredArticles">
                                         <td class="mdl-data-table__cell--non-numeric name">{{ article.name }}</td>
                                         <td class="mdl-data-table__cell--non-numeric">
-                                            <mdl-button @click.native="addArticleToPromotion(article)">Nouvel ensemble</mdl-button>
-                                            <mdl-button @click.native="chooseStepToAdd(article)" v-show="formatPromo.length > 0">Ajouter à un ensemble</mdl-button>
+                                            <mdl-button raised @click.native="addArticleToPromotion(article)">Nouvel ensemble</mdl-button>
+                                            <mdl-button raised @click.native="chooseStepToAdd(article)" v-show="promotionFormat.length > 0">Ajouter à un ensemble</mdl-button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -122,23 +128,25 @@
 
                         <br />
 
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Promotion</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="promotion in promotions">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ promotion.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button @click.native="editPromotion(promotion)">Modifier</mdl-button>
-                                        <mdl-button @click.native="$root.confirm() && removePromotion(promotion)">Supprimer</mdl-button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="b-responsive-table">
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Promotion</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="promotion in promotions">
+                                        <td class="mdl-data-table__cell--non-numeric">{{ promotion.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                            <mdl-button raised colored @click.native="editPromotion(promotion)">Modifier</mdl-button>
+                                            <mdl-button raised accent @click.native="$root.confirm() && removePromotion(promotion)">Supprimer</mdl-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </transition>
             </div>
@@ -306,7 +314,7 @@ export default {
             post(`sets/${set.id}/articles`, {id: article.id})
                 .then(result => {
                     this.detailsPromotion.sets.map(setPromo => {
-                        if(setPromo.id == set.id) {
+                        if (setPromo.id == set.id) {
                             setPromo.articles.push(article);
                         }
 
@@ -322,7 +330,7 @@ export default {
                     for (const s of this.detailsPromotion.sets) {
                         if (s.id === set.id) {
                             for (const a of s.articles) {
-                                if(a.id === article.id) {
+                                if (a.id === article.id) {
                                     break;
                                 }
 
@@ -346,10 +354,10 @@ export default {
             this.chosenArticle = article;
         },
         addChosenArticleToStep(index) {
-            const step = this.formatPromo[index];
+            const step = this.promotionFormat[index];
 
-            if(step.type == 'article') {
-                if(step.articles[0].id != this.chosenArticle.id) {
+            if (step.type == 'article') {
+                if (step.articles[0].id != this.chosenArticle.id) {
                     this.createSetWithArticles({
                         set: {
                             name: this.detailsPromotion.name
@@ -372,10 +380,10 @@ export default {
 
                     this.$root.$emit('snackfilter', data);
                 }
-            } else if(step.type == 'set') {
+            } else if (step.type == 'set') {
                 const articlesIds = step.set.articles.map(article => article.id);
 
-                if(articlesIds.indexOf(this.chosenArticle.id) == -1) {
+                if (articlesIds.indexOf(this.chosenArticle.id) == -1) {
                     this.addArticleToSet(this.chosenArticle, step.set);
                 } else {
                     const data = {
@@ -391,17 +399,17 @@ export default {
             this.chosenArticle = {};
         },
         removeChosenArticleFromStep(index) {
-            const step = this.formatPromo[index];
+            const step = this.promotionFormat[index];
 
-            if(step.type == 'article') {
+            if (step.type == 'article') {
                 this.removeArticleFromPromotion(this.chosenArticle);
             } else if (step.type == 'set') {
-                if(step.set.articles.length > 2) {
+                if (step.set.articles.length > 2) {
                     this.removeArticleFromSet(this.chosenArticle, step.set);
                 } else {
                     let keptArticle = {};
                     step.set.articles.forEach(article => {
-                        if(article.id != this.chosenArticle.id) {
+                        if (article.id != this.chosenArticle.id) {
                             keptArticle = article;
                         }
                     });
@@ -428,10 +436,10 @@ export default {
             sets        : state => state.app.sets,
             currentEvent: state => state.global.currentEvent
         }),
-        formatPromo() {
+        promotionFormat() {
             let promotion = [];
 
-            if(this.detailsPromotion.articles) {
+            if (this.detailsPromotion.articles) {
                 this.detailsPromotion.articles.forEach(article => {
                     promotion.push({
                         type    : 'article',
@@ -440,13 +448,13 @@ export default {
                 });
             }
 
-            if(this.detailsPromotion.sets) {
+            if (this.detailsPromotion.sets) {
                 this.detailsPromotion.sets.forEach(set => {
                     const sortedArticles = set.articles.sort((a, b) => {
-                        if(a.name < b.name) {
+                        if (a.name < b.name) {
                             return -1;
                         }
-                        if(a.name > b.name) {
+                        if (a.name > b.name) {
                             return 1;
                         }
                         return 0;
@@ -461,10 +469,10 @@ export default {
             }
 
             promotion = promotion.sort((a, b) => {
-                if(a.articles[0].name < b.articles[0].name) {
+                if (a.articles[0].name < b.articles[0].name) {
                     return -1;
                 }
-                if(a.articles[0].name > b.articles[0].name) {
+                if (a.articles[0].name > b.articles[0].name) {
                     return 1;
                 }
                 return 0;
@@ -508,7 +516,7 @@ export default {
         },
         periodOptions() {
             let periods = this.periods.map(period => {
-                if(period.Event_id == this.currentEvent.id) {
+                if (period.Event_id == this.currentEvent.id) {
                     return { name: period.name, value: period };
                 } else {
                     return null;

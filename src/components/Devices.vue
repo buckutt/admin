@@ -63,45 +63,47 @@
                             <mdl-button colored raised>Créer</mdl-button>
                         </form>
                         <br />
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Equipement</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Temps réel</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Intervalle</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Revalidation</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Alcool</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Catégories</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Image</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="device in devices">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ device.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.realtime" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ device.refreshInterval }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.doubleValidation" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.alcohol" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.showCategories" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.showPicture" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button @click.native="editDevice(device)">Modifier</mdl-button>
-                                        <mdl-button @click.native="$root.confirm() && removeDevice(device)">Supprimer</mdl-button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="b-responsive-table">
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Equipement</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Temps réel</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Intervalle</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Revalidation</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Alcool</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Catégories</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Image</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="device in devices">
+                                        <td class="mdl-data-table__cell--non-numeric">{{ device.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-checkbox v-model="device.realtime" disabled></mdl-checkbox>
+                                        </td>
+                                        <td class="mdl-data-table__cell--non-numeric">{{ device.refreshInterval }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-checkbox v-model="device.doubleValidation" disabled></mdl-checkbox>
+                                        </td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-checkbox v-model="device.alcohol" disabled></mdl-checkbox>
+                                        </td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-checkbox v-model="device.showCategories" disabled></mdl-checkbox>
+                                        </td>
+                                        <td class="mdl-data-table__cell--non-numeric">
+                                            <mdl-checkbox v-model="device.showPicture" disabled></mdl-checkbox>
+                                        </td>
+                                        <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                            <mdl-button raised colored @click.native="editDevice(device)">Modifier</mdl-button>
+                                            <mdl-button raised accent @click.native="$root.confirm() && removeDevice(device)">Supprimer</mdl-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </transition>
             </div>
@@ -166,7 +168,7 @@ export default {
 
             get(`devices/${device.id}?embed=${embedDevices}`)
                 .then(result => {
-                    if(result.periodPoints) {
+                    if (result.periodPoints) {
                         result.periodPoints = result.periodPoints.filter(periodPoint => {
                             return !periodPoint.isRemoved;
                         });
@@ -221,7 +223,7 @@ export default {
                 .then(result => {
                     let i = 0;
                     for(const p of this.detailsDevice.periodPoints) {
-                        if(p.id === periodPoint.id) {
+                        if (p.id === periodPoint.id) {
                             break;
                         }
                         ++i;
@@ -270,7 +272,7 @@ export default {
             const period        = this.selectedPeriod;
             this.selectedPoint  = null;
             this.selectedPeriod = null;
-            if(!point) {
+            if (!point) {
                 return {
                     Period_id: period.id
                 }
@@ -283,7 +285,7 @@ export default {
         },
         periodOptions() {
             let periods = this.periods.map(period => {
-                if(period.Event_id == this.currentEvent.id) {
+                if (period.Event_id == this.currentEvent.id) {
                     return { name: period.name, value: period };
                 } else {
                     return null;

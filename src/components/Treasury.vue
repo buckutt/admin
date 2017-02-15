@@ -16,37 +16,42 @@
                 </form>
 
                 <h4>Rechargements <span class="small">(total: {{ totalReload | price(true) }})</span></h4>
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Moyen de paiement</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="reload in reloads">
-                            <td class="mdl-data-table__cell--non-numeric">{{ reload.group | reload }}</td>
-                            <td>{{ reload.reduction | price(true) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="b-responsive-table">
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Moyen de paiement</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="reload in reloads">
+                                <td class="mdl-data-table__cell--non-numeric">{{ reload.group | reload }}</td>
+                                <td>{{ reload.reduction | price(true) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <h4>Transferts <span class="small">(total: {{ totalTransfer | price(true) }})</span></h4>
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">De</th>
-                            <th class="mdl-data-table__cell--non-numeric">À</th>
-                            <th>Montant</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="transfer in transfers">
-                            <td class="mdl-data-table__cell--non-numeric">{{ transfer.sender.firstname }} {{ transfer.sender.lastname }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ transfer.reciever.firstname }} {{ transfer.reciever.lastname }}</td>
-                            <td>{{ transfer.amount | price(true) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="b-responsive-table">
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">De</th>
+                                <th class="mdl-data-table__cell--non-numeric">À</th>
+                                <th>Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="transfer in transfers">
+                                <td class="mdl-data-table__cell--non-numeric">{{ transfer.sender.firstname }} {{ transfer.sender.lastname }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ transfer.reciever.firstname }} {{ transfer.reciever.lastname }}</td>
+                                <td>{{ transfer.amount | price(true) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <mdl-snackbar display-on="snackfilter"></mdl-snackbar>

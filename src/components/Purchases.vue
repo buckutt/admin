@@ -26,26 +26,29 @@
                 </form>
 
                 <h4>Ventes <span class="small">(total TTC: {{ totalSell | price(true) }}, total HT: {{ totalSellWT | price(true) }})</span></h4>
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th>Quantité</th>
-                            <th class="mdl-data-table__cell--non-numeric">Article</th>
-                            <th>Prix unitaire TTC</th>
-                            <th>Total TTC</th>
-                            <th>Total HT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="purchase in purchases">
-                            <td>{{ purchase.count }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ purchase.name }}</td>
-                            <td>{{ purchase.price | price(true) }}</td>
-                            <td>{{ purchase.totalVAT | price(true) }}</td>
-                            <td>{{ purchase.totalWT | price(true) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <div class="b-responsive-table">
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr>
+                                <th>Quantité</th>
+                                <th class="mdl-data-table__cell--non-numeric">Article</th>
+                                <th>Prix unitaire TTC</th>
+                                <th>Total TTC</th>
+                                <th>Total HT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="purchase in purchases">
+                                <td>{{ purchase.count }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ purchase.name }}</td>
+                                <td>{{ purchase.price | price(true) }}</td>
+                                <td>{{ purchase.totalVAT | price(true) }}</td>
+                                <td>{{ purchase.totalWT | price(true) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
@@ -98,12 +101,12 @@ export default {
             return sum;
         },
         periodOptions() {
-            if(!this.currentEvent) {
+            if (!this.currentEvent) {
                 return {};
             }
 
             let periods = this.periods.map(period => {
-                if(period.Event_id == this.currentEvent.id) {
+                if (period.Event_id == this.currentEvent.id) {
                     return { name: period.name, value: period.id };
                 } else {
                     return null;
@@ -157,7 +160,7 @@ export default {
                     q.push(`dateOut=${convertDate(this.$data.dateOut)}`);
                 }
             } else if (this.dateChoice == '0') {
-                if(this.$data.period !== '0') {
+                if (this.$data.period !== '0') {
                     q.push(`period=${this.$data.period}`);
                 }
             }

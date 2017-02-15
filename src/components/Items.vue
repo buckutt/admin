@@ -62,20 +62,24 @@
                             <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
                         </form>
 
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="name.length > 0 && filteredArticles.length > 0">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Objet</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="article in filteredArticles">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ article.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric"><mdl-button @click.native="editArticle(article)">Modifier</mdl-button><mdl-button @click.native="$root.confirm() && removeArticle(article)">Supprimer</mdl-button></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="b-responsive-table">
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="name.length > 0 && filteredArticles.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Objet</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="article in filteredArticles">
+                                        <td class="mdl-data-table__cell--non-numeric">{{ article.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                            <mdl-button raised colored @click.native="editArticle(article)">Modifier</mdl-button>
+                                            <mdl-button raised accent @click.native="$root.confirm() && removeArticle(article)">Supprimer</mdl-button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </transition>
             </div>
@@ -261,7 +265,7 @@ export default {
         },
         periodOptions() {
             let periods = this.periods.map(period => {
-                if(period.Event_id == this.currentEvent.id) {
+                if (period.Event_id == this.currentEvent.id) {
                     return { name: period.name, value: period };
                 } else {
                     return null;

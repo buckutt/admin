@@ -11,23 +11,25 @@
 
                 <br />
 
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Fondation</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="fundation in fundations">
-                            <td class="mdl-data-table__cell--non-numeric">{{ fundation.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click.native="openModal(fundation)">Modifier</mdl-button>
-                                <mdl-button @click.native="$root.confirm() && removeFundation(fundation)">Supprimer</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="b-responsive-table">
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Fondation</th>
+                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="fundation in fundations">
+                                <td class="mdl-data-table__cell--non-numeric">{{ fundation.name }}</td>
+                                <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                    <mdl-button raised colored @click.native="openModal(fundation)">Modifier</mdl-button>
+                                    <mdl-button raised accent @click.native="$root.confirm() && removeFundation(fundation)">Supprimer</mdl-button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 

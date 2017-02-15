@@ -196,7 +196,7 @@ export default {
         createUser(user) {
             post('users', user)
                 .then(result => {
-                    if(result.mail) {
+                    if (result.mail) {
                         post('meansoflogin', { type: 'etuMail', data: result.mail, User_id: result.id });
                     }
 
@@ -205,7 +205,7 @@ export default {
                 });
         },
         searchUser() {
-            if(this.userName.length >= 2) {
+            if (this.userName.length >= 2) {
                 const q = [];
 
                 q.push(JSON.stringify({
@@ -274,7 +274,7 @@ export default {
                 .then(result => {
                     this.selectedUser = JSON.parse(JSON.stringify(modUser));
                     this.users.forEach((u, i) => {
-                        if(u.id == user.id) {
+                        if (u.id == user.id) {
                             this.users[i] = Object.assign(this.users[i], modUser);
                         }
                     });
@@ -295,23 +295,23 @@ export default {
                 .then(result => {
                     this.selectedUser = JSON.parse(JSON.stringify(modUser));
                     this.users.forEach((u, i) => {
-                        if(u.id == user.id) {
+                        if (u.id == user.id) {
                             this.users[i] = Object.assign(this.users[i], modUser);
                         }
                     });
                 });
         },
         updateUser(user, modUser) {
-            if(user.mail != modUser.mail) {
+            if (user.mail != modUser.mail) {
                 let existingMol = false;
 
                 this.detailsUser.meansOfLogin.forEach(meanOfLogin => {
-                    if(meanOfLogin.type == 'etuMail') {
+                    if (meanOfLogin.type == 'etuMail') {
                         existingMol = meanOfLogin.id;
                     }
                 });
 
-                if(!existingMol) {
+                if (!existingMol) {
                     post('meansoflogin', { type: 'etuMail', data: modUser.mail, User_id: user.id })
                         .then(result => {
                             this.detailsUser.meansOfLogin.push(result);
@@ -320,7 +320,7 @@ export default {
                     put(`meansoflogin/${existingMol}`, { data: modUser.mail })
                         .then(result => {
                             this.detailsUser.meansOfLogin = this.detailsUser.meansOfLogin.map(meanOfLogin => {
-                                if(meanOfLogin.id == result.id) {
+                                if (meanOfLogin.id == result.id) {
                                     meanOfLogin = result;
                                 }
 
@@ -334,7 +334,7 @@ export default {
                 .then(result => {
                     this.selectedUser = JSON.parse(JSON.stringify(modUser));
                     this.users.forEach((u, i) => {
-                        if(u.id == user.id) {
+                        if (u.id == user.id) {
                             this.users[i] = Object.assign(this.users[i], modUser);
                         }
                     });
@@ -346,7 +346,7 @@ export default {
                 .then(result => {
                     let i = 0;
                     for(const u of this.users) {
-                        if(u.id === user.id) {
+                        if (u.id === user.id) {
                             break;
                         }
 
@@ -366,7 +366,7 @@ export default {
                 .then(result => {
                     this.detailsUser.rights.forEach((r, i) => {
                         if (r.id === result.id) {
-                            if(!modRight.Point_id) {
+                            if (!modRight.Point_id) {
                                 result.point = null;
                             } else {
                                 result.point = this.pointById(modRight.Point_id);
@@ -385,7 +385,7 @@ export default {
                 .then(result => {
                     let i = 0;
                     for(const r of this.detailsUser.rights) {
-                        if(r.id === right.id) {
+                        if (r.id === right.id) {
                             break;
                         }
 
@@ -428,7 +428,7 @@ export default {
                 .then(result => {
                     let i = 0;
                     for(const mol of this.detailsUser.meansOfLogin) {
-                        if(mol.id === meanOfLogin.id) {
+                        if (mol.id === meanOfLogin.id) {
                             break;
                         }
 
@@ -441,7 +441,7 @@ export default {
         openModal(right) {
             this.selectedRight = right;
             this.modRight      = JSON.parse(JSON.stringify(right));
-            if(this.modRight.point) {
+            if (this.modRight.point) {
                 this.modRight.Point_id  = this.modRight.point.id;
             } else {
                 this.modRight.Point_id = null;
@@ -458,7 +458,7 @@ export default {
         pointById(id) {
             let point = null;
             this.points.forEach((p, i) => {
-                if(p.id == id) {
+                if (p.id == id) {
                     point = p;
                 }
             });
@@ -467,7 +467,7 @@ export default {
         periodById(id) {
             let period = null;
             this.periods.forEach((p, i) => {
-                if(p.id == id) {
+                if (p.id == id) {
                     period = p;
                 }
             });
@@ -524,7 +524,7 @@ export default {
             this.rightPoint  = null;
             this.rightPeriod = null;
             console.log(point);
-            if(!point) {
+            if (!point) {
                 return {
                     name     : name,
                     Period_id: period.id
@@ -543,12 +543,12 @@ export default {
             return right;
         },
         periodOptions() {
-            if(!this.currentEvent) {
+            if (!this.currentEvent) {
                 return {};
             }
 
             let periods = this.periods.map(period => {
-                if(period.Event_id == this.currentEvent.id) {
+                if (period.Event_id == this.currentEvent.id) {
                     return { name: period.name, value: period };
                 } else {
                     return null;
@@ -565,12 +565,12 @@ export default {
             return points;
         },
         periodOptionsIds() {
-            if(!this.currentEvent) {
+            if (!this.currentEvent) {
                 return {};
             }
 
             let periods = this.periods.map(period => {
-                if(period.Event_id == this.currentEvent.id) {
+                if (period.Event_id == this.currentEvent.id) {
                     return { name: period.name, value: period.id };
                 } else {
                     return null;

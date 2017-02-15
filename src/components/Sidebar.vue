@@ -129,9 +129,9 @@ export default {
             'updateCurrentEvent'
         ]),
         changeEvent() {
-            if(this.selectedEvent) {
-                if(this.currentEvent) {
-                    if(this.selectedEvent != this.currentEvent.id) {
+            if (this.selectedEvent) {
+                if (this.currentEvent) {
+                    if (this.selectedEvent != this.currentEvent.id) {
                         this.$router.push('/stats');
                     }
                 }
@@ -142,7 +142,7 @@ export default {
 
                 get(`events/${this.selectedEvent.id}?embed=${embedEvents}`)
                     .then(result => {
-                        if(result.periods) {
+                        if (result.periods) {
                             result.periods = result.periods.filter(period => {
                                 return !period.isRemoved;
                             });

@@ -14,27 +14,29 @@
 
                 <br />
 
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Période</th>
-                            <th class="mdl-data-table__cell--non-numeric">Début</th>
-                            <th class="mdl-data-table__cell--non-numeric">Fin</th>
-                            <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="period in periods" v-show="currentEvent.id == period.Event_id">
-                            <td class="mdl-data-table__cell--non-numeric">{{ period.name }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ period.start | date }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ period.end | date }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">
-                                <mdl-button @click.native="openModal(period)">Modifier</mdl-button>
-                                <mdl-button @click.native="$root.confirm() && removePeriod(period)">Supprimer</mdl-button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="b-responsive-table">
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Période</th>
+                                <th class="mdl-data-table__cell--non-numeric">Début</th>
+                                <th class="mdl-data-table__cell--non-numeric">Fin</th>
+                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="period in periods" v-show="currentEvent.id == period.Event_id">
+                                <td class="mdl-data-table__cell--non-numeric">{{ period.name }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ period.start | date }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ period.end | date }}</td>
+                                <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                    <mdl-button raised colored @click.native="openModal(period)">Modifier</mdl-button>
+                                    <mdl-button raised accent @click.native="$root.confirm() && removePeriod(period)">Supprimer</mdl-button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 

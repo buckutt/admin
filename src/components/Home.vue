@@ -55,7 +55,7 @@ export default {
             post('services/login', { meanOfLogin: 'etuMail', data: mail, password })
                 .then(result => {
                     if (!result.isAPIError) {
-                        if(this.isAdmin(result.user)) {
+                        if (this.isAdmin(result.user)) {
                             sessionStorage.setItem('user', JSON.stringify(result.user));
                             sessionStorage.setItem('token', result.token);
                             this.isToken = true;
@@ -86,14 +86,14 @@ export default {
             return sessionStorage.hasOwnProperty('token');
         },
         getUser() {
-            if(sessionStorage.hasOwnProperty('user')) {
+            if (sessionStorage.hasOwnProperty('user')) {
                 return JSON.parse(sessionStorage.getItem('user'));
             }
             return {};
         },
         isAdmin(user) {
             let admin = false;
-            if(user) {
+            if (user) {
                 user.rights.forEach(right => {
                     if (right.name == 'admin' && !right.isRemoved && new Date(right.period.start).getTime() <= Date.now() && new Date(right.period.end).getTime() >= Date.now()) {
                         admin = true;
