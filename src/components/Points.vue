@@ -3,109 +3,103 @@
         <div class="b-points">
             <div class="mdl-card mdl-shadow--2dp">
                 <h3>Points</h3>
-                <form @submit.prevent="createPoint(inputPoint)">
-                    <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
-                    <br />
-                    <mdl-button colored raised>Créer</mdl-button>
-                </form>
+                <transition name="fade">
+                    <div v-if="modObject">
+                        <h5>Modifier le point {{ modObject.name }}:</h5>
+                        <form @submit.prevent="updateObject({ route: 'points', value: modObject })">
+                            <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
+                            <mdl-button colored raised>Modifier</mdl-button>
+                        </form>
+                        <br />
+                        <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
+                    </div>
+                </transition>
+                <transition name="fade">
+                    <div v-if="!modObject">
+                        <form @submit.prevent="createObject({ route: 'points', value: inputPoint })">
+                            <mdl-textfield floating-label="Nom" v-model="newPoint.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+                            <br />
+                            <mdl-button colored raised>Créer</mdl-button>
+                        </form>
 
-                <br />
+                        <br />
 
-                <div class="b-responsive-table">
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                        <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Point</th>
-                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="point in points">
-                                <td class="mdl-data-table__cell--non-numeric">{{ point.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                    <mdl-button raised colored @click.native="openModal(point)">Modifier</mdl-button>
-                                    <mdl-button raised accent @click.native="$root.confirm() && removePoint(point)">Supprimer</mdl-button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        <div class="b-responsive-table">
+                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                                <thead>
+                                    <tr>
+                                        <th class="mdl-data-table__cell--non-numeric">Point</th>
+                                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="point in points">
+                                        <td class="mdl-data-table__cell--non-numeric">{{ point.name }}</td>
+                                        <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                            <mdl-button raised colored @click.native="expandPoint(point)">Modifier</mdl-button>
+                                            <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'points', value: point })">Supprimer</mdl-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </transition>
             </div>
         </div>
-
-        <modal>
-            <div class="modal__dialog">
-                <div class="modal__header">
-                    <h3>Modifier le point {{ selectedPoint.name }}</h3>
-                </div>
-                <form @submit.prevent="updatePoint(editPoint)">
-                    <div class="modal__body">
-                        <mdl-textfield floating-label="Nom" v-model="modPoint.name"></mdl-textfield>
-                    </div>
-                    <div class="modal__footer">
-                        <mdl-button>Valider</mdl-button>
-                        <mdl-button @click.native="closeModal()">Annuler</mdl-button>
-                    </div>
-                </form>
-            </div>
-        </modal>
     </div>
 </template>
 
 <script>
-import Modal    from './Modal.vue';
-import { post } from '../lib/fetch';
 import { mapState, mapActions } from 'vuex';
 
-export default {
-    components: {
-        Modal
-    },
+const pointPattern = {
+    name: ''
+};
 
+export default {
     data () {
         return {
-            name:          '',
-            selectedPoint: {},
-            modPoint:      {}
+            newPoint: JSON.parse(JSON.stringify(pointPattern))
         };
     },
 
     methods: {
         ...mapActions([
-            'createPoint',
-            'updatePoint',
-            'removePoint',
-            'updateEditModal'
+            'createObject',
+            'updateObject',
+            'removeObject',
+            'expandObject',
+            'updateModObject'
         ]),
-        openModal(point) {
-            this.selectedPoint = point;
-            this.modPoint      = JSON.parse(JSON.stringify(point));
+        expandPoint(point) {
+            this.$router.push(`/points/${point.id}`);
 
-            this.updateEditModal(true);
-        },
-        closeModal() {
-            this.updateEditModal(false);
+            this.expandObject({
+                route: 'points',
+                value: point
+            });
         }
     },
 
    computed: {
         ...mapState({
-            points       : state => state.app.points,
-            currentEvent : state => state.global.currentEvent,
-            openEditModal: state => state.global.openEditModal
+            points      : state => state.app.points,
+            currentEvent: state => state.global.currentEvent,
+            modObject   : state => state.app.modObject,
+            params      : state => state.route.params
         }),
         inputPoint() {
-            const name = this.name;
-            this.name  = '';
-            return {
-                name: name,
-            };
-        },
-        editPoint() {
-            const point   = this.modPoint;
-            this.modPoint = {};
-            this.closeModal();
-            return point;
+            const inputPoint = JSON.parse(JSON.stringify(this.newPoint));
+            this.newPoint    = JSON.parse(JSON.stringify(pointPattern));
+
+            return inputPoint;
+        }
+    },
+
+    mounted() {
+        if (this.params.id) {
+            this.expandPoint({ id: this.params.id });
         }
     }
 }

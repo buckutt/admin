@@ -1,82 +1,87 @@
 <template>
-    <div>
-        <div class="b-purchases" v-if="currentEvent">
-            <div class="mdl-card mdl-shadow--2dp">
-                <h3 v-if="currentEvent">Achats de "{{ currentEvent.name }}"</h3>
-                <h4>Recherche</h4>
-                <form @submit.prevent="filter()">
-                    <div>
-                        <mdl-select label="Point" id="point-select" v-model="point" :options="pointOptions"></mdl-select>
-                        <mdl-select label="Fondation" id="select-fundations" v-model="fundation" :options="fundationOptions"></mdl-select>
-                    </div>
-                    <div>
-                        Recherche par:<br />
-                        <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="0">Achats liés à une période en particulier</mdl-radio><br />
-                        <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="1">Achats compris entre deux dates</mdl-radio>
-
-                        <div v-show="dateChoice == 1">
-                            <mdl-textfield floating-label="Début" v-model="dateIn" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" ref="datein"></mdl-textfield>
-                            <mdl-textfield floating-label="Fin" v-model="dateOut" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateout" ref="dateout"></mdl-textfield>
-                        </div>
-                        <div v-show="dateChoice == 0">
-                            <mdl-select label="Periode" id="select-periods" v-model="period" :options="periodOptions"></mdl-select>
-                        </div>
-                    </div>
-                    <mdl-button colored raised>Rechercher</mdl-button>
-                </form>
-
-                <h4>Ventes <span class="small">(total TTC: {{ totalSell | price(true) }}, total HT: {{ totalSellWT | price(true) }})</span></h4>
-
-                <div class="b-responsive-table">
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                        <thead>
-                            <tr>
-                                <th>Quantité</th>
-                                <th class="mdl-data-table__cell--non-numeric">Article</th>
-                                <th>Prix unitaire TTC</th>
-                                <th>Total TTC</th>
-                                <th>Total HT</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="purchase in purchases">
-                                <td>{{ purchase.count }}</td>
-                                <td class="mdl-data-table__cell--non-numeric">{{ purchase.name }}</td>
-                                <td>{{ purchase.price | price(true) }}</td>
-                                <td>{{ purchase.totalVAT | price(true) }}</td>
-                                <td>{{ purchase.totalWT | price(true) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <div class="b-purchases">
+        <div class="mdl-card mdl-shadow--2dp">
+            <h3 v-if="currentEvent">Achats de "{{ currentEvent.name }}"</h3>
+            <h4>Recherche</h4>
+            <form @submit.prevent="filter()">
+                <div>
+                    <mdl-select label="Point" id="point-select" v-model="fields.point" :options="pointOptions"></mdl-select>
+                    <mdl-select label="Fondation" id="select-fundations" v-model="fields.fundation" :options="fundationOptions"></mdl-select>
                 </div>
+                <div>
+                    Recherche par:<br />
+                    <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="0">Achats liés à une période en particulier</mdl-radio><br />
+                    <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="1">Achats compris entre deux dates</mdl-radio>
+
+                    <transition name="fade">
+                        <div v-show="dateChoice == 1">
+                            <mdl-textfield floating-label="Début" :value="fields.dateIn | date" @input="updateField('dateIn', convertDate($event))" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" ref="datein"></mdl-textfield>
+                            <mdl-textfield floating-label="Fin"  :value="fields.dateOut | date" @input="updateField('dateOut', convertDate($event))" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" ref="dateout"></mdl-textfield>
+                        </div>
+                    </transition>
+                    <transition name="fade">
+                        <div v-show="dateChoice == 0">
+                            <mdl-select label="Periode" id="select-periods" v-model="fields.period" :options="periodOptions"></mdl-select>
+                        </div>
+                    </transition>
+                </div>
+                <mdl-button colored raised>Rechercher</mdl-button>
+            </form>
+
+            <h4>Ventes <span class="small">(total TTC: {{ totalSell | price(true) }}, total HT: {{ totalSellWT | price(true) }})</span></h4>
+
+            <div class="b-responsive-table">
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <thead>
+                        <tr>
+                            <th>Quantité</th>
+                            <th class="mdl-data-table__cell--non-numeric">Article</th>
+                            <th>Prix unitaire TTC</th>
+                            <th>Total TTC</th>
+                            <th>Total HT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="purchase in purchases">
+                            <td>{{ purchase.count }}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{ purchase.name }}</td>
+                            <td>{{ purchase.price | price(true) }}</td>
+                            <td>{{ purchase.totalVAT | price(true) }}</td>
+                            <td>{{ purchase.totalWT | price(true) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import price from '../lib/price';
-import { parseDate, convertDate } from '../lib/date';
-import { get } from '../lib/fetch';
+import Vue                   from 'vue';
+import price                 from '../lib/price';
+import date, { convertDate } from '../lib/date';
+
 import { mapState, mapActions } from 'vuex';
+
+const fieldsPattern = {
+    point    : null,
+    fundation: null,
+    dateIn   : '',
+    dateOut  : '',
+    period   : null
+};
 
 export default {
     data () {
         return {
-            point     : '',
-            fundation : '',
-            period    : '',
-            dateIn    : '',
-            dateOut   : '',
-            dateChoice: '0',
-            purchases : [],
+            fields    : JSON.parse(JSON.stringify(fieldsPattern)),
+            dateChoice: '0'
         };
     },
 
     computed: {
         ...mapState({
+            purchases   : state => state.app.purchases,
             points      : state => state.app.points,
             fundations  : state => state.app.fundations,
             periods     : state => state.app.periods,
@@ -102,92 +107,73 @@ export default {
         },
         periodOptions() {
             if (!this.currentEvent) {
-                return {};
+                return [];
             }
 
-            let periods = this.periods.map(period => {
-                if (period.Event_id == this.currentEvent.id) {
+            const periods = this.periods.map(period => {
+                if (period.Event_id === this.currentEvent.id) {
                     return { name: period.name, value: period.id };
                 } else {
                     return null;
                 }
             });
 
-            periods.unshift({ name: 'Toutes', value: '' });
+            periods.unshift({ name: 'Toutes', value: null });
 
             return periods.filter(a => a);
         },
         pointOptions() {
-            let options = this.points.map(point => {
+            const options = this.points.map(point => {
                 return { name: point.name, value: point.id };
             });
 
-            options.unshift({ name: 'Tous', value: '' });
+            options.unshift({ name: 'Tous', value: null });
 
             return options;
         },
         fundationOptions() {
-            let options = this.fundations.map(fundation => {
+            const options = this.fundations.map(fundation => {
                 return { name: fundation.name, value: fundation.id };
             });
 
-            options.unshift({ name: 'Toutes', value: '' });
+            options.unshift({ name: 'Toutes', value: null });
 
             return options;
         }
     },
 
     methods: {
+        ...mapActions([
+            'getPurchases'
+        ]),
+        updateField(field, value) {
+            this.fields[field] = value;
+        },
         filter () {
-            const q = [];
+            const inputFields = JSON.parse(JSON.stringify(this.fields));
+            let isFilled      = false;
 
-            q.push(`event=${this.currentEvent.id}`)
-
-            if (this.$data.point !== '') {
-                q.push(`point=${this.$data.point}`);
-            }
-
-            if (this.$data.fundation !== '') {
-                q.push(`fundation=${this.$data.fundation}`);
-            }
-
-            if (this.dateChoice == '1') {
-                if (this.$data.dateIn !== '') {
-                    q.push(`dateIn=${convertDate(this.$data.dateIn)}`);
+            Object.keys(inputFields).forEach(key => {
+                if (inputFields[key]) {
+                    isFilled = true;
                 }
+            });
 
-                if (this.$data.dateOut !== '') {
-                    q.push(`dateOut=${convertDate(this.$data.dateOut)}`);
-                }
-            } else if (this.dateChoice == '0') {
-                if (this.$data.period !== '0') {
-                    q.push(`period=${this.$data.period}`);
-                }
-            }
-
-            if (q.length === 0) {
-                const data = {
-                    message: 'You need at least one filter.',
-                    timeout: 2000
-                };
-
-                this.$root.$emit('snackfilter', data);
-                return;
-            }
-
-            const qString = q
-                .join('&');
-
-            get(`services/treasury/purchases?${qString}`)
-                .then(purchases => {
-                    this.purchases = purchases.map(purchase => {
-                        if (!purchase.totalWT) {
-                            purchase.totalWT = purchase.totalVAT;
-                        }
-
-                        return purchase;
-                    });
+            if (!isFilled
+                || (inputFields.dateIn && !inputFields.dateOut)
+                || (!inputFields.dateIn && inputFields.dateOut)) {
+                return this.$root.$emit('snackfilter', {
+                    message: 'You need at least one filter.'
                 });
+            }
+
+            this.fields       = JSON.parse(JSON.stringify(fieldsPattern));
+            inputFields.event = this.currentEvent.id;
+
+            this.getPurchases(inputFields);
+        },
+        convertDate(date) {
+            return convertDate(date);
         }
     },
 
@@ -197,15 +183,13 @@ export default {
             const $dateOut = this.$refs.dateout.$el;
             jQuery($dateIn).datetimepicker({
                 onChangeDateTime: ct => {
-                    this.$data.dateIn = parseDate(ct);
-                },
-                format:'d/m/Y H:i'
+                    this.fields.dateIn = new Date(ct);
+                }
             });
             jQuery($dateOut).datetimepicker({
                 onChangeDateTime: ct => {
-                    this.$data.dateOut = parseDate(ct);
-                },
-                format:'d/m/Y H:i'
+                    this.fields.dateOut = new Date(ct);
+                }
             });
         });
     }
@@ -240,10 +224,6 @@ export default {
                 width: 100%;
                 white-space: normal;
             }
-        }
-
-        & + .mdl-snackbar {
-            margin-left: $sidebarWidth / 2;
         }
     }
 </style>

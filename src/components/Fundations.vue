@@ -1,111 +1,102 @@
 <template>
-    <div v-if="currentEvent">
-        <div class="b-fundations">
-            <div class="mdl-card mdl-shadow--2dp">
-                <h3>Fondations</h3>
-                <form @submit.prevent="createFundation(inputFundation)">
-                    <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
+    <div class="b-fundations">
+        <div class="mdl-card mdl-shadow--2dp">
+            <h3>Fondations</h3>
+            <transition name="fade">
+                <div v-if="modObject">
+                    <h5>Modifier la fondation {{ modObject.name }}:</h5>
+                    <form @submit.prevent="updateObject({ route: 'fundations', value: modObject })">
+                        <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
+                        <mdl-button colored raised>Modifier</mdl-button>
+                    </form>
                     <br />
-                    <mdl-button colored raised>Créer</mdl-button>
-                </form>
-
-                <br />
-
-                <div class="b-responsive-table">
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                        <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Fondation</th>
-                                <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="fundation in fundations">
-                                <td class="mdl-data-table__cell--non-numeric">{{ fundation.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                    <mdl-button raised colored @click.native="openModal(fundation)">Modifier</mdl-button>
-                                    <mdl-button raised accent @click.native="$root.confirm() && removeFundation(fundation)">Supprimer</mdl-button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
                 </div>
-            </div>
+            </transition>
+            <transition name="fade">
+                <div v-if="!modObject">
+                    <form @submit.prevent="createObject({ route: 'fundations', value: inputFundation })">
+                        <mdl-textfield floating-label="Nom" v-model="newFundation.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+                        <br />
+                        <mdl-button colored raised>Créer</mdl-button>
+                    </form>
+
+                    <br />
+
+                    <div class="b-responsive-table">
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Fondation</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="fundation in fundations">
+                                    <td class="mdl-data-table__cell--non-numeric">{{ fundation.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                        <mdl-button raised colored @click.native="expandFundation(fundation)">Modifier</mdl-button>
+                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'fundations', value: fundation })">Supprimer</mdl-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </transition>
         </div>
-
-        <modal>
-            <div class="modal__dialog">
-                <div class="modal__header">
-                    <h3>Modifier la fondation {{ selectedFundation.name }}</h3>
-                </div>
-                <form @submit.prevent="updateFundation(editFundation)">
-                    <div class="modal__body">
-                        <mdl-textfield floating-label="Nom" v-model="modFundation.name"></mdl-textfield>
-                    </div>
-                    <div class="modal__footer">
-                        <mdl-button>Valider</mdl-button>
-                        <mdl-button @click.native="closeModal()">Annuler</mdl-button>
-                    </div>
-                </form>
-            </div>
-        </modal>
     </div>
 </template>
 
 <script>
-import Modal    from './Modal.vue';
-import { post } from '../lib/fetch';
 import { mapState, mapActions } from 'vuex';
 
-export default {
-    components: {
-        Modal
-    },
+const fundationPattern = {
+    name: ''
+};
 
+export default {
     data () {
         return {
-            name             : '',
-            selectedFundation: {},
-            modFundation     : {}
+            newFundation: JSON.parse(JSON.stringify(fundationPattern))
         };
     },
 
     methods: {
         ...mapActions([
-            'createFundation',
-            'updateFundation',
-            'removeFundation',
-            'updateEditModal'
+            'createObject',
+            'updateObject',
+            'removeObject',
+            'expandObject',
+            'updateModObject'
         ]),
-        openModal(fundation) {
-            this.selectedFundation = fundation;
-            this.modFundation      = JSON.parse(JSON.stringify(fundation));
+        expandFundation(fundation) {
+            this.$router.push(`/fundations/${fundation.id}`);
 
-            this.updateEditModal(true);
-        },
-        closeModal() {
-            this.updateEditModal(false);
+            this.expandObject({
+                route: 'fundations',
+                value: fundation
+            });
         }
     },
 
    computed: {
         ...mapState({
-            fundations   : state => state.app.fundations,
-            currentEvent : state => state.global.currentEvent,
-            openEditModal: state => state.global.openEditModal
+            fundations: state => state.app.fundations,
+            modObject : state => state.app.modObject,
+            params    : state => state.route.params
         }),
         inputFundation() {
-            const name = this.name;
-            this.name  = '';
-            return {
-                name: name,
-            };
-        },
-        editFundation() {
-            const fundation   = this.modFundation;
-            this.modFundation = {};
-            this.closeModal();
-            return fundation;
+            const inputFundation = JSON.parse(JSON.stringify(this.newFundation));
+            this.newFundation    = JSON.parse(JSON.stringify(fundationPattern));
+
+            return inputFundation;
+        }
+    },
+
+    mounted() {
+        if (this.params.id) {
+            this.expandFundation({ id: this.params.id });
         }
     }
 }

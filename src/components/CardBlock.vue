@@ -1,5 +1,5 @@
 <template>
-    <div class="b-cardblock" v-if="currentEvent">
+    <div class="b-cardblock">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Blocage de carte</h3>
             <form @submit.prevent="searchUser(username)">
@@ -47,8 +47,7 @@ export default {
 
     computed: {
         ...mapState({
-            foundUsers  : state => state.cardBlock.foundUsers,
-            currentEvent: state => state.global.currentEvent
+            foundUsers: state => state.cardBlock.foundUsers
         })
     }
 }

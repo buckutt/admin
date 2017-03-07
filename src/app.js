@@ -2,22 +2,24 @@ import 'material-design-lite/material.min.js';
 import 'material-design-lite/material.min.css';
 import 'jquery-datetimepicker/build/jquery.datetimepicker.full.min.js';
 import 'jquery-datetimepicker/jquery.datetimepicker.css';
+import '../src/lib/textfield.js';
 import jQuery from 'jquery';
 
 import Vue       from 'vue';
 import VueRouter from 'vue-router';
 import Vuex      from 'vuex';
 import VueMdl    from 'vue-mdl';
+import { sync }  from 'vuex-router-sync';
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(VueMdl);
 
-import Sidebar    from './components/Sidebar.vue';
+import App        from './App.vue';
 import Home       from './components/Home.vue';
 import Dashboard  from './components/Dashboard.vue';
 import Devices    from './components/Devices.vue';
-import Items      from './components/Items.vue';
+import Articles   from './components/Articles.vue';
 import Treasury   from './components/Treasury.vue';
 import Purchases  from './components/Purchases.vue';
 import Users      from './components/Users.vue';
@@ -31,7 +33,7 @@ import Events     from './components/Events.vue';
 import Logout     from './components/Logout.vue';
 import CardBlock  from './components/CardBlock.vue';
 
-import { updateLogged } from './store/actions';
+import { updateLogged, clearModObject } from './store/actions';
 
 import store    from './store/index';
 import { load } from './lib/load';
@@ -52,8 +54,8 @@ const routes = [
         component: Devices
     },
     {
-        path     : '/items',
-        component: Items
+        path     : '/articles',
+        component: Articles
     },
     {
         path     : '/treasury',
@@ -105,29 +107,47 @@ const routes = [
     }
 ];
 
+routes.forEach(route => {
+    routes.push({
+        path     : `${route.path}/:id`,
+        component: route.component
+    });
+});
+
+const withoutEventRoutes = ['', 'logout', 'events', 'treasury'];
+
 const router = new VueRouter({ routes });
 
 router.beforeEach((route, from, next) => {
-    if (route.path !== '/' && !router.app.$store.state.global.logged) {
+    clearModObject(store);
+    const path = route.path.split('/')[1];
+
+    if ((path !== '' && !store.state.global.logged)
+        || (withoutEventRoutes.indexOf(path) === -1 && !store.state.global.currentEvent)) {
         next('/');
     } else {
         next();
     }
 });
 
-const App = Vue.extend({
+const Admin = Vue.extend({
     router,
     store,
-    components: { Sidebar },
-    template  : '<div><Sidebar></Sidebar><router-view></router-view></div>',
+    components: { App },
+    template  : '<App></App>',
     methods   : {
         confirm() {
             return window.confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');
+        },
+        goBack() {
+            clearModObject(store);
+            router.push(`/${store.state.route.path.split('/')[1]}`);
         }
     }
 });
 
-new App().$mount('#app');
+new Admin().$mount('#app');
+sync(store, router);
 
 if (sessionStorage.hasOwnProperty('token')) {
     updateLogged(router.app.$store, true);

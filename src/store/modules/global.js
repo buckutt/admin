@@ -1,7 +1,6 @@
 const state = {
-    currentEvent : null,
-    logged       : false,
-    openEditModal: false
+    currentEvent: null,
+    logged      : false
 };
 
 // mutations
@@ -11,9 +10,6 @@ const mutations = {
     },
     UPDATELOGGED(state_, logged) {
         state_.logged = logged;
-    },
-    UPDATEEDITMODAL(state_, openEditModal) {
-        state_.openEditModal = openEditModal;
     }
 };
 

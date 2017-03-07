@@ -1,20 +1,20 @@
 <template>
-    <div class="b-categories" v-if="currentEvent">
+    <div class="b-categories">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Catégories</h3>
             <transition name="fade">
-                <div v-if="selectedCategory.name">
-                    <h5>Modifier la catégorie {{ selectedCategory.name }}:</h5>
-                    <form @submit.preven="updateCategory(modCategory)">
-                        <mdl-textfield floating-label="Nom" v-model="modCategory.name"></mdl-textfield>
+                <div v-if="modObject">
+                    <h5>Modifier la catégorie {{ modObject.name }}:</h5>
+                    <form @submit.prevent="updateObject({ route: 'categories', value: modObject })">
+                        <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                         <br />
                         <mdl-button colored raised>Modifier</mdl-button>
                     </form>
                     <br />
 
-                    <div v-show="detailsCategory.articles">
+                    <div v-show="modObject.articles">
                         <h5>Articles dans la catégorie:</h5>
-                        <mdl-button v-for="article in detailsCategory.articles" @click.native="search(article)">{{ article.name }}</mdl-button>
+                        <mdl-button v-for="article in modObject.articles" @click.native="search(article)">{{ article.name }}</mdl-button>
                         <br />
                     </div>
 
@@ -23,31 +23,33 @@
                         <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>
                     </form>
 
-                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="articleName.length > 0 && filteredArticles.length > 0">
-                        <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Objet</th>
-                                <th class="mdl-data-table__cell--non-numeric">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="article in filteredArticles">
-                                <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ article.name }}</td>
-                                <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                    <mdl-button @click.native="addToCategory(article)" v-show="!isInCategory(article)">Ajouter</mdl-button>
-                                    <mdl-button @click.native="removeFromCategory(article)" v-show="isInCategory(article)">Enlever</mdl-button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="b-responsive-table" v-show="articleName.length > 0 && filteredArticles.length > 0">
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Objet</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="article in filteredArticles">
+                                    <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ article.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                        <mdl-button raised colored @click.native="addToCategory(modObject, article)" v-show="!isInCategory(article)">Ajouter</mdl-button>
+                                        <mdl-button raised accent @click.native="removeFromCategory(modObject, article)" v-show="isInCategory(article)">Enlever</mdl-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <br />
-                    <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
+                    <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
                 </div>
             </transition>
             <transition name="fade">
-                <div v-if="!selectedCategory.name">
-                    <form @submit.prevent="createCategory(inputCategory)">
-                        <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
+                <div v-if="!modObject">
+                    <form @submit.prevent="createObject({ route: 'categories', value: inputCategory })">
+                        <mdl-textfield floating-label="Nom" v-model="newCategory.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                         <br />
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
@@ -66,8 +68,8 @@
                                 <tr v-for="category in categories">
                                     <td class="mdl-data-table__cell--non-numeric">{{ category.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button raised colored @click.native="editCategory(category)">Modifier</mdl-button>
-                                        <mdl-button raised accent @click.native="$root.confirm() && removeCategory(category)">Supprimer</mdl-button>
+                                        <mdl-button raised colored @click.native="expandCategory(category)">Modifier</mdl-button>
+                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'categories', value: category })">Supprimer</mdl-button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -80,56 +82,47 @@
 </template>
 
 <script>
-import { get, post, del } from '../lib/fetch';
 import { mapState, mapActions } from 'vuex';
 import fuzzy from 'fuzzy';
+
+const categoryPattern = {
+    name: ''
+};
 
 export default {
     data () {
         return {
-            name            : '',
-            articleName     : '',
-            selectedCategory: {},
-            detailsCategory : {},
-            modCategory     : {}
+            newCategory: JSON.parse(JSON.stringify(categoryPattern)),
+            articleName: ''
         };
     },
 
     methods: {
         ...mapActions([
-            'createCategory',
-            'updateCategory',
-            'removeCategory'
+            'createObject',
+            'updateObject',
+            'removeObject',
+            'createSimpleRelation',
+            'removeSimpleRelation',
+            'expandObject',
+            'updateModObject'
         ]),
-        goBack() {
-            this.articleName      = '';
-            this.selectedCategory = {};
-            this.modCategory      = {};
-        },
-        editCategory(category) {
-            this.selectedCategory = category;
-            this.modCategory      = JSON.parse(JSON.stringify(category));
+        expandCategory(category) {
+            this.$router.push(`/categories/${category.id}`);
 
-            const embedCategories = encodeURIComponent(JSON.stringify({
-                articles: true
-            }));
-
-            get(`categories/${category.id}?embed=${embedCategories}`)
-                .then(result => {
-                    result.articles = result.articles.filter(article => {
-                        return !article.isRemoved;
-                    });
-                    this.detailsCategory = result;
-                });
+            this.expandObject({
+                route: 'categories',
+                value: category
+            });
         },
         search(article) {
             this.articleName = article.name;
         },
         isInCategory(article) {
             let isInCategory = false;
-            if (this.detailsCategory.articles) {
-                if (this.detailsCategory.articles.length > 0) {
-                    this.detailsCategory.articles.forEach((a, i) => {
+            if (this.modObject.articles) {
+                if (this.modObject.articles.length > 0) {
+                    this.modObject.articles.forEach((a, i) => {
                         if (a.id == article.id) {
                             isInCategory = true;
                         }
@@ -138,34 +131,38 @@ export default {
             }
             return isInCategory;
         },
-        addToCategory(article) {
-            post(`categories/${this.selectedCategory.id}/articles`, {id: article.id})
-                .then(result => {
-                    this.detailsCategory.articles.push(article);
-                });
+        addToCategory(category, article) {
+            this.createSimpleRelation({
+                obj1: {
+                    route: 'categories',
+                    value: category
+                },
+                obj2: {
+                    route: 'articles',
+                    value: article
+                }
+            });
         },
-        removeFromCategory(article) {
-            del(`categories/${this.selectedCategory.id}/articles/${article.id}`)
-                .then(result => {
-                    let i = 0;
-                    for (const a of this.detailsCategory.articles) {
-                        if (a.id === article.id) {
-                            break;
-                        }
-
-                        ++i;
-                    }
-
-                    this.detailsCategory.articles.splice(i, 1);
-                });
+        removeFromCategory(category, article) {
+            this.removeSimpleRelation({
+                obj1: {
+                    route: 'categories',
+                    value: category
+                },
+                obj2: {
+                    route: 'articles',
+                    value: article
+                }
+            });
         }
     },
 
    computed: {
         ...mapState({
-            categories  : state => state.app.categories,
-            articles    : state => state.app.articles,
-            currentEvent: state => state.global.currentEvent
+            categories: state => state.app.categories,
+            articles  : state => state.app.articles,
+            modObject : state => state.app.modObject,
+            params    : state => state.route.params
         }),
         filteredArticles() {
             let val           = this.articleName;
@@ -175,11 +172,16 @@ export default {
             });
         },
         inputCategory() {
-            const name = this.name;
-            this.name  = '';
-            return {
-                name: name,
-            };
+            const inputCategory = JSON.parse(JSON.stringify(this.newCategory));
+            this.newCategory    = JSON.parse(JSON.stringify(categoryPattern));
+
+            return inputCategory;
+        }
+    },
+
+    mounted() {
+        if (this.params.id) {
+            this.expandCategory({ id: this.params.id });
         }
     }
 }

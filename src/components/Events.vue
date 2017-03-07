@@ -3,24 +3,24 @@
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Évenements</h3>
             <transition name="fade">
-                <div v-if="selectedEvent.name">
-                    <h5>Modifier l'évenement {{ selectedEvent.name }}:</h5>
-                    <form @submit.prevent="updateEvent(modEvent)">
-                        <mdl-textfield floating-label="Nom" v-model="modEvent.name"></mdl-textfield><br />
-                        <mdl-textfield floating-label="Rechargement minimal (en centimes)" v-model="modEvent.config.minReload"></mdl-textfield><br />
-                        <mdl-textfield floating-label="Solde maximal (en centimes)" v-model="modEvent.config.maxPerAccount"></mdl-textfield><br />
+                <div v-if="modObject">
+                    <h5>Modifier l'évenement {{ modObject.name }}:</h5>
+                    <form @submit.prevent="updateObject({ route: 'events', value: modObject })">
+                        <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })"></mdl-textfield required="required" error="Le nom doit contenir au moins un caractère"><br />
+                        <mdl-textfield floating-label="Rechargement minimal (en centimes)" :value="modObject.config.minReload" @input="updateModObject({ field:'config.minReload', value: $event })" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
+                        <mdl-textfield floating-label="Solde maximal (en centimes)" :value="modObject.config.maxPerAccount" @input="updateModObject({ field:'config.maxPerAccount', value: $event })" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
                         <mdl-button colored raised>Modifier</mdl-button>
                     </form>
                     <br />
-                    <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
+                    <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
                 </div>
             </transition>
             <transition name="fade">
-                <div v-if="!selectedEvent.name">
-                    <form v-on:submit.prevent="createEvent(inputEvent)">
-                        <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield><br />
-                        <mdl-textfield floating-label="Rechargement minimal (en centimes)" v-model="minReload"></mdl-textfield><br />
-                        <mdl-textfield floating-label="Solde maximal (en centimes)" v-model="maxPerAccount"></mdl-textfield><br />
+                <div v-if="!modObject">
+                    <form v-on:submit.prevent="createObject({ route: 'events', value: inputEvent })">
+                        <mdl-textfield floating-label="Nom" v-model="newEvent.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
+                        <mdl-textfield floating-label="Rechargement minimal (en centimes)" v-model="newEvent.config.minReload" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
+                        <mdl-textfield floating-label="Solde maximal (en centimes)" v-model="newEvent.config.maxPerAccount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
                     <br />
@@ -40,8 +40,8 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ event.config.minReload | price(true) }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxPerAccount | price(true) }}</td>
                                     <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                        <mdl-button raised colored @click.native="editEvent(event)">Modifier</mdl-button>
-                                        <mdl-button raised accent @click.native="$root.confirm() && removeEvent(event)">Supprimer</mdl-button>
+                                        <mdl-button raised colored @click.native="expandEvent(event)">Modifier</mdl-button>
+                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'events', value: event })">Supprimer</mdl-button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -55,82 +55,58 @@
 
 <script>
 import price from '../lib/price';
-import { get, post, del } from '../lib/fetch';
 import { mapState, mapActions } from 'vuex';
+
+const eventPattern = {
+    name  : '',
+    config: {
+        minReload    : 0,
+        maxPerAccount: 10000
+    }
+};
 
 export default {
     data () {
         return {
-            name          : '',
-            minReload     : 0,
-            maxPerAccount : 10000,
-            selectedEvent : {},
-            modEvent      : {},
-            detailsEvent  : {}
+            newEvent: JSON.parse(JSON.stringify(eventPattern))
         };
     },
 
     methods: {
         ...mapActions([
-            'createEvent',
-            'updateEvent',
-            'removeEvent'
+            'createObject',
+            'updateObject',
+            'removeObject',
+            'expandObject',
+            'updateModObject'
         ]),
-        goBack() {
-            this.selectedEvent = {};
-            this.modEvent      = {};
-        },
-        editEvent(event) {
-            this.selectedEvent  = event;
-            this.modEvent       = JSON.parse(JSON.stringify(event));
+        expandEvent(event) {
+            this.$router.push(`/events/${event.id}`);
 
-            const embedEvents = encodeURIComponent(JSON.stringify({
-                periods: true
-            }));
-
-            get(`events/${event.id}?embed=${embedEvents}`)
-                .then(result => {
-                    if (result.periods) {
-                        result.periods = result.periods.filter(period => {
-                            return !period.isRemoved;
-                        });
-                    }
-                    this.detailsEvent = result;
-                });
-        },
-        confirm(message) {
-            window.confirm(message);
+            this.expandObject({
+                route: 'events',
+                value: event
+            });
         }
     },
 
     computed: {
         ...mapState({
-            events : state => state.app.events,
-            periods: state => state.app.periods
+            events   : state => state.app.events,
+            modObject: state => state.app.modObject,
+            params   : state => state.route.params
         }),
         inputEvent() {
-            const name          = this.name;
-            const minReload     = this.minReload;
-            const maxPerAccount = this.maxPerAccount;
-            this.name           = '';
-            this.minReload      = 0;
-            this.maxPerAccount  = 10000;
+            const inputEvent = JSON.parse(JSON.stringify(this.newEvent));
+            this.newEvent    = eventPattern;
 
-            console.log({
-                name: name,
-                config: {
-                    minReload    : minReload,
-                    maxPerAccount: maxPerAccount
-                }
-            });
+            return inputEvent;
+        }
+    },
 
-            return {
-                name: name,
-                config: {
-                    minReload    : minReload,
-                    maxPerAccount: maxPerAccount
-                }
-            };
+    mounted() {
+        if (this.params.id) {
+            this.expandEvent({ id: this.params.id });
         }
     }
 }

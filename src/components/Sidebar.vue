@@ -5,7 +5,7 @@
             <ul class="eventSelector">
                 <li>
                     <form v-on:submit.prevent>
-                        <mdl-select label="Évenement" id="event-select" v-model="selectedEvent" :options="eventOptions" @click.native="changeEvent"></mdl-select>
+                        <mdl-select label="Évenement" id="event-select" :value="displayEvent" :options="eventOptions" @input="changeEvent($event)"></mdl-select>
                     </form>
                 </li>
                 <li>
@@ -72,7 +72,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/items" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                        <router-link to="/articles" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                             <i class="material-icons">view_module</i>
                             Articles
                         </router-link>
@@ -115,42 +115,25 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import { get } from '../lib/fetch';
 
 export default {
-    data () {
-        return {
-            selectedEvent: null
-        };
-    },
-
     methods: {
         ...mapActions([
             'updateCurrentEvent'
         ]),
-        changeEvent() {
-            if (this.selectedEvent) {
-                if (this.currentEvent) {
-                    if (this.selectedEvent != this.currentEvent.id) {
-                        this.$router.push('/stats');
-                    }
-                }
-
-                const embedEvents = encodeURIComponent(JSON.stringify({
-                    periods: true
-                }));
-
-                get(`events/${this.selectedEvent.id}?embed=${embedEvents}`)
-                    .then(result => {
-                        if (result.periods) {
-                            result.periods = result.periods.filter(period => {
-                                return !period.isRemoved;
-                            });
-                        }
-                        sessionStorage.setItem('event', JSON.stringify(result));
-                        this.updateCurrentEvent(result);
-                    });
+        changeEvent(event) {
+            if (!event) {
+                return;
             }
+
+            if (this.currentEvent) {
+                if (event.id === this.currentEvent.id) {
+                    return;
+                }
+            }
+
+            this.updateCurrentEvent(event);
+            this.$router.push('/stats');
         }
     },
 
@@ -164,13 +147,18 @@ export default {
             return this.events.map(event => {
                 return { name: event.name, value: event };
             });
+        },
+        displayEvent() {
+            if (!this.currentEvent) {
+                return '';
+            }
+            return this.currentEvent.name;
         }
     },
 
     mounted() {
         if (sessionStorage.hasOwnProperty('event')) {
-            const parsedEvent  = JSON.parse(sessionStorage.getItem('event'));
-            this.selectedEvent = parsedEvent.name;
+            const parsedEvent = JSON.parse(sessionStorage.getItem('event'));
             this.updateCurrentEvent(parsedEvent);
         }
     }
@@ -186,6 +174,7 @@ export default {
         height: 100%;
         position: fixed;
         width: $sidebarWidth;
+        overflow-y: auto;
 
         > h1 {
             color: $sidebarColor;

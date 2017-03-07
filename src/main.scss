@@ -43,7 +43,7 @@ html, body, main {
 .anytime-picker__dates > * { box-sizing: border-box; width: 14.28%; display: inline-block; }
 
 .b-responsive-table {
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .b-actions-cell {

@@ -1,42 +1,28 @@
 import {
-    fetchPoints,
-    fetchDevices,
-    fetchPeriods,
-    fetchArticles,
-    fetchFundations,
-    fetchGroups,
-    fetchCategories,
-    fetchEvents,
-    fetchPromotions,
-    fetchSets,
+    fetchObjects,
     listenChanges
 } from '../store/actions';
 
 export function load(store) {
+    const models = [
+        'points',
+        'devices',
+        'periods',
+        'articles',
+        'fundations',
+        'groups',
+        'categories',
+        'promotions',
+        'sets',
+        'events'
+    ];
+
     listenChanges(store, {
-        token : sessionStorage.getItem('token'),
-        models: [
-            'points',
-            'devices',
-            'periods',
-            'articles',
-            'fundations',
-            'groups',
-            'categories',
-            'promotions',
-            'sets',
-            'events'
-        ]
+        token: sessionStorage.getItem('token'),
+        models
     });
 
-    fetchPoints(store);
-    fetchDevices(store);
-    fetchPeriods(store);
-    fetchArticles(store);
-    fetchFundations(store);
-    fetchGroups(store);
-    fetchCategories(store);
-    fetchPromotions(store);
-    fetchSets(store);
-    fetchEvents(store);
+    models.forEach(model => {
+        fetchObjects(store, model);
+    });
 }

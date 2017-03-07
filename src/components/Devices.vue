@@ -1,31 +1,31 @@
 <template>
-    <div>
-        <div class="b-devices" v-if="currentEvent">
-            <div class="mdl-card mdl-shadow--2dp">
-                <h3>Equipements</h3>
-                <transition name="fade">
-                    <div v-if="selectedDevice.name">
-                        <h5>Modifier {{ selectedDevice.name }}</h5>
-                        <form @submit.prevent="updateDevice(modDevice)">
-                            <mdl-textfield floating-label="Nom" v-model="modDevice.name"></mdl-textfield>
-                            <mdl-textfield floating-label="Intervalle de rafraichissement" v-model="modDevice.refreshInterval"></mdl-textfield>
-                            <mdl-switch v-model="modDevice.realtime" class="mdl-js-ripple-effect">Temps réel</mdl-switch><br />
-                            <mdl-switch v-model="modDevice.doubleValidation" class="mdl-js-ripple-effect">Revalidation post-achats</mdl-switch><br />
-                            <mdl-switch v-model="modDevice.alcohol" class="mdl-js-ripple-effect">Avertissement alcool</mdl-switch><br />
-                            <mdl-switch v-model="modDevice.showCategories" class="mdl-js-ripple-effect">Afficher les catégories</mdl-switch><br />
-                            <mdl-switch v-model="modDevice.showPicture" class="mdl-js-ripple-effect">Afficher l'image utilisateur</mdl-switch><br />
+    <div class="b-devices">
+        <div class="mdl-card mdl-shadow--2dp">
+            <h3>Equipements</h3>
+            <transition name="fade">
+                <div v-if="modObject">
+                    <h5>Modifier {{ modObject.name }}</h5>
+                    <form @submit.prevent="updateObject({ route: 'devices', value: modObject })">
+                        <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+                        <mdl-textfield floating-label="Intervalle de rafraichissement" :value="modObject.refreshInterval" @input="updateModObject({ field:'refreshInterval', value: $event })"></mdl-textfield>
+                        <mdl-switch :value="modObject.realtime" @input="updateModObject({ field:'realtime', value: $event })" class="mdl-js-ripple-effect">Temps réel</mdl-switch><br />
+                        <mdl-switch :value="modObject.doubleValidation" @input="updateModObject({ field:'doubleValidation', value: $event })" class="mdl-js-ripple-effect">Revalidation post-achats</mdl-switch><br />
+                        <mdl-switch :value="modObject.alcohol" @input="updateModObject({ field:'alcohol', value: $event })" class="mdl-js-ripple-effect">Avertissement alcool</mdl-switch><br />
+                        <mdl-switch :value="modObject.showCategories" @input="updateModObject({ field:'showCategories', value: $event })" class="mdl-js-ripple-effect">Afficher les catégories</mdl-switch><br />
+                        <mdl-switch :value="modObject.showPicture" @input="updateModObject({ field:'showPicture', value: $event })" class="mdl-js-ripple-effect">Afficher l'image utilisateur</mdl-switch><br />
 
-                            <mdl-button colored raised>Modifier</mdl-button>
-                        </form>
-                        <br />
-                        <h5>Assigner l'équipement</h5>
-                        <br />
-                        <form @submit.prevent="createPeriodPoint(selectedDevice, inputPeriodPoint)">
-                            <mdl-select label="Point" id="point-select" v-model="selectedPoint" :options="pointOptions"></mdl-select>
-                            <mdl-select label="Période" id="period-select" v-model="selectedPeriod" :options="periodOptions"></mdl-select>
+                        <mdl-button colored raised>Modifier</mdl-button>
+                    </form>
+                    <br />
+                    <h5>Assigner l'équipement</h5>
+                    <br />
+                    <form @submit.prevent="createPeriodPoint(modObject, inputPeriodPoint)">
+                        <mdl-select label="Point" id="point-select" v-model="periodPoint.point" :options="pointOptions"></mdl-select>
+                        <mdl-select label="Période" id="period-select" v-model="periodPoint.period" :options="periodOptions"></mdl-select>
 
-                            <mdl-button colored raised>Ajouter</mdl-button>
-                        </form>
+                        <mdl-button colored raised>Ajouter</mdl-button>
+                    </form>
+                    <div class="b-responsive-table">
                         <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                             <thead>
                                 <tr>
@@ -35,150 +35,130 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="periodPoint in detailsDevice.periodPoints" v-show="periodPoint.period.Event_id == currentEvent.id">
+                                <tr v-for="periodPoint in modObject.periodPoints" v-show="periodPoint.period.Event_id == currentEvent.id">
                                     <td class="mdl-data-table__cell--non-numeric" v-if="periodPoint.point">{{ periodPoint.point.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ periodPoint.period.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button @click.native="$root.confirm() && removePeriodPoint(periodPoint)">Supprimer</mdl-button>
+                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'periodPoints', value: periodPoint })">Supprimer</mdl-button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                        <br />
-                        <h5>Génération du certificat SSL</h5>
-                        <br />
-                        <form v-on:submit.prevent="generateCert(selectedDevice, password)">
-                            <mdl-textfield type="password" floating-label="Mot de passe souhaité" v-model="password"></mdl-textfield>
-                            <mdl-button colored raised>Générer</mdl-button>
-                        </form>
-                        <br />
-                        <mdl-button colored raised @click.native="goBack()">Retour</mdl-button>
                     </div>
-                </transition>
-                <transition name="fade">
-                    <div v-if="!selectedDevice.name">
-                        <form v-on:submit.prevent="createDevice(inputDevice)">
-                            <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield><br />
-                            <mdl-button colored raised>Créer</mdl-button>
-                        </form>
-                        <br />
-                        <div class="b-responsive-table">
-                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                                <thead>
-                                    <tr>
-                                        <th class="mdl-data-table__cell--non-numeric">Equipement</th>
-                                        <th class="mdl-data-table__cell--non-numeric">Temps réel</th>
-                                        <th class="mdl-data-table__cell--non-numeric">Intervalle</th>
-                                        <th class="mdl-data-table__cell--non-numeric">Revalidation</th>
-                                        <th class="mdl-data-table__cell--non-numeric">Alcool</th>
-                                        <th class="mdl-data-table__cell--non-numeric">Catégories</th>
-                                        <th class="mdl-data-table__cell--non-numeric">Image</th>
-                                        <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="device in devices">
-                                        <td class="mdl-data-table__cell--non-numeric">{{ device.name }}</td>
-                                        <td class="mdl-data-table__cell--non-numeric">
-                                            <mdl-checkbox v-model="device.realtime" disabled></mdl-checkbox>
-                                        </td>
-                                        <td class="mdl-data-table__cell--non-numeric">{{ device.refreshInterval }}</td>
-                                        <td class="mdl-data-table__cell--non-numeric">
-                                            <mdl-checkbox v-model="device.doubleValidation" disabled></mdl-checkbox>
-                                        </td>
-                                        <td class="mdl-data-table__cell--non-numeric">
-                                            <mdl-checkbox v-model="device.alcohol" disabled></mdl-checkbox>
-                                        </td>
-                                        <td class="mdl-data-table__cell--non-numeric">
-                                            <mdl-checkbox v-model="device.showCategories" disabled></mdl-checkbox>
-                                        </td>
-                                        <td class="mdl-data-table__cell--non-numeric">
-                                            <mdl-checkbox v-model="device.showPicture" disabled></mdl-checkbox>
-                                        </td>
-                                        <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                            <mdl-button raised colored @click.native="editDevice(device)">Modifier</mdl-button>
-                                            <mdl-button raised accent @click.native="$root.confirm() && removeDevice(device)">Supprimer</mdl-button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <br />
+                    <h5>Génération du certificat SSL</h5>
+                    <br />
+                    <form v-on:submit.prevent="generateCert(modObject, password)">
+                        <mdl-textfield type="password" floating-label="Mot de passe souhaité" v-model="password"></mdl-textfield>
+                        <mdl-button colored raised>Générer</mdl-button>
+                    </form>
+                    <br />
+                    <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
+                </div>
+            </transition>
+            <transition name="fade">
+                <div v-if="!modObject">
+                    <form v-on:submit.prevent="createObject({ route: 'devices', value: inputDevice })">
+                        <mdl-textfield floating-label="Nom" v-model="newDevice.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
+                        <mdl-button colored raised>Créer</mdl-button>
+                    </form>
+                    <br />
+                    <div class="b-responsive-table">
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                            <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric">Equipement</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Temps réel</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Intervalle</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Revalidation</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Alcool</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Catégories</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Image</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="device in devices">
+                                    <td class="mdl-data-table__cell--non-numeric">{{ device.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-checkbox v-model="device.realtime" disabled></mdl-checkbox>
+                                    </td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ device.refreshInterval }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-checkbox v-model="device.doubleValidation" disabled></mdl-checkbox>
+                                    </td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-checkbox v-model="device.alcohol" disabled></mdl-checkbox>
+                                    </td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-checkbox v-model="device.showCategories" disabled></mdl-checkbox>
+                                    </td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <mdl-checkbox v-model="device.showPicture" disabled></mdl-checkbox>
+                                    </td>
+                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                        <mdl-button raised colored @click.native="expandDevice(device)">Modifier</mdl-button>
+                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'devices', value: device })">Supprimer</mdl-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </transition>
-            </div>
+                </div>
+            </transition>
         </div>
-        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
 </template>
 
 <script>
-import { get, post, put, download } from '../lib/fetch';
+import { download } from '../lib/fetch';
 import { mapState, mapActions } from 'vuex';
 import { saveAs } from 'file-saver';
+
+const devicePattern = {
+    name            : '',
+    fingerprint     : '',
+    realtime        : false,
+    refreshInterval : 5,
+    doubleValidation: false,
+    alcohol         : false,
+    showCategories  : false,
+    showPicture     : false
+};
 
 export default {
     data () {
         return {
-            name          : '',
-            password      : '',
-            selectedDevice: {},
-            modDevice     : {
-                realtime        : false,
-                doubleValidation: false,
-                alcohol         : false,
-                showCategories  : false,
-                showPicture     : false
-            },
-            detailsDevice : {},
-            selectedPeriod: null,
-            selectedPoint : null
+            newDevice  : JSON.parse(JSON.stringify(devicePattern)),
+            password   : '',
+            periodPoint: {
+                point : null,
+                period: null
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createDevice',
-            'updateDevice',
-            'removeDevice'
+            'createObject',
+            'updateObject',
+            'removeObject',
+            'expandObject',
+            'createMultipleRelation',
+            'updateModObject'
         ]),
-        goBack() {
-            this.selectedDevice = {};
-            this.modDevice      = {
-                realtime        : false,
-                doubleValidation: false,
-                alcohol         : false,
-                showCategories  : false,
-                showPicture     : false
-            };
-        },
-        editDevice(device) {
-            this.selectedDevice = device;
-            this.modDevice      = JSON.parse(JSON.stringify(device));
-            this.selectedPoint  = null;
-            this.selectedPeriod = null;
+        expandDevice(device) {
+            this.$router.push(`/devices/${device.id}`);
 
-
-            const embedDevices = encodeURIComponent(JSON.stringify({
-                periodPoints: {
-                    period: true,
-                    point : true
-                }
-            }));
-
-            get(`devices/${device.id}?embed=${embedDevices}`)
-                .then(result => {
-                    if (result.periodPoints) {
-                        result.periodPoints = result.periodPoints.filter(periodPoint => {
-                            return !periodPoint.isRemoved;
-                        });
-                    }
-                    this.detailsDevice = result;
-                });
+            this.expandObject({
+                route: 'devices',
+                value: device
+            });
         },
         createPeriodPoint(device, periodPoint) {
             if (periodPoint.Point_id) {
-                const filteredEvents = this.detailsDevice.periodPoints
+                const filteredEvents = this.modObject.periodPoints
                     .filter(pP => {
                         if (!pP.point) {
                             return false;
@@ -203,33 +183,16 @@ export default {
 
             delete periodPoint.period;
 
-            let currentPeriodPoint  = {};
-            const embedPeriodPoint  = encodeURIComponent(JSON.stringify({
-                point : true,
-                period: true
-            }));
-            post(`periodPoints?embed=${embedPeriodPoint}`, periodPoint)
-                .then(result => {
-                    currentPeriodPoint = result;
-                    return post(`devices/${device.id}/periodPoints`, {id: result.id});
-                })
-                .then(result => {
-                    this.detailsDevice.periodPoints.push(currentPeriodPoint);
-                });
-        },
-        removePeriodPoint(periodPoint) {
-            periodPoint.isRemoved = true;
-            put(`periodPoints/${periodPoint.id}`, periodPoint)
-                .then(result => {
-                    let i = 0;
-                    for(const p of this.detailsDevice.periodPoints) {
-                        if (p.id === periodPoint.id) {
-                            break;
-                        }
-                        ++i;
-                    }
-                    this.detailsDevice.periodPoints.splice(i, 1);
-                });
+            this.createMultipleRelation({
+                obj: {
+                    route: 'devices',
+                    value: device
+                },
+                relation: {
+                    route : 'periodPoints',
+                    fields: periodPoint
+                }
+            });
         },
         generateCert(device, password) {
             download(`services/certificate?deviceId=${device.id}&password=${password}`)
@@ -250,54 +213,53 @@ export default {
             devices     : state => state.app.devices,
             points      : state => state.app.points,
             periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent
+            currentEvent: state => state.global.currentEvent,
+            modObject   : state => state.app.modObject,
+            params      : state => state.route.params
         }),
         inputDevice() {
-            const name          = this.name;
-            this.name           = '';
+            const inputDevice = JSON.parse(JSON.stringify(this.newDevice));
+            this.newDevice    = JSON.parse(JSON.stringify(devicePattern));
 
-            return {
-                name,
-                fingerprint     : '',
-                realtime        : false,
-                refreshInterval : 5,
-                doubleValidation: false,
-                alcohol         : false,
-                showCategories  : false,
-                showPicture     : false
-            };
+            return inputDevice;
         },
         inputPeriodPoint() {
-            const point         = this.selectedPoint;
-            const period        = this.selectedPeriod;
-            this.selectedPoint  = null;
-            this.selectedPeriod = null;
-            if (!point) {
-                return {
-                    Period_id: period.id
-                }
+            const periodPoint = JSON.parse(JSON.stringify(this.periodPoint));
+
+            Object.keys(this.periodPoint).map(key => {
+                this.periodPoint[key] = null;
+            });
+
+            if (periodPoint.point) {
+                periodPoint.Point_id = periodPoint.point.id;
+                delete periodPoint.point;
             }
-            return {
-                Period_id: period.id,
-                period   : period,
-                Point_id : point.id
+
+            if (periodPoint.period) {
+                periodPoint.Period_id = periodPoint.period.id;
             }
+
+            return periodPoint;
         },
         periodOptions() {
-            let periods = this.periods.map(period => {
+            return this.periods.map(period => {
                 if (period.Event_id == this.currentEvent.id) {
                     return { name: period.name, value: period };
                 } else {
                     return null;
                 }
-            });
-
-            return periods.filter(a => a);
+            }).filter(a => a);
         },
         pointOptions() {
             return this.points.map(point => {
                 return { name: point.name, value: point };
             });
+        }
+    },
+
+    mounted() {
+        if (this.params.id) {
+            this.expandDevice({ id: this.params.id });
         }
     }
 }
@@ -330,10 +292,6 @@ export default {
                 width: 100%;
                 white-space: normal;
             }
-        }
-
-        & + .mdl-snackbar {
-            margin-left: $sidebarWidth / 2;
         }
     }
 </style>

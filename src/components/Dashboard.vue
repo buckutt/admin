@@ -1,12 +1,10 @@
 <template>
-    <div v-if="currentEvent">
+    <div >
         <canvas ref="chart" width="400" height="400"></canvas>
     </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
-
 export default {
     data () {
         return {
@@ -36,12 +34,6 @@ export default {
                 ]
             }
         };
-    },
-
-    computed: {
-        ...mapState({
-            currentEvent: state => state.global.currentEvent
-        })
     }
 }
 </script>

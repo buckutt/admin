@@ -1,0 +1,67 @@
+{
+    "articles": {
+        "prices": {
+            "fundation": true,
+            "group"    : true,
+            "period"   : true,
+            "point"    : true
+        }
+    },
+    "categories": {
+        "articles": true
+    },
+    "devices": {
+        "periodPoints": {
+            "period": true,
+            "point" : true
+        }
+    },
+    "events": {
+        "periods": true
+    },
+    "groupPeriods": {
+        "period": true,
+        "group" : true
+    },
+    "periodPoints": {
+        "period": true,
+        "point" : true
+    },
+    "prices": {
+        "fundation": true,
+        "group"    : true,
+        "period"   : true,
+        "point"    : true
+    },
+    "promotions": {
+        "prices": {
+            "fundation": true,
+            "group"    : true,
+            "period"   : true,
+            "point"    : true
+        },
+        "articles": true,
+        "sets"    : {
+            "articles": true
+        }
+    },
+    "rights": {
+        "period": true,
+        "point" : true
+    },
+    "transfers": {
+        "sender"  : true,
+        "reciever": true
+    },
+    "users": {
+        "meansOfLogin": true,
+        "rights"      : {
+            "period": true,
+            "point" : true
+        },
+        "groupPeriods": {
+            "period": true,
+            "group" : true
+        }
+    }
+}

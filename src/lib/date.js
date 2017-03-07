@@ -1,7 +1,15 @@
 import Vue from 'vue';
 
 export function parseDate (date) {
+    if (typeof date === 'string' && date.length !== 24) {
+        return date;
+    }
+
     const dateJs = new Date(date);
+
+    if (isNaN(dateJs.getDate())) {
+        return date;
+    }
 
     const day   = `0${dateJs.getDate()}`.slice(-2);
     const month = `0${dateJs.getMonth() + 1}`.slice(-2);
@@ -16,6 +24,10 @@ export function parseDate (date) {
 export function convertDate (dateString) {
     const regexp = /([0-9]{2})\/([0-9]{2})\/([0-9]{4}) ([0-9]{2}):([0-9]{2})/;
     const result = dateString.match(regexp);
+
+    if (!result) {
+        return dateString;
+    }
 
     return new Date(result[3], result[2] - 1, result[1], result[4], result[5]);
 }

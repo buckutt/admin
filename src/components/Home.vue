@@ -25,8 +25,6 @@
                 </div>
             </div>
         </transition>
-
-        <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
     </div>
 </template>
 
@@ -65,20 +63,16 @@ export default {
 
                             load(this.$router.app.$store);
                         } else {
-                            const dataAdmin = {
+                            this.$root.$emit('snackfilter', {
                                 message: 'Vous n\'êtes pas administrateur.',
                                 timeout: 2000
-                            };
-
-                            this.$root.$emit('snackfilter', dataAdmin);
+                            });
                         }
                     } else {
-                        const data = {
+                        this.$root.$emit('snackfilter', {
                             message: 'La connexion a échoué.',
                             timeout: 2000
-                        };
-
-                        this.$root.$emit('snackfilter', data);
+                        });
                     }
                 });
         },
