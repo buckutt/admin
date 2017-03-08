@@ -16,7 +16,7 @@
     "watch": "webpack-dev-server --inline --no-info --hot --host 0.0.0.0 --port 8082",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "lint": "eslint .",
-    "serve": "static public/ -a 0.0.0.0 -p 8082"
+    "start": "static public/ -a 0.0.0.0 -p 8082"
   },
   "devDependencies": {
     "babel-core": "^6.11.4",
