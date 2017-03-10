@@ -4,6 +4,8 @@ WORKDIR /usr/src/buckless-admin
 
 EXPOSE 8082
 
+CMD ["yarn", "run", "start"]
+
 RUN apk update && \
     apk add --no-cache git openssh make gcc g++ python && \
     mkdir -p /usr/src/buckless-admin
