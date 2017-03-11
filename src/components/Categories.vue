@@ -14,7 +14,7 @@
 
                     <div v-show="modObject.articles">
                         <h5>Articles dans la catégorie:</h5>
-                        <mdl-button v-for="article in modObject.articles" @click.native="search(article)">{{ article.name }}</mdl-button>
+                        <mdl-button v-for="article in modObject.articles" :key="article.id" @click.native="search(article)">{{ article.name }}</mdl-button>
                         <br />
                     </div>
 
@@ -90,7 +90,7 @@ const categoryPattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             newCategory: JSON.parse(JSON.stringify(categoryPattern)),
             articleName: ''
@@ -122,8 +122,8 @@ export default {
             let isInCategory = false;
             if (this.modObject.articles) {
                 if (this.modObject.articles.length > 0) {
-                    this.modObject.articles.forEach((a, i) => {
-                        if (a.id == article.id) {
+                    this.modObject.articles.forEach((a) => {
+                        if (a.id === article.id) {
                             isInCategory = true;
                         }
                     });
@@ -157,7 +157,7 @@ export default {
         }
     },
 
-   computed: {
+    computed: {
         ...mapState({
             categories: state => state.app.categories,
             articles  : state => state.app.articles,
@@ -165,11 +165,9 @@ export default {
             params    : state => state.route.params
         }),
         filteredArticles() {
-            let val           = this.articleName;
-            let articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
-            return articlesNames.map(article => {
-                return article.original;
-            });
+            const val           = this.articleName;
+            const articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
+            return articlesNames.map(article => article.original);
         },
         inputCategory() {
             const inputCategory = JSON.parse(JSON.stringify(this.newCategory));
@@ -184,10 +182,10 @@ export default {
             this.expandCategory({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-categories {

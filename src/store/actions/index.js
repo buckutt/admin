@@ -1,7 +1,5 @@
-import * as appActions from './app';
+export * from './app';
 
-import * as cardBlockActions from './cardBlock';
+export * from './cardBlock';
 
-import * as globalActions from './global';
-
-export default { ...appActions, ...cardBlockActions, ...globalActions };
+export * from './global';

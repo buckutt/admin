@@ -54,8 +54,8 @@
 </template>
 
 <script>
-import price from '../lib/price';
 import { mapState, mapActions } from 'vuex';
+import '../lib/price';
 
 const eventPattern = {
     name  : '',
@@ -66,7 +66,7 @@ const eventPattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             newEvent: JSON.parse(JSON.stringify(eventPattern))
         };
@@ -109,10 +109,10 @@ export default {
             this.expandEvent({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-events {

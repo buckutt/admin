@@ -1,5 +1,3 @@
-import { api } from '../../config';
-
 const authData = {
     headers: {
         Accept        : 'application/json',
@@ -11,7 +9,7 @@ if (sessionStorage.hasOwnProperty('token')) {
     authData.headers.Authorization = `Bearer ${sessionStorage.getItem('token')}`;
 }
 
-export function updateBearer (token) {
+export function updateBearer(token) {
     authData.headers.Authorization = `Bearer ${token}`;
 }
 
@@ -21,14 +19,14 @@ export function updateBearer (token) {
  * @param  {Object} opts_ Options to pass to fetch (headers are already there)
  * @return {Promise} The result as JSON
  */
-export function get (url, opts_) {
+export function get(url, opts_) {
     const opts = Object.assign({}, authData, {
         method: 'GET'
     }, opts_);
 
-    return fetch(`${api}/${url}`, opts)
+    return fetch(`${config.api}/${url}`, opts)
         .then(res => res.json())
-        .then(results => {
+        .then((results) => {
             if (Array.isArray(results)) {
                 return results.filter(r => !r.isRemoved);
             } else if (!results.isRemoved) {
@@ -44,13 +42,13 @@ export function get (url, opts_) {
  * @param  {Object} opts_ Options to pass to fetch (headers, body and method are already there)
  * @return {Promise} The result as JSON
  */
-export function post (url, data, opts_) {
+export function post(url, data, opts_) {
     const opts = Object.assign({}, authData, {
         method: 'POST',
         body  : JSON.stringify(data)
     }, opts_);
 
-    return fetch(`${api}/${url}`, opts)
+    return fetch(`${config.api}/${url}`, opts)
         .then(res => res.json());
 }
 
@@ -61,13 +59,13 @@ export function post (url, data, opts_) {
  * @param  {Object} opts_ Options to pass to fetch (headers, body and method are already there)
  * @return {Promise} The result as JSON
  */
-export function put (url, data, opts_) {
+export function put(url, data, opts_) {
     const opts = Object.assign({}, authData, {
         method: 'PUT',
         body  : JSON.stringify(data)
     }, opts_);
 
-    return fetch(`${api}/${url}`, opts)
+    return fetch(`${config.api}/${url}`, opts)
         .then(res => res.json());
 }
 
@@ -77,12 +75,12 @@ export function put (url, data, opts_) {
  * @param  {Object} opts_ Options to pass to fetch (headers are already there)
  * @return {Promise} The result as JSON
  */
-export function del (url, opts_) {
+export function del(url, opts_) {
     const opts = Object.assign({}, authData, {
         method: 'DELETE'
     }, opts_);
 
-    return fetch(`${api}/${url}`, opts)
+    return fetch(`${config.api}/${url}`, opts)
         .then(res => res.json());
 }
 
@@ -92,13 +90,13 @@ export function del (url, opts_) {
  * @param  {Object} opts_ Options to pass to fetch (headers are already there)
  * @return {Promise} The result as blob
  */
-export function download (url, opts_) {
+export function download(url, opts_) {
     const opts = Object.assign({}, authData, {
         method: 'GET'
     }, opts_);
 
-    return fetch(`${api}/${url}`, opts)
-        .then(res => {
+    return fetch(`${config.api}/${url}`, opts)
+        .then((res) => {
             if (res.status !== 200) {
                 return Promise.reject(new Error('Download failed'));
             }

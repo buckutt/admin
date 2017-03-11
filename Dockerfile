@@ -7,7 +7,7 @@ EXPOSE 8082
 CMD ["npm", "run", "serve"]
 
 RUN apk update && \
-    apk add --no-cache git openssh make gcc g++ python && \
+    apk add --no-cache git openssh make gcc g++ python openjdk8-jre && \
     mkdir -p /usr/src/buckless-admin
 
 COPY package.json /usr/src/buckless-admin/

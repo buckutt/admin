@@ -56,12 +56,10 @@
 </template>
 
 <script>
-import Vue                   from 'vue';
-import price                 from '../lib/price';
-import reloadType            from '../lib/reloadType';
-import date, { convertDate } from '../lib/date';
-
 import { mapState, mapActions } from 'vuex';
+import '../lib/price';
+import '../lib/reloadType';
+import { convertDate } from '../lib/date';
 
 const fieldsPattern = {
     point  : null,
@@ -70,7 +68,7 @@ const fieldsPattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             fields: JSON.parse(JSON.stringify(fieldsPattern))
         };
@@ -85,25 +83,23 @@ export default {
         totalReload() {
             let sum = 0;
 
-            for (const reload of this.reloads) {
+            this.reloads.forEach((reload) => {
                 sum += reload.reduction;
-            }
+            });
 
             return sum;
         },
         totalTransfer() {
             let sum = 0;
 
-            for (const transfer of this.transfers) {
+            this.transfers.forEach((transfer) => {
                 sum += transfer.amount;
-            }
+            });
 
             return sum;
         },
         pointOptions() {
-            let options = this.points.map(point => {
-                return { name: point.name, value: point.id };
-            });
+            const options = this.points.map(point => ({ name: point.name, value: point.id }));
 
             options.unshift({ name: 'Tous', value: null });
 
@@ -118,11 +114,11 @@ export default {
         updateField(field, value) {
             this.fields[field] = value;
         },
-        filter () {
+        filter() {
             const inputFields = JSON.parse(JSON.stringify(this.fields));
             let isFilled      = false;
 
-            Object.keys(inputFields).forEach(key => {
+            Object.keys(inputFields).forEach((key) => {
                 if (inputFields[key]) {
                     isFilled = true;
                 }
@@ -145,26 +141,26 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         this.$nextTick(() => {
             const $dateIn  = this.$refs.datein.$el;
             const $dateOut = this.$refs.dateout.$el;
-            jQuery($dateIn).datetimepicker({
-                onChangeDateTime: ct => {
+            window.jQuery($dateIn).datetimepicker({
+                onChangeDateTime: (ct) => {
                     this.fields.dateIn = new Date(ct);
                 }
             });
-            jQuery($dateOut).datetimepicker({
-                onChangeDateTime: ct => {
+            window.jQuery($dateOut).datetimepicker({
+                onChangeDateTime: (ct) => {
                     this.fields.dateOut = new Date(ct);
                 }
             });
         });
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-treasury {

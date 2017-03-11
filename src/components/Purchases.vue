@@ -57,11 +57,9 @@
 </template>
 
 <script>
-import Vue                   from 'vue';
-import price                 from '../lib/price';
-import date, { convertDate } from '../lib/date';
-
 import { mapState, mapActions } from 'vuex';
+import '../lib/price';
+import { convertDate } from '../lib/date';
 
 const fieldsPattern = {
     point    : null,
@@ -72,7 +70,7 @@ const fieldsPattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             fields    : JSON.parse(JSON.stringify(fieldsPattern)),
             dateChoice: '0'
@@ -90,18 +88,18 @@ export default {
         totalSell() {
             let sum = 0;
 
-            for (const purchase of this.purchases) {
+            this.purchases.forEach((purchase) => {
                 sum += purchase.totalVAT;
-            }
+            });
 
             return sum;
         },
         totalSellWT() {
             let sum = 0;
 
-            for (const purchase of this.purchases) {
+            this.purchases.forEach((purchase) => {
                 sum += purchase.totalWT;
-            }
+            });
 
             return sum;
         },
@@ -110,12 +108,11 @@ export default {
                 return [];
             }
 
-            const periods = this.periods.map(period => {
+            const periods = this.periods.map((period) => {
                 if (period.Event_id === this.currentEvent.id) {
                     return { name: period.name, value: period.id };
-                } else {
-                    return null;
                 }
+                return null;
             });
 
             periods.unshift({ name: 'Toutes', value: null });
@@ -123,18 +120,14 @@ export default {
             return periods.filter(a => a);
         },
         pointOptions() {
-            const options = this.points.map(point => {
-                return { name: point.name, value: point.id };
-            });
+            const options = this.points.map(point => ({ name: point.name, value: point.id }));
 
             options.unshift({ name: 'Tous', value: null });
 
             return options;
         },
         fundationOptions() {
-            const options = this.fundations.map(fundation => {
-                return { name: fundation.name, value: fundation.id };
-            });
+            const options = this.fundations.map(fundation => ({ name: fundation.name, value: fundation.id }));
 
             options.unshift({ name: 'Toutes', value: null });
 
@@ -149,11 +142,11 @@ export default {
         updateField(field, value) {
             this.fields[field] = value;
         },
-        filter () {
+        filter() {
             const inputFields = JSON.parse(JSON.stringify(this.fields));
             let isFilled      = false;
 
-            Object.keys(inputFields).forEach(key => {
+            Object.keys(inputFields).forEach((key) => {
                 if (inputFields[key]) {
                     isFilled = true;
                 }
@@ -177,26 +170,26 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         this.$nextTick(() => {
             const $dateIn  = this.$refs.datein.$el;
             const $dateOut = this.$refs.dateout.$el;
-            jQuery($dateIn).datetimepicker({
-                onChangeDateTime: ct => {
+            window.jQuery($dateIn).datetimepicker({
+                onChangeDateTime: (ct) => {
                     this.fields.dateIn = new Date(ct);
                 }
             });
-            jQuery($dateOut).datetimepicker({
-                onChangeDateTime: ct => {
+            window.jQuery($dateOut).datetimepicker({
+                onChangeDateTime: (ct) => {
                     this.fields.dateOut = new Date(ct);
                 }
             });
         });
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-purchases {

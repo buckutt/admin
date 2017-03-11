@@ -56,7 +56,7 @@ const fundationPattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             newFundation: JSON.parse(JSON.stringify(fundationPattern))
         };
@@ -80,7 +80,7 @@ export default {
         }
     },
 
-   computed: {
+    computed: {
         ...mapState({
             fundations: state => state.app.fundations,
             modObject : state => state.app.modObject,
@@ -99,10 +99,10 @@ export default {
             this.expandFundation({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-fundations {

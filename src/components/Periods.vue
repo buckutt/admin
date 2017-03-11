@@ -61,8 +61,8 @@
 </template>
 
 <script>
-import date, { parseDate, convertDate } from '../lib/date';
 import { mapState, mapActions } from 'vuex';
+import { convertDate } from '../lib/date';
 
 const periodPattern = {
     name : '',
@@ -71,7 +71,7 @@ const periodPattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             newPeriod: JSON.parse(JSON.stringify(periodPattern))
         };
@@ -101,20 +101,20 @@ export default {
                 const $dateStart = this.$refs.dateStart.$el;
                 const $dateEnd   = this.$refs.dateEnd.$el;
 
-                jQuery($dateStart).datetimepicker({
-                    onChangeDateTime: ct => {
+                window.jQuery($dateStart).datetimepicker({
+                    onChangeDateTime: (ct) => {
                         if (this.modObject) {
-                            this.updateModObject({ field:'start', value: new Date(ct) });
+                            this.updateModObject({ field: 'start', value: new Date(ct) });
                         } else {
                             this.newPeriod.start = new Date(ct);
                         }
                     }
                 });
 
-                jQuery($dateEnd).datetimepicker({
-                    onChangeDateTime: ct => {
+                window.jQuery($dateEnd).datetimepicker({
+                    onChangeDateTime: (ct) => {
                         if (this.modObject) {
-                            this.updateModObject({ field:'end', value: new Date(ct) });
+                            this.updateModObject({ field: 'end', value: new Date(ct) });
                         } else {
                             this.newPeriod.end = new Date(ct);
                         }
@@ -129,10 +129,10 @@ export default {
 
     computed: {
         ...mapState({
-            periods      : state => state.app.periods,
-            currentEvent : state => state.global.currentEvent,
-            modObject    : state => state.app.modObject,
-            params       : state => state.route.params
+            periods     : state => state.app.periods,
+            currentEvent: state => state.global.currentEvent,
+            modObject   : state => state.app.modObject,
+            params      : state => state.route.params
         }),
         inputPeriod() {
             const inputPeriod    = JSON.parse(JSON.stringify(this.newPeriod));
@@ -143,17 +143,17 @@ export default {
         }
     },
 
-    mounted () {
+    mounted() {
         this.picker();
 
         if (this.params.id) {
             this.expandPeriod({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-periods {

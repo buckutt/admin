@@ -144,9 +144,7 @@ export default {
             logged      : state => state.global.logged
         }),
         eventOptions() {
-            return this.events.map(event => {
-                return { name: event.name, value: event };
-            });
+            return this.events.map(event => ({ name: event.name, value: event }));
         },
         displayEvent() {
             if (!this.currentEvent) {
@@ -162,10 +160,10 @@ export default {
             this.updateCurrentEvent(parsedEvent);
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-sidebar {

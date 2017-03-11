@@ -20,7 +20,7 @@ export function searchUser({ commit }, name) {
         meansOfLogin: true
     });
 
-    get(`users/search?q=${q(qFirstname)}&or[]=${q(qLastname)}&embed=${e}`).then(users => {
+    get(`users/search?q=${q(qFirstname)}&or[]=${q(qLastname)}&embed=${e}`).then((users) => {
         commit('SEARCHUSER', users);
     });
 }

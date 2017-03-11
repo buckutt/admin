@@ -89,9 +89,9 @@
 </template>
 
 <script>
-import price from '../lib/price';
 import { mapState, mapActions } from 'vuex';
 import fuzzy from 'fuzzy';
+import '../lib/price';
 
 const articlePattern = {
     name   : '',
@@ -109,7 +109,7 @@ const pricePattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             name      : '',
             newArticle: JSON.parse(JSON.stringify(articlePattern)),
@@ -166,11 +166,9 @@ export default {
             params      : state => state.route.params
         }),
         filteredArticles() {
-            let val           = this.name;
-            let articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
-            return articlesNames.map(article => {
-                return article.original;
-            });
+            const val           = this.name;
+            const articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
+            return articlesNames.map(article => article.original);
         },
         inputArticle() {
             const inputArticle = JSON.parse(JSON.stringify(this.newArticle));
@@ -206,28 +204,21 @@ export default {
             return price;
         },
         periodOptions() {
-            return this.periods.map(period => {
-                if (period.Event_id == this.currentEvent.id) {
+            return this.periods.map((period) => {
+                if (period.Event_id === this.currentEvent.id) {
                     return { name: period.name, value: period };
-                } else {
-                    return null;
                 }
+                return null;
             }).filter(a => a);
         },
         pointOptions() {
-            return this.points.map(point => {
-                return { name: point.name, value: point };
-            });
+            return this.points.map(point => ({ name: point.name, value: point }));
         },
         fundationOptions() {
-            return this.fundations.map(fundation => {
-                return { name: fundation.name, value: fundation };
-            });
+            return this.fundations.map(fundation => ({ name: fundation.name, value: fundation }));
         },
         groupOptions() {
-            return this.groups.map(group => {
-                return { name: group.name, value: group };
-            });
+            return this.groups.map(group => ({ name: group.name, value: group }));
         }
     },
 
@@ -236,10 +227,10 @@ export default {
             this.expandArticle({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-articles {

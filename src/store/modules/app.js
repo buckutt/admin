@@ -22,7 +22,7 @@ const state = {
 // mutations
 const mutations = {
     CLEARAPPSTORE(state_) {
-        Object.keys(state_).forEach(key => {
+        Object.keys(state_).forEach((key) => {
             if (Array.isArray(state_[key])) {
                 state_[key] = [];
             } else {

@@ -167,7 +167,7 @@ const userPattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             rightsList: ['admin', 'seller', 'reloader'],
             newUser   : JSON.parse(JSON.stringify(userPattern)),
@@ -236,8 +236,8 @@ export default {
         updateUser(user) {
             let existingMol = null;
 
-            user.meansOfLogin.forEach(meanOfLogin => {
-                if (meanOfLogin.type == 'etuMail') {
+            user.meansOfLogin.forEach((meanOfLogin) => {
+                if (meanOfLogin.type === 'etuMail') {
                     existingMol = meanOfLogin;
                 }
             });
@@ -308,9 +308,9 @@ export default {
         },
         randString(x) {
             let s = '';
-            while(s.length < x && x > 0) {
-                let r = Math.random();
-                s += (r<0.1?Math.floor(r*100):String.fromCharCode(Math.floor(r*26) + (r>0.5?97:65)));
+            while (s.length < x && x > 0) {
+                const r = Math.random();
+                s += (r < 0.1 ? Math.floor(r * 100) : String.fromCharCode(Math.floor(r * 26) + (r > 0.5 ? 97 : 65)));
             }
             return s;
         },
@@ -320,7 +320,7 @@ export default {
         }
     },
 
-   computed: {
+    computed: {
         ...mapState({
             users       : state => state.app.users,
             points      : state => state.app.points,
@@ -346,7 +346,7 @@ export default {
         inputRight() {
             const userRight = JSON.parse(JSON.stringify(this.userRight));
 
-            Object.keys(this.userRight).map(key => {
+            Object.keys(this.userRight).map((key) => {
                 this.userRight[key] = null;
             });
 
@@ -365,7 +365,7 @@ export default {
         inputGroupPeriod() {
             const groupPeriod = JSON.parse(JSON.stringify(this.groupPeriod));
 
-            Object.keys(this.groupPeriod).map(key => {
+            Object.keys(this.groupPeriod).map((key) => {
                 this.groupPeriod[key] = null;
             });
 
@@ -386,25 +386,20 @@ export default {
                 return [];
             }
 
-            return this.periods.map(period => {
-                if (period.Event_id == this.currentEvent.id) {
+            return this.periods.map((period) => {
+                if (period.Event_id === this.currentEvent.id) {
                     return { name: period.name, value: period };
-                } else {
-                    return null;
                 }
+                return null;
             }).filter(a => a);
         },
         pointOptions() {
-            const points = this.points.map(point => {
-                return { name: point.name, value: point };
-            });
+            const points = this.points.map(point => ({ name: point.name, value: point }));
             points.unshift({ name: 'Aucun', value: null });
             return points;
         },
         groupOptions() {
-            return this.groups.map(group => {
-                return { name: group.name, value: group };
-            });
+            return this.groups.map(group => ({ name: group.name, value: group }));
         }
     },
 
@@ -415,10 +410,10 @@ export default {
             this.expandUser({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-users {

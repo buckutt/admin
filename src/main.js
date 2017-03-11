@@ -1,19 +1,14 @@
-import 'material-design-lite/material.min.js';
-import 'material-design-lite/material.min.css';
-import 'jquery-datetimepicker/build/jquery.datetimepicker.full.min.js';
-import 'jquery-datetimepicker/jquery.datetimepicker.css';
-import '../src/lib/textfield.js';
-import jQuery from 'jquery';
-
+import jQuery    from 'jquery';
 import Vue       from 'vue';
 import VueRouter from 'vue-router';
 import Vuex      from 'vuex';
 import VueMdl    from 'vue-mdl';
 import { sync }  from 'vuex-router-sync';
 
-Vue.use(VueRouter);
-Vue.use(Vuex);
-Vue.use(VueMdl);
+import 'material-design-lite/material.min.js';
+import 'material-design-lite/material.min.css';
+import 'jquery-datetimepicker/build/jquery.datetimepicker.full.min.js';
+import 'jquery-datetimepicker/jquery.datetimepicker.css';
 
 import App        from './App.vue';
 import Home       from './components/Home.vue';
@@ -37,6 +32,12 @@ import { updateLogged, clearModObject } from './store/actions';
 
 import store    from './store/index';
 import { load } from './lib/load';
+
+import '../src/lib/textfield.js';
+
+Vue.use(VueRouter);
+Vue.use(Vuex);
+Vue.use(VueMdl);
 
 window.jQuery = jQuery;
 
@@ -107,7 +108,7 @@ const routes = [
     }
 ];
 
-routes.forEach(route => {
+routes.forEach((route) => {
     routes.push({
         path     : `${route.path}/:id`,
         component: route.component

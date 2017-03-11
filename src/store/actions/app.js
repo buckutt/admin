@@ -1,4 +1,3 @@
-import { api, relations }      from '../../../config';
 import { get, post, put, del } from '../../lib/fetch';
 
 const modelTocommit = {
@@ -90,13 +89,13 @@ export function clearObject({ commit }, route) {
 
 export function expandObject({ commit }, object) {
     let embed = '';
-    if (relations[object.route]) {
-        embed = `?embed=${encodeURIComponent(JSON.stringify(relations[object.route]))}`;
+    if (config.relations[object.route]) {
+        embed = `?embed=${encodeURIComponent(JSON.stringify(config.relations[object.route]))}`;
     }
 
-    get(`${object.route}/${object.value.id}${embed}`).then(result => {
-        if (relations[object.route]) {
-            Object.keys(relations[object.route]).forEach(key => {
+    get(`${object.route}/${object.value.id}${embed}`).then((result) => {
+        if (config.relations[object.route]) {
+            Object.keys(config.relations[object.route]).forEach((key) => {
                 result[key] = result[key].filter(rel => !rel.isRemoved);
             });
         }
@@ -107,21 +106,21 @@ export function expandObject({ commit }, object) {
 }
 
 export function fetchObjects({ commit }, route) {
-    get(route.toLowerCase()).then(results => {
+    get(route.toLowerCase()).then((results) => {
         commit(modelTocommit[route].add, results);
     });
 }
 
 export function createObject({ commit, state }, object) {
-    post(object.route.toLowerCase(), object.value).then(result => {
+    post(object.route.toLowerCase(), object.value).then((result) => {
         if (state.app[object.route].findIndex(o => (o.id === result.id)) === -1) {
-            commit(modelTocommit[object.route].add, [ result ]);
+            commit(modelTocommit[object.route].add, [result]);
         }
     });
 }
 
 export function updateObject({ commit, state }, object) {
-    put(`${object.route.toLowerCase()}/${object.value.id}`, object.value).then(result => {
+    put(`${object.route.toLowerCase()}/${object.value.id}`, object.value).then((result) => {
         const index = state.app[object.route].findIndex(o => (o.id === result.id));
 
         if (index !== -1) {
@@ -135,7 +134,7 @@ export function updateObject({ commit, state }, object) {
 }
 
 export function removeObject({ commit, state }, object) {
-    put(`${object.route.toLowerCase()}/${object.value.id}`, { isRemoved: true }).then(result => {
+    put(`${object.route.toLowerCase()}/${object.value.id}`, { isRemoved: true }).then((result) => {
         if (state.app[object.route]) {
             if (state.app[object.route].findIndex(o => (o.id === result.id)) !== -1) {
                 commit(modelTocommit[object.route].delete, result);
@@ -193,13 +192,13 @@ export function removeSimpleRelation({ commit, state }, relation) {
 
 export function createMultipleRelation({ commit, state }, relation) {
     let embed = '';
-    if (relations[relation.relation.route]) {
-        embed = `?embed=${encodeURIComponent(JSON.stringify(relations[relation.relation.route]))}`;
+    if (config.relations[relation.relation.route]) {
+        embed = `?embed=${encodeURIComponent(JSON.stringify(config.relations[relation.relation.route]))}`;
     }
 
     let firstObject  = {};
     post(`${relation.relation.route.toLowerCase()}${embed}`, relation.relation.fields)
-        .then(result => {
+        .then((result) => {
             firstObject = result;
             return post(`${relation.obj.route}/${relation.obj.value.id}/${relation.relation.route}`, { id: result.id });
         })
@@ -222,11 +221,11 @@ export function listenChanges({ commit, state }, payload) {
     const models       = payload.models;
     const modelsString = models.join(',');
 
-    const es = new EventSource(`${api}/changes?models=${modelsString}&authorization=Bearer ${token}`, {
+    const es = new EventSource(`${config.api}/changes?models=${modelsString}&authorization=Bearer ${token}`, {
         withCredentials: true
     });
 
-    es.onmessage = function (e) {
+    es.onmessage = ((e) => {
         try {
             const data = JSON.parse(e.data);
             switch (data.action) {
@@ -262,7 +261,7 @@ export function listenChanges({ commit, state }, payload) {
         } catch (error) {
             console.log(error);
         }
-    };
+    });
 }
 
 /**
@@ -274,14 +273,14 @@ export function createSetWithArticles({ commit, state }, payload) {
     const articles  = payload.articles;
     const promotion = payload.promotion;
 
-    post('sets', set).then(result => {
+    post('sets', set).then((result) => {
         if (state.app.sets.findIndex(object => (object.id === result.id)) === -1) {
-            commit('ADDSETS', [ result ]);
+            commit('ADDSETS', [result]);
         }
 
         post(`sets/${result.id}/promotions`, { id: promotion.id });
 
-        articles.forEach(article => {
+        articles.forEach((article) => {
             post(`sets/${result.id}/articles`, { id: article.id });
         });
     });
@@ -293,22 +292,22 @@ export function createSetWithArticles({ commit, state }, payload) {
 
 export function createUserWithMol({ commit }, user) {
     post('users', user)
-        .then(result => {
+        .then((result) => {
             if (result.mail) {
                 post('meansoflogin', { type: 'etuMail', data: result.mail, User_id: result.id });
             }
 
-            commit('ADDUSERS', [ result ]);
+            commit('ADDUSERS', [result]);
         });
 }
 
 export function searchUsers({ commit }, name) {
     get(`services/manager/searchuser?name=${name}`)
-        .then(results => {
+        .then((results) => {
             if (results.length > 0) {
                 const q = [];
 
-                results.forEach(result => {
+                results.forEach((result) => {
                     q.push(JSON.stringify({
                         field: 'id',
                         eq   : result.id
@@ -319,13 +318,13 @@ export function searchUsers({ commit }, name) {
                     .map(o => encodeURIComponent(o))
                     .join('&q[]=');
 
-                return get(`users/search?q=${orQ}&embed=${encodeURIComponent(JSON.stringify(relations.users))}`);
+                return get(`users/search?q=${orQ}&embed=${encodeURIComponent(JSON.stringify(config.relations.users))}`);
             }
         })
-        .then(results => {
+        .then((results) => {
             commit('CLEARUSERS');
-            commit('ADDUSERS', results.map(result => {
-                Object.keys(relations.users).forEach(key => {
+            commit('ADDUSERS', results.map((result) => {
+                Object.keys(config.relations.users).forEach((key) => {
                     result[key] = result[key].filter(rel => !rel.isRemoved);
                 });
 
@@ -367,9 +366,9 @@ export function getPurchases({ commit }, fields) {
         .join('&');
 
     get(`services/treasury/purchases?${qString}`)
-        .then(purchases => {
+        .then((purchases) => {
             commit('CLEARPURCHASES');
-            commit('ADDPURCHASES', purchases.map(purchase => {
+            commit('ADDPURCHASES', purchases.map((purchase) => {
                 if (!purchase.totalWT) {
                     purchase.totalWT = purchase.totalVAT;
                 }
@@ -424,13 +423,15 @@ export function getTreasury({ commit }, fields) {
         .join('&q[]=');
 
     get(`services/treasury/reloads?${qString}`)
-        .then(reloads => {
+        .then((reloads) => {
             commit('CLEARRELOADS');
             commit('ADDRELOADS', reloads);
 
-            return get(`transfers/search?q=${orQt}&embed=${encodeURIComponent(JSON.stringify(relations.transfers))}`);
+            const relEmbed = encodeURIComponent(JSON.stringify(config.relations.transfers));
+
+            return get(`transfers/search?q=${orQt}&embed=${relEmbed}`);
         })
-        .then(transfers => {
+        .then((transfers) => {
             commit('CLEARTRANSFERS');
             commit('ADDTRANSFERS', transfers.filter(t => !t.isRemoved));
         });

@@ -55,7 +55,7 @@ const groupPattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             newGroup: JSON.parse(JSON.stringify(groupPattern))
         };
@@ -79,7 +79,7 @@ export default {
         }
     },
 
-   computed: {
+    computed: {
         ...mapState({
             groups   : state => state.app.groups,
             modObject: state => state.app.modObject,
@@ -98,10 +98,10 @@ export default {
             this.expandGroup({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-groups {

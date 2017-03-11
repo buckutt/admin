@@ -22,7 +22,7 @@ export function load(store) {
         models
     });
 
-    models.forEach(model => {
+    models.forEach((model) => {
         fetchObjects(store, model);
     });
 }

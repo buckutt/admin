@@ -10,7 +10,7 @@ export function updateCurrentEvent({ commit }, currentEvent) {
     }));
 
     get(`events/${currentEvent.id}?embed=${embedEvents}`)
-        .then(result => {
+        .then((result) => {
             if (result.periods) {
                 result.periods = result.periods.filter(period => !period.isRemoved);
             }

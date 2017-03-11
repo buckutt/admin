@@ -58,7 +58,7 @@ const pointPattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             newPoint: JSON.parse(JSON.stringify(pointPattern))
         };
@@ -82,7 +82,7 @@ export default {
         }
     },
 
-   computed: {
+    computed: {
         ...mapState({
             points      : state => state.app.points,
             currentEvent: state => state.global.currentEvent,
@@ -102,10 +102,10 @@ export default {
             this.expandPoint({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-points {

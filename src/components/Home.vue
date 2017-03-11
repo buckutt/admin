@@ -34,7 +34,7 @@ import { post, updateBearer }   from '../lib/fetch';
 import { load }                 from '../lib/load';
 
 export default {
-    data () {
+    data() {
         const isToken = this.$options.methods.getIsToken();
         const user    = this.$options.methods.getUser();
         return {
@@ -51,7 +51,7 @@ export default {
         ]),
         login(mail, password) {
             post('services/login', { meanOfLogin: 'etuMail', data: mail, password })
-                .then(result => {
+                .then((result) => {
                     if (!result.isAPIError) {
                         if (this.isAdmin(result.user)) {
                             sessionStorage.setItem('user', JSON.stringify(result.user));
@@ -88,8 +88,10 @@ export default {
         isAdmin(user) {
             let admin = false;
             if (user) {
-                user.rights.forEach(right => {
-                    if (right.name == 'admin' && !right.isRemoved && new Date(right.period.start).getTime() <= Date.now() && new Date(right.period.end).getTime() >= Date.now()) {
+                user.rights.forEach((right) => {
+                    if (right.name === 'admin' && !right.isRemoved
+                        && new Date(right.period.start).getTime() <= Date.now()
+                        && new Date(right.period.end).getTime() >= Date.now()) {
                         admin = true;
                     }
                 });
@@ -104,10 +106,10 @@ export default {
             logged: state => state.global.logged
         })
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-container {

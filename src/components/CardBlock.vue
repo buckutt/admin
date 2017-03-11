@@ -32,7 +32,7 @@
 import { mapState, mapActions } from 'vuex';
 
 export default {
-    data () {
+    data() {
         return {
             username: ''
         };
@@ -50,10 +50,10 @@ export default {
             foundUsers: state => state.cardBlock.foundUsers
         })
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-cardblock {

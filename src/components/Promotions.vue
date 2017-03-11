@@ -153,9 +153,9 @@
 </template>
 
 <script>
-import price from '../lib/price';
 import { mapState, mapActions } from 'vuex';
 import fuzzy from 'fuzzy';
+import '../lib/price';
 
 const promotionPattern = {
     name: ''
@@ -170,7 +170,7 @@ const pricePattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             newPromotion : JSON.parse(JSON.stringify(promotionPattern)),
             newPrice     : JSON.parse(JSON.stringify(pricePattern)),
@@ -304,8 +304,8 @@ export default {
         addChosenArticleToStep(promotion, index) {
             const step = this.promotionFormat[index];
 
-            if (step.type == 'article') {
-                if (step.articles[0].id != this.chosenArticle.id) {
+            if (step.type === 'article') {
+                if (step.articles[0].id !== this.chosenArticle.id) {
                     this.createSetWithArticles({
                         set: {
                             name: promotion.name
@@ -326,10 +326,10 @@ export default {
                         timeout: 2000
                     });
                 }
-            } else if (step.type == 'set') {
+            } else if (step.type === 'set') {
                 const articlesIds = step.set.articles.map(article => article.id);
 
-                if (articlesIds.indexOf(this.chosenArticle.id) == -1) {
+                if (articlesIds.indexOf(this.chosenArticle.id) === -1) {
                     this.addArticleToSet(this.chosenArticle, step.set);
                 } else {
                     this.$root.$emit('snackfilter', {
@@ -345,15 +345,15 @@ export default {
         removeChosenArticleFromStep(promotion, index) {
             const step = this.promotionFormat[index];
 
-            if (step.type == 'article') {
+            if (step.type === 'article') {
                 this.removeArticleFromPromotion(promotion, this.chosenArticle);
-            } else if (step.type == 'set') {
+            } else if (step.type === 'set') {
                 if (step.set.articles.length > 2) {
                     this.removeArticleFromSet(this.chosenArticle, step.set);
                 } else {
                     let keptArticle = {};
-                    step.set.articles.forEach(article => {
-                        if (article.id != this.chosenArticle.id) {
+                    step.set.articles.forEach((article) => {
+                        if (article.id !== this.chosenArticle.id) {
                             keptArticle = article;
                         }
                     });
@@ -386,7 +386,7 @@ export default {
             let promotion = [];
 
             if (this.modObject.articles) {
-                this.modObject.articles.forEach(article => {
+                this.modObject.articles.forEach((article) => {
                     promotion.push({
                         type    : 'article',
                         articles: [article]
@@ -395,7 +395,7 @@ export default {
             }
 
             if (this.modObject.sets) {
-                this.modObject.sets.forEach(set => {
+                this.modObject.sets.forEach((set) => {
                     const sortedArticles = set.articles.sort((a, b) => {
                         if (a.name < b.name) {
                             return -1;
@@ -408,7 +408,7 @@ export default {
 
                     promotion.push({
                         type    : 'set',
-                        set     : set,
+                        set,
                         articles: sortedArticles
                     });
                 });
@@ -429,9 +429,7 @@ export default {
         filteredArticles() {
             const val           = this.articleName;
             const articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
-            return articlesNames.map(article => {
-                return article.original;
-            });
+            return articlesNames.map(article => article.original);
         },
         inputPromotion() {
             const inputPromotion = JSON.parse(JSON.stringify(this.newPromotion));
@@ -466,28 +464,21 @@ export default {
             return price;
         },
         periodOptions() {
-            return this.periods.map(period => {
-                if (period.Event_id == this.currentEvent.id) {
+            return this.periods.map((period) => {
+                if (period.Event_id === this.currentEvent.id) {
                     return { name: period.name, value: period };
-                } else {
-                    return null;
                 }
+                return null;
             }).filter(a => a);
         },
         pointOptions() {
-            return this.points.map(point => {
-                return { name: point.name, value: point };
-            });
+            return this.points.map(point => ({ name: point.name, value: point }));
         },
         fundationOptions() {
-            return this.fundations.map(fundation => {
-                return { name: fundation.name, value: fundation };
-            });
+            return this.fundations.map(fundation => ({ name: fundation.name, value: fundation }));
         },
         groupOptions() {
-            return this.groups.map(group => {
-                return { name: group.name, value: group };
-            });
+            return this.groups.map(group => ({ name: group.name, value: group }));
         }
     },
 
@@ -496,10 +487,10 @@ export default {
             this.expandPromotion({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-promotions {

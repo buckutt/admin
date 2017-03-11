@@ -21,12 +21,12 @@ export default {
         })
     },
 
-    mounted () {
+    mounted() {
         sessionStorage.clear();
         this.updateLogged(false);
         this.clearAppStore();
 
         this.$router.push('/');
     }
-}
+};
 </script>

@@ -12,13 +12,13 @@ const mutations = {
         state_.foundUsers.push(...users);
     },
     INVERTMOL(state_, molId) {
-        for (const user of state_.foundUsers) {
-            for (const mol of user.meansOfLogin) {
+        state_.foundUsers.forEach((user) => {
+            user.meansOfLogin.forEach((mol) => {
                 if (mol.id === molId) {
                     mol.isRemoved = !mol.isRemoved;
                 }
-            }
-        }
+            });
+        });
     }
 };
 

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-export function parseDate (date) {
+export function parseDate(date) {
     if (typeof date === 'string' && date.length !== 24) {
         return date;
     }
@@ -21,7 +21,7 @@ export function parseDate (date) {
     return `${day}/${month}/${year} ${hour}:${minutes}`;
 }
 
-export function convertDate (dateString) {
+export function convertDate(dateString) {
     const regexp = /([0-9]{2})\/([0-9]{2})\/([0-9]{4}) ([0-9]{2}):([0-9]{2})/;
     const result = dateString.match(regexp);
 

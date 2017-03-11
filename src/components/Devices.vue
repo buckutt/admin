@@ -112,9 +112,9 @@
 </template>
 
 <script>
-import { download } from '../lib/fetch';
 import { mapState, mapActions } from 'vuex';
-import { saveAs } from 'file-saver';
+import { saveAs }   from 'file-saver';
+import { download } from '../lib/fetch';
 
 const devicePattern = {
     name            : '',
@@ -128,7 +128,7 @@ const devicePattern = {
 };
 
 export default {
-    data () {
+    data() {
         return {
             newDevice  : JSON.parse(JSON.stringify(devicePattern)),
             password   : '',
@@ -159,20 +159,21 @@ export default {
         createPeriodPoint(device, periodPoint) {
             if (periodPoint.Point_id) {
                 const filteredEvents = this.modObject.periodPoints
-                    .filter(pP => {
+                    .filter((pP) => {
                         if (!pP.point) {
                             return false;
                         }
 
-                        const samePoint = (periodPoint.Point_id == pP.point.id);
-                        const overlap   = ((periodPoint.period.start <= pP.period.end) && (periodPoint.period.end >= pP.period.start));
+                        const samePoint = (periodPoint.Point_id === pP.point.id);
+                        const overlap   = ((periodPoint.period.start <= pP.period.end)
+                            && (periodPoint.period.end >= pP.period.start));
 
                         return samePoint && overlap;
                     })
                     .map(pP => pP.period.Event_id);
 
                 if (filteredEvents.length > 0) {
-                    if (periodPoint.period.Event_id != filteredEvents[0]) {
+                    if (periodPoint.period.Event_id !== filteredEvents[0]) {
                         return this.$root.$emit('snackfilter', {
                             message: 'Le point est déjà utilisé par un autre événement sur cette période',
                             timeout: 2000
@@ -196,10 +197,10 @@ export default {
         },
         generateCert(device, password) {
             download(`services/certificate?deviceId=${device.id}&password=${password}`)
-                .then(result => {
+                .then((result) => {
                     saveAs(result, `${device.name}.p12`);
                 })
-                .catch(e => {
+                .catch(() => {
                     this.$root.$emit('snackfilter', {
                         message: 'Le téléchargement du certificat a échoué',
                         timeout: 2000
@@ -226,7 +227,7 @@ export default {
         inputPeriodPoint() {
             const periodPoint = JSON.parse(JSON.stringify(this.periodPoint));
 
-            Object.keys(this.periodPoint).map(key => {
+            Object.keys(this.periodPoint).map((key) => {
                 this.periodPoint[key] = null;
             });
 
@@ -242,18 +243,15 @@ export default {
             return periodPoint;
         },
         periodOptions() {
-            return this.periods.map(period => {
-                if (period.Event_id == this.currentEvent.id) {
+            return this.periods.map((period) => {
+                if (period.Event_id === this.currentEvent.id) {
                     return { name: period.name, value: period };
-                } else {
-                    return null;
                 }
+                return null;
             }).filter(a => a);
         },
         pointOptions() {
-            return this.points.map(point => {
-                return { name: point.name, value: point };
-            });
+            return this.points.map(point => ({ name: point.name, value: point }));
         }
     },
 
@@ -262,10 +260,10 @@ export default {
             this.expandDevice({ id: this.params.id });
         }
     }
-}
+};
 </script>
 
-<style lang="sass">
+<style lang="scss">
     @import '../main.scss';
 
     .b-devices {
