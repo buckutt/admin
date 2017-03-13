@@ -9,6 +9,7 @@ import 'material-design-lite/material.min.js';
 import 'material-design-lite/material.min.css';
 import 'jquery-datetimepicker/build/jquery.datetimepicker.full.min.js';
 import 'jquery-datetimepicker/jquery.datetimepicker.css';
+import './assets/font.css';
 
 import App        from './App.vue';
 import Home       from './components/Home.vue';
