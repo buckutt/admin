@@ -15,7 +15,7 @@
             </transition>
             <transition name="fade">
                 <div v-if="!modObject">
-                    <form @submit.prevent="createObject({ route: 'fundations', value: inputFundation })">
+                    <form @submit.prevent="createObject({ route: 'fundations', value: inputFundation() })">
                         <mdl-textfield floating-label="Nom" v-model="newFundation.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                         <br />
                         <mdl-button colored raised>Créer</mdl-button>
@@ -58,7 +58,7 @@ const fundationPattern = {
 export default {
     data() {
         return {
-            newFundation: JSON.parse(JSON.stringify(fundationPattern))
+            newFundation: Object.assign({}, fundationPattern)
         };
     },
 
@@ -77,6 +77,12 @@ export default {
                 route: 'fundations',
                 value: fundation
             });
+        },
+        inputFundation() {
+            const inputFundation = Object.assign({}, this.newFundation);
+            this.newFundation    = Object.assign({}, fundationPattern);
+
+            return inputFundation;
         }
     },
 
@@ -85,13 +91,7 @@ export default {
             fundations: state => state.app.fundations,
             modObject : state => state.app.modObject,
             params    : state => state.route.params
-        }),
-        inputFundation() {
-            const inputFundation = JSON.parse(JSON.stringify(this.newFundation));
-            this.newFundation    = JSON.parse(JSON.stringify(fundationPattern));
-
-            return inputFundation;
-        }
+        })
     },
 
     mounted() {

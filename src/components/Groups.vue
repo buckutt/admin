@@ -15,7 +15,7 @@
             </transition>
             <transition name="fade">
                 <div v-if="!modObject">
-                    <form @submit.prevent="createObject({ route: 'groups', value: inputGroup })">
+                    <form @submit.prevent="createObject({ route: 'groups', value: inputGroup() })">
                         <mdl-textfield floating-label="Nom" v-model="newGroup.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
@@ -57,7 +57,7 @@ const groupPattern = {
 export default {
     data() {
         return {
-            newGroup: JSON.parse(JSON.stringify(groupPattern))
+            newGroup: Object.assign({}, groupPattern)
         };
     },
 
@@ -76,6 +76,12 @@ export default {
                 route: 'groups',
                 value: group
             });
+        },
+        inputGroup() {
+            const inputGroup = Object.assign({}, this.newGroup);
+            this.newGroup    = Object.assign({}, groupPattern);
+
+            return inputGroup;
         }
     },
 
@@ -84,13 +90,7 @@ export default {
             groups   : state => state.app.groups,
             modObject: state => state.app.modObject,
             params   : state => state.route.params
-        }),
-        inputGroup() {
-            const inputGroup = JSON.parse(JSON.stringify(this.newGroup));
-            this.newGroup    = JSON.parse(JSON.stringify(groupPattern));
-
-            return inputGroup;
-        }
+        })
     },
 
     mounted() {

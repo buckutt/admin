@@ -45,7 +45,7 @@
                         </table>
                     </div>
                     <h5>Droits</h5>
-                    <form @submit.prevent="createUserRight(modObject, inputRight)">
+                    <form @submit.prevent="createUserRight(modObject, inputRight())">
                         <mdl-select label="Droit" id="right-select" v-model="userRight.name" :options="rightsList"></mdl-select>
                         <mdl-select label="Point" id="point-select" v-model="userRight.point" :options="pointOptions"></mdl-select>
                         <mdl-select label="Période" id="period-select" v-model="userRight.period" :options="periodOptions"></mdl-select><br />
@@ -76,7 +76,7 @@
                         </table>
                     </div>
                     <h5>Groupes</h5>
-                    <form @submit.prevent="createGroupPeriod(modObject, inputGroupPeriod)">
+                    <form @submit.prevent="createGroupPeriod(modObject, inputGroupPeriod())">
                         <mdl-select label="Groupe" id="group-select" v-model="groupPeriod.group" :options="groupOptions"></mdl-select>
                         <mdl-select label="Période" id="period-select-2" v-model="groupPeriod.period" :options="periodOptions"></mdl-select><br />
                         <mdl-button colored raised>Ajouter</mdl-button>
@@ -115,7 +115,7 @@
                     <transition name="fade">
                         <p v-show="newPassword">Le mot de passe de l'utilisateur est <strong>{{ newPassword }}</strong></p>
                     </transition>
-                    <form @submit.prevent="createUserWithMol(inputUser)">
+                    <form @submit.prevent="createUserWithMol(inputUser())">
                         <mdl-textfield floating-label="Nom" v-model="newUser.lastname" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                         <mdl-textfield floating-label="Prénom" v-model="newUser.firstname" required="required" error="Le prénom doit contenir au moins un caractère"></mdl-textfield><br />
                         <mdl-textfield floating-label="Surnom" v-model="newUser.nickname" required="required" error="Le surnom doit contenir au moins un caractère"></mdl-textfield><br />
@@ -170,7 +170,7 @@ export default {
     data() {
         return {
             rightsList: ['admin', 'seller', 'reloader'],
-            newUser   : JSON.parse(JSON.stringify(userPattern)),
+            newUser   : Object.assign({}, userPattern),
             userRight : {
                 name  : null,
                 point : null,
@@ -317,22 +317,10 @@ export default {
         reset() {
             this.newPin = '';
             this.newPassword = '';
-        }
-    },
-
-    computed: {
-        ...mapState({
-            users       : state => state.app.users,
-            points      : state => state.app.points,
-            periods     : state => state.app.periods,
-            groups      : state => state.app.groups,
-            currentEvent: state => state.global.currentEvent,
-            modObject   : state => state.app.modObject,
-            params      : state => state.route.params
-        }),
+        },
         inputUser() {
-            const inputUser = JSON.parse(JSON.stringify(this.newUser));
-            this.newUser    = JSON.parse(JSON.stringify(userPattern));
+            const inputUser = Object.assign({}, this.newUser);
+            this.newUser    = Object.assign({}, userPattern);
 
             const randTen    = () => Math.floor(Math.random() * 10);
             this.newPin      = `${randTen()}${randTen()}${randTen()}${randTen()}`;
@@ -344,7 +332,7 @@ export default {
             return inputUser;
         },
         inputRight() {
-            const userRight = JSON.parse(JSON.stringify(this.userRight));
+            const userRight = Object.assign({}, this.userRight);
 
             Object.keys(this.userRight).map((key) => {
                 this.userRight[key] = null;
@@ -363,7 +351,7 @@ export default {
             return userRight;
         },
         inputGroupPeriod() {
-            const groupPeriod = JSON.parse(JSON.stringify(this.groupPeriod));
+            const groupPeriod = Object.assign({}, this.groupPeriod);
 
             Object.keys(this.groupPeriod).map((key) => {
                 this.groupPeriod[key] = null;
@@ -380,7 +368,19 @@ export default {
             }
 
             return groupPeriod;
-        },
+        }
+    },
+
+    computed: {
+        ...mapState({
+            users       : state => state.app.users,
+            points      : state => state.app.points,
+            periods     : state => state.app.periods,
+            groups      : state => state.app.groups,
+            currentEvent: state => state.global.currentEvent,
+            modObject   : state => state.app.modObject,
+            params      : state => state.route.params
+        }),
         periodOptions() {
             if (!this.currentEvent) {
                 return [];

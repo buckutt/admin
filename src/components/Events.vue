@@ -17,7 +17,7 @@
             </transition>
             <transition name="fade">
                 <div v-if="!modObject">
-                    <form v-on:submit.prevent="createObject({ route: 'events', value: inputEvent })">
+                    <form v-on:submit.prevent="createObject({ route: 'events', value: inputEvent() })">
                         <mdl-textfield floating-label="Nom" v-model="newEvent.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
                         <mdl-textfield floating-label="Rechargement minimal (en centimes)" v-model="newEvent.config.minReload" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
                         <mdl-textfield floating-label="Solde maximal (en centimes)" v-model="newEvent.config.maxPerAccount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
@@ -68,7 +68,7 @@ const eventPattern = {
 export default {
     data() {
         return {
-            newEvent: JSON.parse(JSON.stringify(eventPattern))
+            newEvent: Object.assign({}, eventPattern)
         };
     },
 
@@ -87,6 +87,12 @@ export default {
                 route: 'events',
                 value: event
             });
+        },
+        inputEvent() {
+            const inputEvent = Object.assign({}, this.newEvent);
+            this.newEvent    = Object.assign({}, eventPattern);
+
+            return inputEvent;
         }
     },
 
@@ -95,13 +101,7 @@ export default {
             events   : state => state.app.events,
             modObject: state => state.app.modObject,
             params   : state => state.route.params
-        }),
-        inputEvent() {
-            const inputEvent = JSON.parse(JSON.stringify(this.newEvent));
-            this.newEvent    = eventPattern;
-
-            return inputEvent;
-        }
+        })
     },
 
     mounted() {

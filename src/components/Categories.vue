@@ -48,7 +48,7 @@
             </transition>
             <transition name="fade">
                 <div v-if="!modObject">
-                    <form @submit.prevent="createObject({ route: 'categories', value: inputCategory })">
+                    <form @submit.prevent="createObject({ route: 'categories', value: inputCategory() })">
                         <mdl-textfield floating-label="Nom" v-model="newCategory.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                         <br />
                         <mdl-button colored raised>Créer</mdl-button>
@@ -92,7 +92,7 @@ const categoryPattern = {
 export default {
     data() {
         return {
-            newCategory: JSON.parse(JSON.stringify(categoryPattern)),
+            newCategory: Object.assign({}, categoryPattern),
             articleName: ''
         };
     },
@@ -154,6 +154,12 @@ export default {
                     value: article
                 }
             });
+        },
+        inputCategory() {
+            const inputCategory = Object.assign({}, this.newCategory);
+            this.newCategory    = Object.assign({}, categoryPattern);
+
+            return inputCategory;
         }
     },
 
@@ -168,12 +174,6 @@ export default {
             const val           = this.articleName;
             const articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
             return articlesNames.map(article => article.original);
-        },
-        inputCategory() {
-            const inputCategory = JSON.parse(JSON.stringify(this.newCategory));
-            this.newCategory    = JSON.parse(JSON.stringify(categoryPattern));
-
-            return inputCategory;
         }
     },
 

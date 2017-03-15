@@ -16,7 +16,7 @@
                 </transition>
                 <transition name="fade">
                     <div v-if="!modObject">
-                        <form @submit.prevent="createObject({ route: 'points', value: inputPoint })">
+                        <form @submit.prevent="createObject({ route: 'points', value: inputPoint() })">
                             <mdl-textfield floating-label="Nom" v-model="newPoint.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                             <br />
                             <mdl-button colored raised>Créer</mdl-button>
@@ -60,7 +60,7 @@ const pointPattern = {
 export default {
     data() {
         return {
-            newPoint: JSON.parse(JSON.stringify(pointPattern))
+            newPoint: Object.assign({}, pointPattern)
         };
     },
 
@@ -79,6 +79,12 @@ export default {
                 route: 'points',
                 value: point
             });
+        },
+        inputPoint() {
+            const inputPoint = Object.assign({}, this.newPoint);
+            this.newPoint    = Object.assign({}, pointPattern);
+
+            return inputPoint;
         }
     },
 
@@ -88,13 +94,7 @@ export default {
             currentEvent: state => state.global.currentEvent,
             modObject   : state => state.app.modObject,
             params      : state => state.route.params
-        }),
-        inputPoint() {
-            const inputPoint = JSON.parse(JSON.stringify(this.newPoint));
-            this.newPoint    = JSON.parse(JSON.stringify(pointPattern));
-
-            return inputPoint;
-        }
+        })
     },
 
     mounted() {

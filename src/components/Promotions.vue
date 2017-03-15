@@ -11,7 +11,7 @@
                     </form>
                     <br />
                     <h5>Prix:</h5>
-                    <form v-on:submit.prevent="createPromotionPrice(modObject, inputPrice)">
+                    <form v-on:submit.prevent="createPromotionPrice(modObject, inputPrice())">
                         <mdl-textfield floating-label="Montant TTC (centimes)" v-model="newPrice.amount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield>
                         <mdl-select label="Point" id="point-select" v-model="newPrice.point" :options="pointOptions"></mdl-select>
                         <mdl-select label="Fondation" id="fundation-select" v-model="newPrice.fundation" :options="fundationOptions"></mdl-select><br />
@@ -120,7 +120,7 @@
             </transition>
             <transition name="fade">
                 <div v-if="!modObject">
-                    <form @submit.prevent="createObject({ route: 'promotions', value: inputPromotion })">
+                    <form @submit.prevent="createObject({ route: 'promotions', value: inputPromotion() })">
                         <mdl-textfield floating-label="Nom" v-model="newPromotion.name"></mdl-textfield><br />
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
@@ -172,8 +172,8 @@ const pricePattern = {
 export default {
     data() {
         return {
-            newPromotion : JSON.parse(JSON.stringify(promotionPattern)),
-            newPrice     : JSON.parse(JSON.stringify(pricePattern)),
+            newPromotion : Object.assign({}, promotionPattern),
+            newPrice     : Object.assign({}, pricePattern),
             articleName  : '',
             chosenArticle: {},
             displayChoose: false,
@@ -366,6 +366,38 @@ export default {
 
             this.displayRemove = false;
             this.chosenArticle = {};
+        },
+        inputPromotion() {
+            const inputPromotion = Object.assign({}, this.newPromotion);
+            this.newPromotion    = Object.assign({}, promotionPattern);
+
+            return inputPromotion;
+        },
+        inputPrice() {
+            const price   = Object.assign({}, this.newPrice);
+            this.newPrice = Object.assign({}, pricePattern);
+
+            if (price.fundation) {
+                price.Fundation_id = price.fundation.id;
+                delete price.fundation;
+            }
+
+            if (price.group) {
+                price.Group_id = price.group.id;
+                delete price.group;
+            }
+
+            if (price.period) {
+                price.Period_id = price.period.id;
+                delete price.period;
+            }
+
+            if (price.point) {
+                price.Point_id = price.point.id;
+                delete price.point;
+            }
+
+            return price;
         }
     },
 
@@ -430,38 +462,6 @@ export default {
             const val           = this.articleName;
             const articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
             return articlesNames.map(article => article.original);
-        },
-        inputPromotion() {
-            const inputPromotion = JSON.parse(JSON.stringify(this.newPromotion));
-            this.newPromotion    = JSON.parse(JSON.stringify(promotionPattern));
-
-            return inputPromotion;
-        },
-        inputPrice() {
-            const price   = JSON.parse(JSON.stringify(this.newPrice));
-            this.newPrice = JSON.parse(JSON.stringify(pricePattern));
-
-            if (price.fundation) {
-                price.Fundation_id = price.fundation.id;
-                delete price.fundation;
-            }
-
-            if (price.group) {
-                price.Group_id = price.group.id;
-                delete price.group;
-            }
-
-            if (price.period) {
-                price.Period_id = price.period.id;
-                delete price.period;
-            }
-
-            if (price.point) {
-                price.Point_id = price.point.id;
-                delete price.point;
-            }
-
-            return price;
         },
         periodOptions() {
             return this.periods.map((period) => {

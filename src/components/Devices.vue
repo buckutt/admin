@@ -19,7 +19,7 @@
                     <br />
                     <h5>Assigner l'équipement</h5>
                     <br />
-                    <form @submit.prevent="createPeriodPoint(modObject, inputPeriodPoint)">
+                    <form @submit.prevent="createPeriodPoint(modObject, inputPeriodPoint())">
                         <mdl-select label="Point" id="point-select" v-model="periodPoint.point" :options="pointOptions"></mdl-select>
                         <mdl-select label="Période" id="period-select" v-model="periodPoint.period" :options="periodOptions"></mdl-select>
 
@@ -59,7 +59,7 @@
             </transition>
             <transition name="fade">
                 <div v-if="!modObject">
-                    <form v-on:submit.prevent="createObject({ route: 'devices', value: inputDevice })">
+                    <form v-on:submit.prevent="createObject({ route: 'devices', value: inputDevice() })">
                         <mdl-textfield floating-label="Nom" v-model="newDevice.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
@@ -130,7 +130,7 @@ const devicePattern = {
 export default {
     data() {
         return {
-            newDevice  : JSON.parse(JSON.stringify(devicePattern)),
+            newDevice  : Object.assign({}, devicePattern),
             password   : '',
             periodPoint: {
                 point : null,
@@ -206,26 +206,15 @@ export default {
                         timeout: 2000
                     });
                 });
-        }
-    },
-
-    computed: {
-        ...mapState({
-            devices     : state => state.app.devices,
-            points      : state => state.app.points,
-            periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent,
-            modObject   : state => state.app.modObject,
-            params      : state => state.route.params
-        }),
+        },
         inputDevice() {
-            const inputDevice = JSON.parse(JSON.stringify(this.newDevice));
-            this.newDevice    = JSON.parse(JSON.stringify(devicePattern));
+            const inputDevice = Object.assign({}, this.newDevice);
+            this.newDevice    = Object.assign({}, devicePattern);
 
             return inputDevice;
         },
         inputPeriodPoint() {
-            const periodPoint = JSON.parse(JSON.stringify(this.periodPoint));
+            const periodPoint = Object.assign({}, this.periodPoint);
 
             Object.keys(this.periodPoint).map((key) => {
                 this.periodPoint[key] = null;
@@ -241,7 +230,18 @@ export default {
             }
 
             return periodPoint;
-        },
+        }
+    },
+
+    computed: {
+        ...mapState({
+            devices     : state => state.app.devices,
+            points      : state => state.app.points,
+            periods     : state => state.app.periods,
+            currentEvent: state => state.global.currentEvent,
+            modObject   : state => state.app.modObject,
+            params      : state => state.route.params
+        }),
         periodOptions() {
             return this.periods.map((period) => {
                 if (period.Event_id === this.currentEvent.id) {

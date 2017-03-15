@@ -70,7 +70,7 @@ const fieldsPattern = {
 export default {
     data() {
         return {
-            fields: JSON.parse(JSON.stringify(fieldsPattern))
+            fields: Object.assign({}, fieldsPattern)
         };
     },
 
@@ -132,7 +132,7 @@ export default {
                 });
             }
 
-            this.fields = JSON.parse(JSON.stringify(fieldsPattern));
+            this.fields = Object.assign({}, fieldsPattern);
 
             this.getTreasury(inputFields);
         },

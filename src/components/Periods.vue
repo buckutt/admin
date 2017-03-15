@@ -20,7 +20,7 @@
             </transition>
             <transition name="fade" @after-enter="picker">
                 <div v-if="!modObject">
-                    <form @submit.prevent="createObject({ route: 'periods', value: inputPeriod })">
+                    <form @submit.prevent="createObject({ route: 'periods', value: inputPeriod() })">
                         <mdl-textfield floating-label="Nom" v-model="newPeriod.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                         <br />
                         <mdl-textfield floating-label="Début" :value="newPeriod.start | date" @input="updatePeriod('start', convertDate($event))" required="required" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" ref="dateStart"></mdl-textfield>
@@ -73,7 +73,7 @@ const periodPattern = {
 export default {
     data() {
         return {
-            newPeriod: JSON.parse(JSON.stringify(periodPattern))
+            newPeriod: Object.assign({}, periodPattern)
         };
     },
 
@@ -124,6 +124,13 @@ export default {
         },
         convertDate(date) {
             return convertDate(date);
+        },
+        inputPeriod() {
+            const inputPeriod    = Object.assign({}, this.newPeriod);
+            this.newPeriod       = Object.assign({}, periodPattern);
+            inputPeriod.Event_id = this.currentEvent.id;
+
+            return inputPeriod;
         }
     },
 
@@ -133,14 +140,7 @@ export default {
             currentEvent: state => state.global.currentEvent,
             modObject   : state => state.app.modObject,
             params      : state => state.route.params
-        }),
-        inputPeriod() {
-            const inputPeriod    = JSON.parse(JSON.stringify(this.newPeriod));
-            this.newPeriod       = JSON.parse(JSON.stringify(periodPattern));
-            inputPeriod.Event_id = this.currentEvent.id;
-
-            return inputPeriod;
-        }
+        })
     },
 
     mounted() {

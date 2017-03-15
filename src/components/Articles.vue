@@ -14,7 +14,7 @@
                     </form>
                     <br />
                     <h5>Prix</h5>
-                    <form @submit.prevent="createArticlePrice(modObject, inputPrice)">
+                    <form @submit.prevent="createArticlePrice(modObject, inputPrice())">
                         <mdl-textfield floating-label="Montant TTC (centimes)" v-model="newPrice.amount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield>
                         <mdl-select label="Point" id="point-select" v-model="newPrice.point" :options="pointOptions"></mdl-select>
                         <mdl-select label="Fondation" id="fundation-select" v-model="newPrice.fundation" :options="fundationOptions"></mdl-select><br />
@@ -54,7 +54,7 @@
             <transition name="fade">
                 <div v-if="!modObject">
                     <h5>Ajouter un article</h5>
-                    <form @submit.prevent="createObject({ route: 'articles', value: inputArticle })">
+                    <form @submit.prevent="createObject({ route: 'articles', value: inputArticle() })">
                         <mdl-textfield floating-label="Nom" v-model="newArticle.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
@@ -112,8 +112,8 @@ export default {
     data() {
         return {
             name      : '',
-            newArticle: JSON.parse(JSON.stringify(articlePattern)),
-            newPrice  : JSON.parse(JSON.stringify(pricePattern))
+            newArticle: Object.assign({}, articlePattern),
+            newPrice  : Object.assign({}, pricePattern)
         };
     },
 
@@ -151,35 +151,17 @@ export default {
                     fields: price
                 }
             });
-        }
-    },
-
-    computed: {
-        ...mapState({
-            articles    : state => state.app.articles,
-            points      : state => state.app.points,
-            fundations  : state => state.app.fundations,
-            periods     : state => state.app.periods,
-            groups      : state => state.app.groups,
-            currentEvent: state => state.global.currentEvent,
-            modObject   : state => state.app.modObject,
-            params      : state => state.route.params
-        }),
-        filteredArticles() {
-            const val           = this.name;
-            const articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
-            return articlesNames.map(article => article.original);
         },
         inputArticle() {
-            const inputArticle = JSON.parse(JSON.stringify(this.newArticle));
-            this.newArticle    = JSON.parse(JSON.stringify(articlePattern));
+            const inputArticle = Object.assign({}, this.newArticle);
+            this.newArticle    = Object.assign({}, articlePattern);
             this.name          = inputArticle.name;
 
             return inputArticle;
         },
         inputPrice() {
-            const price   = JSON.parse(JSON.stringify(this.newPrice));
-            this.newPrice = JSON.parse(JSON.stringify(pricePattern));
+            const price   = Object.assign({}, this.newPrice);
+            this.newPrice = Object.assign({}, pricePattern);
 
             if (price.fundation) {
                 price.Fundation_id = price.fundation.id;
@@ -202,6 +184,24 @@ export default {
             }
 
             return price;
+        }
+    },
+
+    computed: {
+        ...mapState({
+            articles    : state => state.app.articles,
+            points      : state => state.app.points,
+            fundations  : state => state.app.fundations,
+            periods     : state => state.app.periods,
+            groups      : state => state.app.groups,
+            currentEvent: state => state.global.currentEvent,
+            modObject   : state => state.app.modObject,
+            params      : state => state.route.params
+        }),
+        filteredArticles() {
+            const val           = this.name;
+            const articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
+            return articlesNames.map(article => article.original);
         },
         periodOptions() {
             return this.periods.map((period) => {
