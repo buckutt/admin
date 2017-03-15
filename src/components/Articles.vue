@@ -2,16 +2,35 @@
     <div class="b-articles">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Articles</h3>
-            <transition name="fade">
+            <transition name="fade" @after-enter="displayImage">
                 <div v-if="modObject">
-                    <h5>Modifier l'article {{ modObject.name }}</h5>
-                    <form @submit.prevent="updateObject({ route: 'articles', value: modObject })">
-                        <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })"  required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
-                        <mdl-textfield floating-label="Stock" :value="modObject.stock" @input="updateModObject({ field:'stock', value: $event })"></mdl-textfield><br />
-                        <mdl-textfield floating-label="Alcool" :value="modObject.alcohol" @input="updateModObject({ field:'alcohol', value: $event })"></mdl-textfield>
-                        <mdl-textfield floating-label="TVA" :value="modObject.vat" @input="updateModObject({ field:'vat', value: $event })"></mdl-textfield><br />
-                        <mdl-button colored raised>Modifier</mdl-button>
-                    </form>
+                    <div class="b-articles-container">
+                        <div> 
+                            <h5>Modifier l'article {{ modObject.name }}</h5>
+                            <form @submit.prevent="updateObject({ route: 'articles', value: modObject })">
+                                <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })"  required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+                                <mdl-textfield floating-label="Stock" :value="modObject.stock" @input="updateModObject({ field:'stock', value: $event })"></mdl-textfield><br />
+                                <mdl-textfield floating-label="Alcool" :value="modObject.alcohol" @input="updateModObject({ field:'alcohol', value: $event })"></mdl-textfield>
+                                <mdl-textfield floating-label="TVA" :value="modObject.vat" @input="updateModObject({ field:'vat', value: $event })"></mdl-textfield><br />
+                                <mdl-button colored raised>Modifier</mdl-button>
+                            </form>
+                        </div>
+                        <div>
+                            <h5>Image</h5>
+                            <form>
+                                <div class="b-articles-container-preview">
+                                    <img :src="image" :alt="modObject.name" v-show="image" class="b-articles-container-preview__image" />
+                                    <div class="b-articles-container-preview__image" v-show="!image"></div>
+                                    <mdl-tooltip target="add-button">Parcourir</mdl-tooltip>
+                                    <mdl-button id="add-button" fab colored
+                                        class="b-articles-container-preview__add mdl-js-ripple-effect">
+                                      <i class="material-icons">attach_file</i>
+                                      <input type="file" @change="onImageChange" accept="image/*" />
+                                    </mdl-button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                     <br />
                     <h5>Prix</h5>
                     <form @submit.prevent="createArticlePrice(modObject, inputPrice())">
@@ -112,6 +131,7 @@ export default {
     data() {
         return {
             name      : '',
+            image     : '',
             newArticle: Object.assign({}, articlePattern),
             newPrice  : Object.assign({}, pricePattern)
         };
@@ -126,8 +146,27 @@ export default {
             'createMultipleRelation',
             'updateModObject'
         ]),
+        onImageChange(event) {
+            const file   = event.target.files[0];
+            const reader = new FileReader();
+            const vm     = this;
+
+            reader.addEventListener('load', () => {
+                vm.image = reader.result;
+                vm.updateModObject({ field: 'image', value: reader.result });
+                vm.updateObject({ route: 'articles', value: vm.modObject });
+            });
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        },
+        displayImage() {
+            this.image = this.modObject.image;
+        },
         expandArticle(article) {
             this.$router.push(`/articles/${article.id}`);
+            this.image = '';
 
             this.expandObject({
                 route: 'articles',
@@ -254,5 +293,49 @@ export default {
                 white-space: normal;
             }
         }
+    }
+
+    .b-articles-container {
+        display: flex;
+        flex-wrap: wrap;
+
+        > div:first-child {
+            margin-right: 50px;
+        }
+
+        > div:last-child {
+            input[type="file"] {
+                cursor: pointer;
+                height: 100%;
+                right: 0;
+                opacity: 0;
+                position: absolute;
+                top: 0;
+                width: 100%;
+                z-index: 4;
+            }
+        }
+    }
+
+    .b-articles-container-preview {
+        background-image: url('../assets/placeholder.jpg');
+        background-repeat: no-repeat;
+        width: 150px;
+        height: 150px;
+        box-shadow: 0 0 2px rgba(#222, 0.25),
+                    0 2px 3px rgba(#222, 0.25);
+        border-radius: 2px;
+    }
+
+    .b-articles-container-preview__image {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .b-articles-container-preview__add {
+        position: relative;
+        top: -35px;
+        left: 115px;
     }
 </style>
