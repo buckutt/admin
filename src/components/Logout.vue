@@ -11,7 +11,8 @@ export default {
     methods: {
         ...mapActions([
             'updateLogged',
-            'clearAppStore'
+            'clearAppStore',
+            'closeSocket'
         ])
     },
 
@@ -25,6 +26,7 @@ export default {
         sessionStorage.clear();
         this.updateLogged(false);
         this.clearAppStore();
+        this.closeSocket();
 
         this.$router.push('/');
     }

@@ -1,63 +1,5 @@
 import { get, post, put, del } from '../../lib/fetch';
-
-const modelTocommit = {
-    points: {
-        add   : 'ADDPOINTS',
-        update: 'UPDATEPOINT',
-        delete: 'DELETEPOINT'
-    },
-    devices: {
-        add   : 'ADDDEVICES',
-        update: 'UPDATEDEVICE',
-        delete: 'DELETEDEVICE'
-    },
-    periods: {
-        add   : 'ADDPERIODS',
-        update: 'UPDATEPERIOD',
-        delete: 'DELETEPERIOD'
-    },
-    articles: {
-        add   : 'ADDARTICLES',
-        update: 'UPDATEARTICLE',
-        delete: 'DELETEARTICLE'
-    },
-    fundations: {
-        add   : 'ADDFUNDATIONS',
-        update: 'UPDATEFUNDATION',
-        delete: 'DELETEFUNDATION'
-    },
-    groups: {
-        add   : 'ADDGROUPS',
-        update: 'UPDATEGROUP',
-        delete: 'DELETEGROUP'
-    },
-    categories: {
-        add   : 'ADDCATEGORIES',
-        update: 'UPDATECATEGORY',
-        delete: 'DELETECATEGORY'
-    },
-    promotions: {
-        add   : 'ADDPROMOTIONS',
-        update: 'UPDATEPROMOTION',
-        delete: 'DELETEPROMOTION'
-    },
-    sets: {
-        add   : 'ADDSETS',
-        update: 'UPDATESET',
-        delete: 'DELETESET'
-    },
-    events: {
-        add   : 'ADDEVENTS',
-        update: 'UPDATEEVENT',
-        delete: 'DELETEEVENT'
-    },
-    users: {
-        add   : 'ADDUSERS',
-        update: 'UPDATEUSER',
-        delete: 'DELETEUSER',
-        clear : 'CLEARUSERS'
-    }
-};
+import { modelTocommit }       from '../../lib/storeUtils.js';
 
 /**
  * App actions
@@ -210,58 +152,6 @@ export function createMultipleRelation({ commit, state }, relation) {
                 });
             }
         });
-}
-
-/**
- * SSE actions
- */
-
-export function listenChanges({ commit, state }, payload) {
-    const token        = payload.token;
-    const models       = payload.models;
-    const modelsString = models.join(',');
-
-    const es = new EventSource(`${config.api}/changes?models=${modelsString}&authorization=Bearer ${token}`, {
-        withCredentials: true
-    });
-
-    es.onmessage = ((e) => {
-        try {
-            const data = JSON.parse(e.data);
-            switch (data.action) {
-                case 'listen':
-                    console.log(`Listen to ${data.model} changes`);
-                    break;
-                case 'create':
-                    if (state.app[data.model].findIndex(object => (object.id === data.doc.id)) === -1) {
-                        commit(modelTocommit[data.model].add, [data.doc]);
-                    }
-                    break;
-                case 'update': {
-                    const index = state.app[data.model].findIndex(object => (object.id === data.doc.id));
-
-                    if (index !== -1) {
-                        if (data.doc.isRemoved) {
-                            commit(modelTocommit[data.model].delete, data.doc);
-                        } else if (state.app[data.model][index].editedAt !== data.doc.editedAt) {
-                            commit(modelTocommit[data.model].update, data.doc);
-                        }
-                    }
-                    break;
-                }
-                case 'delete':
-                    if (state.app[data.model].findIndex(object => (object.id === data.doc.id)) !== -1) {
-                        commit(modelTocommit[data.model].delete, data.doc);
-                    }
-                    break;
-                default:
-                    console.log('Unknown event');
-                    break;
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    });
 }
 
 /**

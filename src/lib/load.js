@@ -1,10 +1,11 @@
 import {
     fetchObjects,
-    listenChanges
+    registerModels,
+    initSocket
 } from '../store/actions';
 
 export function load(store) {
-    const models = [
+    const routes = [
         'points',
         'devices',
         'periods',
@@ -17,12 +18,11 @@ export function load(store) {
         'events'
     ];
 
-    listenChanges(store, {
-        token: sessionStorage.getItem('token'),
-        models
+    initSocket(store, sessionStorage.getItem('token'));
+
+    routes.forEach((route) => {
+        fetchObjects(store, route);
     });
 
-    models.forEach((model) => {
-        fetchObjects(store, model);
-    });
+    registerModels(store, routes);
 }

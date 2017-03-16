@@ -5,6 +5,7 @@ import * as actions from './actions';
 
 import app        from './modules/app';
 import cardBlock  from './modules/cardBlock';
+import changes    from './modules/changes';
 import global     from './modules/global';
 
 Vue.use(Vuex);
@@ -14,6 +15,7 @@ export default new Vuex.Store({
     modules: {
         app,
         cardBlock,
+        changes,
         global
     }
 });
