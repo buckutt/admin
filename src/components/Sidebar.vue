@@ -101,12 +101,6 @@
                             Groupes
                         </router-link>
                     </li>
-                    <li>
-                        <router-link to="/cardBlock" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                            <i class="material-icons">credit_card</i>
-                            Blocage de carte
-                        </router-link>
-                    </li>
                 </ul>
             </transition>
         </div>

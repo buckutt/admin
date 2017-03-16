@@ -27,7 +27,6 @@ import Groups     from './components/Groups.vue';
 import Categories from './components/Categories.vue';
 import Events     from './components/Events.vue';
 import Logout     from './components/Logout.vue';
-import CardBlock  from './components/CardBlock.vue';
 
 import { updateLogged, clearModObject } from './store/actions';
 
@@ -102,10 +101,6 @@ const routes = [
     {
         path     : '/logout',
         component: Logout
-    },
-    {
-        path     : '/cardBlock',
-        component: CardBlock
     }
 ];
 
