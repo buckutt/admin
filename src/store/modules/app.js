@@ -40,10 +40,9 @@ const mutations = {
         lodget(state_.modObject, payload.relation).push(payload.value);
     },
     UPDATEMODOBJECTRELATION(state_, payload) {
-        const relations = lodget(state_.modObject, payload.relation);
+        const relations = lodget(state_.modObject, payload.relation).slice(0);
         const i         = relations.findIndex(o => (o.id === payload.value.id));
         relations[i]    = payload.value;
-
         lodset(state_.modObject, payload.relation, relations);
     },
     REMOVEMODOBJECTRELATION(state_, payload) {

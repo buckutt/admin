@@ -74,7 +74,7 @@ export function clearModObject({ commit }) {
 export function updateModObject({ commit, state }, payload) {
     if (payload.relation) {
         const index = state.app.modObject[payload.relation].findIndex(o => (o.id === payload.value.id));
-        console.log(index);
+
         if (index === -1) {
             commit('ADDMODOBJECTRELATION', payload);
         } else {

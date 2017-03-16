@@ -261,7 +261,7 @@ export default {
                     value: { type: 'etuMail', data: user.mail, User_id: user.id }
                 });
             } else {
-                existingMol.mail = user.mail;
+                existingMol.data = user.mail;
                 this.updateObject({
                     route: 'meansOfLogin',
                     value: existingMol
