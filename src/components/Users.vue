@@ -30,7 +30,7 @@
                                 <tr>
                                     <th class="mdl-data-table__cell--non-numeric">Type</th>
                                     <th class="mdl-data-table__cell--non-numeric">Contenu</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Action</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -38,7 +38,9 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.type }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.data }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button raised accent @click.native="removeObject({ route: 'meansOfLogin', value: meanOfLogin })">Désactiver</mdl-button>
+                                        <mdl-button raised accent @click.native="lockMol(meanOfLogin, true)" v-if="!meanOfLogin.blocked">Bloquer</mdl-button>
+                                        <mdl-button raised @click.native="lockMol(meanOfLogin, false)" v-if="meanOfLogin.blocked">Débloquer</mdl-button>
+                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'meansOfLogin', value: meanOfLogin })">Supprimer</mdl-button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -206,6 +208,17 @@ export default {
                 value: user
             });
         },
+        lockMol(meanOfLogin, blocked) {
+            const modMol = {
+                id: meanOfLogin.id,
+                blocked
+            };
+
+            this.updateObject({
+                route: 'meansOfLogin',
+                value: modMol
+            });
+        },
         regenPin(user) {
             const randTen = () => Math.floor(Math.random() * 10);
             const pin     = `${randTen()}${randTen()}${randTen()}${randTen()}`;
@@ -244,13 +257,13 @@ export default {
 
             if (!existingMol) {
                 this.createObject({
-                    route: 'meansoflogin',
+                    route: 'meansOfLogin',
                     value: { type: 'etuMail', data: user.mail, User_id: user.id }
                 });
             } else {
-                existingMol.mail = user.mail;
+                existingMol.data = user.mail;
                 this.updateObject({
-                    route: 'meansoflogin',
+                    route: 'meansOfLogin',
                     value: existingMol
                 });
             }

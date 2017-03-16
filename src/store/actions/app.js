@@ -13,9 +13,15 @@ export function clearModObject({ commit }) {
     commit('CLEARMODOBJECT');
 }
 
-export function updateModObject({ commit }, payload) {
+export function updateModObject({ commit, state }, payload) {
     if (payload.relation) {
-        commit('UPDATEMODOBJECTRELATION', payload);
+        const index = state.app.modObject[payload.relation].findIndex(o => (o.id === payload.value.id));
+
+        if (index === -1) {
+            commit('ADDMODOBJECTRELATION', payload);
+        } else {
+            commit('UPDATEMODOBJECTRELATION', payload);
+        }
     } else {
         commit('UPDATEMODOBJECTFIELD', payload);
     }
@@ -55,21 +61,43 @@ export function fetchObjects({ commit }, route) {
 
 export function createObject({ commit, state }, object) {
     post(object.route.toLowerCase(), object.value).then((result) => {
-        if (state.app[object.route].findIndex(o => (o.id === result.id)) === -1) {
-            commit(modelTocommit[object.route].add, [result]);
+        if (state.app[object.route]) {
+            if (state.app[object.route].findIndex(o => (o.id === result.id)) === -1) {
+                commit(modelTocommit[object.route].add, [result]);
+            }
+        }
+
+        if (state.app.modObject) {
+            if (state.app.modObject[object.route]) {
+                updateModObject({ commit, state }, {
+                    relation: object.route,
+                    value   : result
+                });
+            }
         }
     });
 }
 
 export function updateObject({ commit, state }, object) {
     put(`${object.route.toLowerCase()}/${object.value.id}`, object.value).then((result) => {
-        const index = state.app[object.route].findIndex(o => (o.id === result.id));
+        if (state.app[object.route]) {
+            const index = state.app[object.route].findIndex(o => (o.id === result.id));
 
-        if (index !== -1) {
-            if (result.isRemoved) {
-                commit(modelTocommit[object.route].delete, result);
-            } else if (state.app[object.route][index].editedAt !== result.editedAt) {
-                commit(modelTocommit[object.route].update, result);
+            if (index !== -1) {
+                if (result.isRemoved) {
+                    commit(modelTocommit[object.route].delete, result);
+                } else if (state.app[object.route][index].editedAt !== result.editedAt) {
+                    commit(modelTocommit[object.route].update, result);
+                }
+            }
+        }
+
+        if (state.app.modObject) {
+            if (state.app.modObject[object.route]) {
+                updateModObject({ commit, state }, {
+                    relation: object.route,
+                    value   : result
+                });
             }
         }
     });
@@ -98,14 +126,14 @@ export function createSimpleRelation({ commit, state }, relation) {
     post(`${relation.obj1.route}/${relation.obj1.value.id}/${relation.obj2.route}`, { id: relation.obj2.value.id })
         .then(() => {
             if (relation.obj1.value.id === state.app.modObject.id) {
-                updateModObject({ commit }, {
+                updateModObject({ commit, state }, {
                     relation: relation.obj2.route,
                     value   : relation.obj2.value
                 });
             }
 
             if (relation.obj2.value.id === state.app.modObject.id) {
-                updateModObject({ commit }, {
+                updateModObject({ commit, state }, {
                     relation: relation.obj1.route,
                     value   : relation.obj1.value
                 });
@@ -146,7 +174,7 @@ export function createMultipleRelation({ commit, state }, relation) {
         })
         .then(() => {
             if (relation.obj.value.id === state.app.modObject.id) {
-                updateModObject({ commit }, {
+                updateModObject({ commit, state }, {
                     relation: relation.relation.route,
                     value   : firstObject
                 });
