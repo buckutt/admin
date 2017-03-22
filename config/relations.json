@@ -27,6 +27,9 @@
         "period": "true",
         "point" : "true"
     },
+    "points": {
+        "categories": "true"
+    },
     "prices": {
         "fundation": "true",
         "group"    : "true",
