@@ -234,7 +234,7 @@ export function searchUsers({ commit }, name) {
 
                 const orQ = q
                     .map(o => encodeURIComponent(o))
-                    .join('&q[]=');
+                    .join('&or[]=');
 
                 return get(`users/search?q=${orQ}&embed=${encodeURIComponent(JSON.stringify(config.relations.users))}`);
             }
