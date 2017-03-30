@@ -224,8 +224,8 @@ export default {
             const pin     = `${randTen()}${randTen()}${randTen()}${randTen()}`;
             this.newPin   = pin;
             const modUser = {
-                id      : user.id,
-                password: bcrypt.hashSync(pin, 10)
+                id : user.id,
+                pin: bcrypt.hashSync(pin, 10)
             };
 
             this.updateObject({
