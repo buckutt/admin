@@ -40,7 +40,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">
                                         <mdl-button raised accent @click.native="lockMol(meanOfLogin, true)" v-if="!meanOfLogin.blocked">Bloquer</mdl-button>
                                         <mdl-button raised @click.native="lockMol(meanOfLogin, false)" v-if="meanOfLogin.blocked">Débloquer</mdl-button>
-                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'meansOfLogin', value: meanOfLogin })">Supprimer</mdl-button>
+                                        <b-confirm :func="() => { removeObject({ route: 'meansOfLogin', value: meanOfLogin }) }">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>
@@ -71,7 +71,7 @@
                                     <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ right.period.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'rights', value: right })">Supprimer</mdl-button>
+                                        <b-confirm :func="() => { removeObject({ route: 'rights', value: right }) }">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>
@@ -98,7 +98,7 @@
                                     <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ groupPeriod.group.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ groupPeriod.period.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'groupPeriods', value: groupPeriod })">Supprimer</mdl-button>
+                                        <b-confirm :func="() => { removeObject({ route: 'groupPeriods', value: groupPeriod }) }">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>
@@ -144,7 +144,7 @@
                                     <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ user.firstname }} {{ user.lastname }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
                                         <mdl-button raised colored @click.native="expandUser(user)">Modifier</mdl-button>
-                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'users', value: user })">Supprimer</mdl-button>
+                                        <b-confirm :func="() => { removeObject({ route: 'users', value: user }) }">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>

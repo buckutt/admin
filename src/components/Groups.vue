@@ -35,7 +35,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric b-actions-cell">
                                         <mdl-button raised colored @click.native="expandGroup(group)">Modifier</mdl-button>
-                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'groups', value: group })">Supprimer</mdl-button>
+                                        <b-confirm :func="() => { removeObject({ route: 'groups', value: group }) }">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>

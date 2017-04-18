@@ -27,6 +27,7 @@ import Groups     from './components/Groups.vue';
 import Categories from './components/Categories.vue';
 import Events     from './components/Events.vue';
 import Logout     from './components/Logout.vue';
+import Confirm    from './components/Confirm.vue';
 
 import { updateLogged, clearModObject } from './store/actions';
 
@@ -38,6 +39,8 @@ import '../src/lib/textfield.js';
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(VueMdl);
+
+Vue.component('b-confirm', Confirm);
 
 window.jQuery = jQuery;
 
@@ -133,9 +136,6 @@ const Admin = Vue.extend({
     components: { App },
     template  : '<App></App>',
     methods   : {
-        confirm() {
-            return window.confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');
-        },
         goBack() {
             clearModObject(store);
             router.push(`/${store.state.route.path.split('/')[1]}`);

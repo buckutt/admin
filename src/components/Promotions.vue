@@ -40,7 +40,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'prices', value: price })">Supprimer</mdl-button>
+                                        <b-confirm :func="() => { removeObject({ route: 'prices', value: price }) }">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>
@@ -140,7 +140,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ promotion.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric b-actions-cell">
                                         <mdl-button raised colored @click.native="expandPromotion(promotion)">Modifier</mdl-button>
-                                        <mdl-button raised accent @click.native="$root.confirm() && removeObject({ route: 'promotions', value: promotion })">Supprimer</mdl-button>
+                                        <b-confirm :func="() => { removeObject({ route: 'promotions', value: promotion }) }">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>
