@@ -9,6 +9,7 @@
                         <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })"></mdl-textfield required="required" error="Le nom doit contenir au moins un caractère"><br />
                         <mdl-textfield floating-label="Rechargement minimal (en centimes)" :value="modObject.config.minReload" @input="updateModObject({ field:'config.minReload', value: $event })" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
                         <mdl-textfield floating-label="Solde maximal (en centimes)" :value="modObject.config.maxPerAccount" @input="updateModObject({ field:'config.maxPerAccount', value: $event })" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
+                        <mdl-textfield floating-label="Unités alcool maximale/participant" :value="modObject.config.maxAlcohol" @input="updateModObject({ field:'config.maxAlcohol', value: $event })" required="required" pattern="[0-9]+" error="Les unités doivent être un entier"></mdl-textfield><br />
                         <mdl-button colored raised>Modifier</mdl-button>
                     </form>
                     <br />
@@ -21,6 +22,7 @@
                         <mdl-textfield floating-label="Nom" v-model="newEvent.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
                         <mdl-textfield floating-label="Rechargement minimal (en centimes)" v-model="newEvent.config.minReload" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
                         <mdl-textfield floating-label="Solde maximal (en centimes)" v-model="newEvent.config.maxPerAccount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield><br />
+                        <mdl-textfield floating-label="Unités alcool maximale/participant" v-model="newEvent.config.maxAlcohol" required="required" pattern="[0-9]+" error="Les unités doivent être un entier"></mdl-textfield><br />
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
                     <br />
@@ -31,6 +33,7 @@
                                     <th class="mdl-data-table__cell--non-numeric">Évenement</th>
                                     <th class="mdl-data-table__cell--non-numeric">Rechargement minimal</th>
                                     <th class="mdl-data-table__cell--non-numeric">Solde maximal</th>
+                                    <th class="mdl-data-table__cell--non-numeric">Alcool maximal</th>
                                     <th class="mdl-data-table__cell--non-numeric">Actions</th>
                                 </tr>
                             </thead>
@@ -39,6 +42,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ event.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ event.config.minReload | price(true) }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxPerAccount | price(true) }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxAlcohol }}</td>
                                     <td class="mdl-data-table__cell--non-numeric b-actions-cell">
                                         <mdl-button raised colored @click.native="expandEvent(event)">Modifier</mdl-button>
                                         <b-confirm :func="() => { removeObject({ route: 'events', value: event }) }">Supprimer</b-confirm>
@@ -61,7 +65,8 @@ const eventPattern = {
     name  : '',
     config: {
         minReload    : 0,
-        maxPerAccount: 10000
+        maxPerAccount: 10000,
+        maxAlcohol   : 0
     }
 };
 
