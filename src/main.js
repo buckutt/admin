@@ -1,3 +1,6 @@
+import 'promise-polyfill';
+import 'whatwg-fetch';
+
 import jQuery    from 'jquery';
 import Vue       from 'vue';
 import VueRouter from 'vue-router';
