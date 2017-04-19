@@ -198,7 +198,8 @@ export default {
             'clearObject',
             'expandObject',
             'createMultipleRelation',
-            'updateModObject'
+            'updateModObject',
+            'showClientError'
         ]),
         expandUser(user) {
             this.$router.push(`/users/${user.id}`);
@@ -275,9 +276,7 @@ export default {
         },
         createUserRight(user, right) {
             if (!right.name || !right.Period_id) {
-                return this.$root.$emit('snackfilter', {
-                    message: 'Tous les champs doivent être remplis.'
-                });
+                return this.showClientError({ message: 'Tous les champs doivent être remplis.' });
             }
 
             this.createMultipleRelation({
@@ -293,9 +292,7 @@ export default {
         },
         createGroupPeriod(user, groupPeriod) {
             if (!groupPeriod.Group_id || !groupPeriod.Period_id) {
-                return this.$root.$emit('snackfilter', {
-                    message: 'Tous les champs doivent être remplis.'
-                });
+                return this.showClientError({ message: 'Tous les champs doivent être remplis.' });
             }
 
             const index = user.groupPeriods.findIndex(o => (
@@ -303,9 +300,7 @@ export default {
             ));
 
             if (index > -1) {
-                return this.$root.$emit('snackfilter', {
-                    message: 'L\'utilisateur est déjà membre du groupe sur cette période.'
-                });
+                return this.showClientError({ message: 'L\'utilisateur est déjà membre du groupe sur cette période.' });
             }
 
             this.createMultipleRelation({

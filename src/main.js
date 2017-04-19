@@ -32,10 +32,14 @@ import Events     from './components/Events.vue';
 import Logout     from './components/Logout.vue';
 import Confirm    from './components/Confirm.vue';
 
-import { updateLogged, clearModObject } from './store/actions';
+import {
+    updateLogged,
+    updateLoggedUser,
+    clearModObject,
+    load
+} from './store/actions';
 
-import store    from './store/index';
-import { load } from './lib/load';
+import store from './store/index';
 
 import '../src/lib/textfield.js';
 
@@ -146,12 +150,33 @@ const Admin = Vue.extend({
     }
 });
 
-new Admin().$mount('#app');
+const vueApp = new Admin().$mount('#app');
 sync(store, router);
+
+store.subscribe((mutation) => {
+    switch (mutation.type) {
+        case 'UPDATEAPIERROR':
+            vueApp.$root.$emit('snackfilter', {
+                message: `[API] ${mutation.payload.statusText}`
+            });
+            break;
+        case 'UPDATECLIENTERROR':
+            vueApp.$root.$emit('snackfilter', {
+                message: `[CLIENT] ${mutation.payload.message}`
+            });
+            break;
+        case 'UPDATENOTIFY':
+            vueApp.$root.$emit('snackfilter', {
+                message: mutation.payload.message
+            });
+            break;
+        default:
+            break;
+    }
+});
 
 if (sessionStorage.hasOwnProperty('token')) {
     updateLogged(router.app.$store, true);
+    updateLoggedUser(router.app.$store, JSON.parse(sessionStorage.getItem('user')));
     load(router.app.$store);
 }
-
-window.router = router;

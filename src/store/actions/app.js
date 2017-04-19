@@ -1,5 +1,6 @@
-import { get, post, put, del } from '../../lib/fetch';
-import { modelTocommit }       from '../../lib/storeUtils.js';
+import { get, post, put, del, updateBearer } from '../../lib/fetch';
+import { modelTocommit }                     from '../../lib/storeUtils.js';
+import { isAdmin }                           from '../../lib/isAdmin.js';
 
 /**
  * App actions
@@ -50,12 +51,18 @@ export function expandObject({ commit }, object) {
 
         commit(modelTocommit[object.route].update, result);
         commit('UPDATEMODOBJECT', result);
+    })
+    .catch((err) => {
+        commit('UPDATEAPIERROR', err);
     });
 }
 
 export function fetchObjects({ commit }, route) {
     get(route.toLowerCase()).then((results) => {
         commit(modelTocommit[route].add, results);
+    })
+    .catch((err) => {
+        commit('UPDATEAPIERROR', err);
     });
 }
 
@@ -75,6 +82,11 @@ export function createObject({ commit, state }, object) {
                 });
             }
         }
+
+        commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
+    })
+    .catch((err) => {
+        commit('UPDATEAPIERROR', err);
     });
 }
 
@@ -100,6 +112,11 @@ export function updateObject({ commit, state }, object) {
                 });
             }
         }
+
+        commit('UPDATENOTIFY', { message: 'L\'objet a bien été modifié.' });
+    })
+    .catch((err) => {
+        commit('UPDATEAPIERROR', err);
     });
 }
 
@@ -119,6 +136,11 @@ export function removeObject({ commit, state }, object) {
                 });
             }
         }
+
+        commit('UPDATENOTIFY', { message: 'L\'objet a bien été supprimé.' });
+    })
+    .catch((err) => {
+        commit('UPDATEAPIERROR', err);
     });
 }
 
@@ -138,6 +160,11 @@ export function createSimpleRelation({ commit, state }, relation) {
                     value   : relation.obj1.value
                 });
             }
+
+            commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
+        })
+        .catch((err) => {
+            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -157,6 +184,11 @@ export function removeSimpleRelation({ commit, state }, relation) {
                     value   : relation.obj1.value
                 });
             }
+
+            commit('UPDATENOTIFY', { message: 'L\'objet a bien été supprimé.' });
+        })
+        .catch((err) => {
+            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -179,6 +211,11 @@ export function createMultipleRelation({ commit, state }, relation) {
                     value   : firstObject
                 });
             }
+
+            commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
+        })
+        .catch((err) => {
+            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -196,11 +233,19 @@ export function createSetWithArticles({ commit, state }, payload) {
             commit('ADDSETS', [result]);
         }
 
-        post(`sets/${result.id}/promotions`, { id: promotion.id });
+        post(`sets/${result.id}/promotions`, { id: promotion.id })
+            .catch((err) => {
+                commit('UPDATEAPIERROR', err);
+            });
 
         articles.forEach((article) => {
             post(`sets/${result.id}/articles`, { id: article.id });
         });
+
+        commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
+    })
+    .catch((err) => {
+        commit('UPDATEAPIERROR', err);
     });
 }
 
@@ -216,6 +261,10 @@ export function createUserWithMol({ commit }, user) {
             }
 
             commit('ADDUSERS', [result]);
+            commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
+        })
+        .catch((err) => {
+            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -248,6 +297,9 @@ export function searchUsers({ commit }, name) {
 
                 return result;
             }));
+        })
+        .catch((err) => {
+            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -293,6 +345,9 @@ export function getPurchases({ commit }, fields) {
 
                 return purchase;
             }));
+        })
+        .catch((err) => {
+            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -352,5 +407,35 @@ export function getTreasury({ commit }, fields) {
         .then((transfers) => {
             commit('CLEARTRANSFERS');
             commit('ADDTRANSFERS', transfers.filter(t => !t.isRemoved));
+        })
+        .catch((err) => {
+            commit('UPDATEAPIERROR', err);
+        });
+}
+
+/**
+ * Home actions
+ */
+
+export function login({ commit, dispatch }, credentials) {
+    post('services/login', credentials)
+        .then((result) => {
+            if (isAdmin(result.user)) {
+                sessionStorage.setItem('user', JSON.stringify(result.user));
+                sessionStorage.setItem('token', result.token);
+
+                commit('UPDATELOGGED', true);
+                commit('UPDATELOGGEDUSER', result.user);
+                updateBearer(result.token);
+
+                dispatch('load');
+            } else {
+                commit('UPDATECLIENTERROR', {
+                    message: 'Vous n\'êtes pas administrateur.'
+                });
+            }
+        })
+        .catch((err) => {
+            commit('UPDATEAPIERROR', err);
         });
 }

@@ -137,7 +137,8 @@ export default {
 
     methods: {
         ...mapActions([
-            'getPurchases'
+            'getPurchases',
+            'showClientError'
         ]),
         updateField(field, value) {
             this.fields[field] = value;
@@ -155,9 +156,7 @@ export default {
             if (!isFilled
                 || (inputFields.dateIn && !inputFields.dateOut)
                 || (!inputFields.dateIn && inputFields.dateOut)) {
-                return this.$root.$emit('snackfilter', {
-                    message: 'You need at least one filter.'
-                });
+                return this.showClientError({ message: 'You need at least one filter.' });
             }
 
             this.fields       = Object.assign({}, fieldsPattern);

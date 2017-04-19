@@ -191,7 +191,8 @@ export default {
             'createMultipleRelation',
             'createSetWithArticles',
             'expandObject',
-            'updateModObject'
+            'updateModObject',
+            'showClientError'
         ]),
         expandPromotion(promotion) {
             this.$router.push(`/promotions/${promotion.id}`);
@@ -210,9 +211,7 @@ export default {
         },
         createPromotionPrice(promotion, price) {
             if (!price.Fundation_id || !price.Period_id || !price.Group_id || !price.Point_id) {
-                return this.$root.$emit('snackfilter', {
-                    message: 'Un des champs a mal été renseigné.'
-                });
+                return this.showClientError({ message: 'Un des champs a mal été renseigné.' });
             }
 
             this.createMultipleRelation({
@@ -321,10 +320,7 @@ export default {
 
                     this.removeArticleFromPromotion(promotion, step.articles[0]);
                 } else {
-                    this.$root.$emit('snackfilter', {
-                        message: 'L\'article est déjà présent dans l\'ensemble.',
-                        timeout: 2000
-                    });
+                    this.showClientError({ message: 'L\'article est déjà présent dans l\'ensemble.' });
                 }
             } else if (step.type === 'set') {
                 const articlesIds = step.set.articles.map(article => article.id);
@@ -332,10 +328,7 @@ export default {
                 if (articlesIds.indexOf(this.chosenArticle.id) === -1) {
                     this.addArticleToSet(this.chosenArticle, step.set);
                 } else {
-                    this.$root.$emit('snackfilter', {
-                        message: 'L\'article est déjà présent dans l\'ensemble.',
-                        timeout: 2000
-                    });
+                    this.showClientError({ message: 'L\'article est déjà présent dans l\'ensemble.' });
                 }
             }
 

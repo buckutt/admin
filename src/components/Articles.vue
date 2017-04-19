@@ -147,7 +147,8 @@ export default {
             'removeObject',
             'expandObject',
             'createMultipleRelation',
-            'updateModObject'
+            'updateModObject',
+            'showClientError'
         ]),
         onImageChange(event) {
             const file   = event.target.files[0];
@@ -178,9 +179,7 @@ export default {
         },
         createArticlePrice(article, price) {
             if (!price.Fundation_id || !price.Period_id || !price.Group_id || !price.Point_id) {
-                return this.$root.$emit('snackfilter', {
-                    message: 'Un des champs a mal été renseigné.'
-                });
+                return this.showClientError({ message: 'Un des champs a mal été renseigné.' });
             }
 
             this.createMultipleRelation({

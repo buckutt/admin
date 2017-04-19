@@ -146,7 +146,8 @@ export default {
             'removeObject',
             'expandObject',
             'createMultipleRelation',
-            'updateModObject'
+            'updateModObject',
+            'showClientError'
         ]),
         expandDevice(device) {
             this.$router.push(`/devices/${device.id}`);
@@ -174,9 +175,8 @@ export default {
 
                 if (filteredEvents.length > 0) {
                     if (periodPoint.period.Event_id !== filteredEvents[0]) {
-                        return this.$root.$emit('snackfilter', {
-                            message: 'Le point est déjà utilisé par un autre événement sur cette période',
-                            timeout: 2000
+                        return this.showClientError({
+                            message: 'Le point est déjà utilisé par un autre événement sur cette période'
                         });
                     }
                 }
@@ -201,10 +201,7 @@ export default {
                     saveAs(result, `${device.name}.p12`);
                 })
                 .catch(() => {
-                    this.$root.$emit('snackfilter', {
-                        message: 'Le téléchargement du certificat a échoué',
-                        timeout: 2000
-                    });
+                    this.showClientError({ message: 'Le téléchargement du certificat a échoué' });
                 });
         },
         inputDevice() {

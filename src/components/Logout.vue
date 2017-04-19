@@ -11,6 +11,7 @@ export default {
     methods: {
         ...mapActions([
             'updateLogged',
+            'updateLoggedUser',
             'clearAppStore',
             'closeSocket'
         ])
@@ -25,6 +26,7 @@ export default {
     mounted() {
         sessionStorage.clear();
         this.updateLogged(false);
+        this.updateLoggedUser(null);
         this.clearAppStore();
         this.closeSocket();
 

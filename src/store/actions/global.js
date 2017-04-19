@@ -23,6 +23,33 @@ export function updateLogged({ commit }, logged) {
     commit('UPDATELOGGED', logged);
 }
 
+export function updateLoggedUser({ commit }, loggedUser) {
+    commit('UPDATELOGGEDUSER', loggedUser);
+}
+
 export function updateEditModal({ commit }, openEditModal) {
     commit('UPDATEEDITMODAL', openEditModal);
+}
+
+export function load({ dispatch }) {
+    const routes = [
+        'points',
+        'devices',
+        'periods',
+        'articles',
+        'fundations',
+        'groups',
+        'categories',
+        'promotions',
+        'sets',
+        'events'
+    ];
+
+    dispatch('initSocket', sessionStorage.getItem('token'));
+
+    routes.forEach((route) => {
+        dispatch('fetchObjects', route);
+    });
+
+    dispatch('registerModels', routes);
 }
