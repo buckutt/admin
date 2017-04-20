@@ -396,14 +396,14 @@ export default {
 
     computed: {
         ...mapState({
-            promotions  : state => state.app.promotions,
-            points      : state => state.app.points,
-            fundations  : state => state.app.fundations,
-            periods     : state => state.app.periods,
-            groups      : state => state.app.groups,
-            articles    : state => state.app.articles,
-            sets        : state => state.app.sets,
-            currentEvent: state => state.global.currentEvent,
+            promotions  : state => state.objects.promotions,
+            points      : state => state.objects.points,
+            fundations  : state => state.objects.fundations,
+            periods     : state => state.objects.periods,
+            groups      : state => state.objects.groups,
+            articles    : state => state.objects.articles,
+            sets        : state => state.objects.sets,
+            currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject,
             params      : state => state.route.params
         }),

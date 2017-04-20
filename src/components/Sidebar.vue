@@ -133,9 +133,9 @@ export default {
 
     computed: {
         ...mapState({
-            events      : state => state.app.events,
-            currentEvent: state => state.global.currentEvent,
-            logged      : state => state.global.logged
+            events      : state => state.objects.events,
+            currentEvent: state => state.app.currentEvent,
+            logged      : state => state.app.logged
         }),
         eventOptions() {
             return this.events.map(event => ({ name: event.name, value: event }));

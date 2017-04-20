@@ -19,7 +19,7 @@ export default {
 
     computed: {
         ...mapState({
-            logged: state => state.global.logged
+            logged: state => state.app.logged
         })
     },
 

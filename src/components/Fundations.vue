@@ -88,7 +88,7 @@ export default {
 
     computed: {
         ...mapState({
-            fundations: state => state.app.fundations,
+            fundations: state => state.objects.fundations,
             modObject : state => state.app.modObject,
             params    : state => state.route.params
         })

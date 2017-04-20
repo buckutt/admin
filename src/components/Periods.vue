@@ -136,8 +136,8 @@ export default {
 
     computed: {
         ...mapState({
-            periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent,
+            periods     : state => state.objects.periods,
+            currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject,
             params      : state => state.route.params
         })

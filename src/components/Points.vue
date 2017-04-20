@@ -163,8 +163,8 @@ export default {
 
     computed: {
         ...mapState({
-            points    : state => state.app.points,
-            categories: state => state.app.categories,
+            points    : state => state.objects.points,
+            categories: state => state.objects.categories,
             modObject : state => state.app.modObject,
             params    : state => state.route.params
         }),

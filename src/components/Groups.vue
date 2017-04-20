@@ -87,7 +87,7 @@ export default {
 
     computed: {
         ...mapState({
-            groups   : state => state.app.groups,
+            groups   : state => state.objects.groups,
             modObject: state => state.app.modObject,
             params   : state => state.route.params
         })

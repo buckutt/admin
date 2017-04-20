@@ -103,7 +103,7 @@ export default {
 
     computed: {
         ...mapState({
-            events   : state => state.app.events,
+            events   : state => state.objects.events,
             modObject: state => state.app.modObject,
             params   : state => state.route.params
         })

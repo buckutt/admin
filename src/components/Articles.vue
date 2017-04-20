@@ -5,7 +5,7 @@
             <transition name="fade" @after-enter="displayImage">
                 <div v-if="modObject">
                     <div class="b-articles-container">
-                        <div> 
+                        <div>
                             <h5>Modifier l'article {{ modObject.name }}</h5>
                             <form @submit.prevent="updateObject({ route: 'articles', value: modObject })">
                                 <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })"  required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
@@ -230,12 +230,12 @@ export default {
 
     computed: {
         ...mapState({
-            articles    : state => state.app.articles,
-            points      : state => state.app.points,
-            fundations  : state => state.app.fundations,
-            periods     : state => state.app.periods,
-            groups      : state => state.app.groups,
-            currentEvent: state => state.global.currentEvent,
+            articles    : state => state.objects.articles,
+            points      : state => state.objects.points,
+            fundations  : state => state.objects.fundations,
+            periods     : state => state.objects.periods,
+            groups      : state => state.objects.groups,
+            currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject,
             params      : state => state.route.params
         }),

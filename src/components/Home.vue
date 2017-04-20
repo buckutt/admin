@@ -50,8 +50,8 @@ export default {
 
     computed: {
         ...mapState({
-            logged    : state => state.global.logged,
-            loggedUser: state => state.global.loggedUser
+            logged    : state => state.app.logged,
+            loggedUser: state => state.app.loggedUser
         })
     }
 };

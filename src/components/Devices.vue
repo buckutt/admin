@@ -232,10 +232,10 @@ export default {
 
     computed: {
         ...mapState({
-            devices     : state => state.app.devices,
-            points      : state => state.app.points,
-            periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent,
+            devices     : state => state.objects.devices,
+            points      : state => state.objects.points,
+            periods     : state => state.objects.periods,
+            currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject,
             params      : state => state.route.params
         }),

@@ -76,9 +76,9 @@ export default {
 
     computed: {
         ...mapState({
-            points   : state => state.app.points,
-            transfers: state => state.app.transfers,
-            reloads  : state => state.app.reloads
+            points   : state => state.objects.points,
+            transfers: state => state.objects.transfers,
+            reloads  : state => state.objects.reloads
         }),
         totalReload() {
             let sum = 0;

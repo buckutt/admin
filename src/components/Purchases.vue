@@ -79,11 +79,11 @@ export default {
 
     computed: {
         ...mapState({
-            purchases   : state => state.app.purchases,
-            points      : state => state.app.points,
-            fundations  : state => state.app.fundations,
-            periods     : state => state.app.periods,
-            currentEvent: state => state.global.currentEvent
+            purchases   : state => state.objects.purchases,
+            points      : state => state.objects.points,
+            fundations  : state => state.objects.fundations,
+            periods     : state => state.objects.periods,
+            currentEvent: state => state.app.currentEvent
         }),
         totalSell() {
             let sum = 0;

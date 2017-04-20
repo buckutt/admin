@@ -381,11 +381,11 @@ export default {
 
     computed: {
         ...mapState({
-            users       : state => state.app.users,
-            points      : state => state.app.points,
-            periods     : state => state.app.periods,
-            groups      : state => state.app.groups,
-            currentEvent: state => state.global.currentEvent,
+            users       : state => state.objects.users,
+            points      : state => state.objects.points,
+            periods     : state => state.objects.periods,
+            groups      : state => state.objects.groups,
+            currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject,
             params      : state => state.route.params
         }),

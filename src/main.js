@@ -129,8 +129,8 @@ router.beforeEach((route, from, next) => {
     clearModObject(store);
     const path = route.path.split('/')[1];
 
-    if ((path !== '' && !store.state.global.logged)
-        || (withoutEventRoutes.indexOf(path) === -1 && !store.state.global.currentEvent)) {
+    if ((path !== '' && !store.state.app.logged)
+        || (withoutEventRoutes.indexOf(path) === -1 && !store.state.app.currentEvent)) {
         next('/');
     } else {
         next();
