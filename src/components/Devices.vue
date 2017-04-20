@@ -40,7 +40,7 @@
                                     <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ periodPoint.period.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
-                                        <b-confirm :func="() => { removeObject({ route: 'periodPoints', value: periodPoint }) }">Supprimer</b-confirm>
+                                        <b-confirm @confirm="removeObject({ route: 'periodPoints', value: periodPoint })">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>
@@ -99,7 +99,7 @@
                                     </td>
                                     <td class="mdl-data-table__cell--non-numeric b-actions-cell">
                                         <mdl-button raised colored @click.native="expandDevice(device)">Modifier</mdl-button>
-                                        <b-confirm :func="() => { removeObject({ route: 'devices', value: device }) }">Supprimer</b-confirm>
+                                        <b-confirm @confirm="removeObject({ route: 'devices', value: device })">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>

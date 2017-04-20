@@ -45,7 +45,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxAlcohol }}</td>
                                     <td class="mdl-data-table__cell--non-numeric b-actions-cell">
                                         <mdl-button raised colored @click.native="expandEvent(event)">Modifier</mdl-button>
-                                        <b-confirm :func="() => { removeObject({ route: 'events', value: event }) }">Supprimer</b-confirm>
+                                        <b-confirm @confirm="removeObject({ route: 'events', value: event })">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>

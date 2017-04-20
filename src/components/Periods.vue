@@ -48,7 +48,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ period.end | date }}</td>
                                     <td class="mdl-data-table__cell--non-numeric b-actions-cell">
                                         <mdl-button raised colored @click.native="expandPeriod(period)">Modifier</mdl-button>
-                                        <b-confirm :func="() => { removeObject({ route: 'periods', value: period }) }">Supprimer</b-confirm>
+                                        <b-confirm @confirm="removeObject({ route: 'periods', value: period })">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>

@@ -69,7 +69,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ category.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">
                                         <mdl-button raised colored @click.native="expandCategory(category)">Modifier</mdl-button>
-                                        <b-confirm :func="() => { removeObject({ route: 'categories', value: category }) }">Supprimer</b-confirm>
+                                        <b-confirm @confirm="removeObject({ route: 'categories', value: category })">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>

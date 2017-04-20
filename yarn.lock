@@ -1663,14 +1663,14 @@ encodeurl@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.1.tgz#79e3d58655346909fe6f0f45a5de68103b294d20"
 
-engine.io-client@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/engine.io-client/-/engine.io-client-2.1.0.tgz#1d3ffb786fddec786e2115ce5d000dcbe9d3aab0"
+engine.io-client@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/engine.io-client/-/engine.io-client-2.0.2.tgz#bae5086148c1ef2b18eee346876277b219fbf55a"
   dependencies:
     component-emitter "1.2.1"
     component-inherit "0.0.3"
     debug "2.3.3"
-    engine.io-parser "2.0.1"
+    engine.io-parser "2.0.0"
     has-cors "1.1.0"
     indexof "0.0.1"
     parsejson "0.0.3"
@@ -1680,9 +1680,9 @@ engine.io-client@2.1.0:
     xmlhttprequest-ssl "1.5.3"
     yeast "0.1.2"
 
-engine.io-parser@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/engine.io-parser/-/engine.io-parser-2.0.1.tgz#2d8929581b1a768044a2d61dea21d595e862488b"
+engine.io-parser@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/engine.io-parser/-/engine.io-parser-2.0.0.tgz#535ccfadc3b154ed271470f8c1dc161d02835159"
   dependencies:
     after "0.8.2"
     arraybuffer.slice "0.0.6"

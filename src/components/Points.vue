@@ -67,7 +67,7 @@
                                     <td class="mdl-data-table__cell--non-numeric">{{ point.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric b-actions-cell">
                                         <mdl-button raised colored @click.native="expandPoint(point)">Modifier</mdl-button>
-                                        <b-confirm :func="() => { removeObject({ route: 'points', value: point }) }">Supprimer</b-confirm>
+                                        <b-confirm @confirm="removeObject({ route: 'points', value: point })">Supprimer</b-confirm>
                                     </td>
                                 </tr>
                             </tbody>
