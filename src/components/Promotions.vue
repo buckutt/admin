@@ -190,6 +190,8 @@ export default {
             'removeSimpleRelation',
             'createMultipleRelation',
             'createSetWithArticles',
+            'addArticleToSet',
+            'removeArticleFromSet',
             'expandObject',
             'updateModObject',
             'showClientError'
@@ -266,30 +268,6 @@ export default {
 
             this.removeObject({ route: 'sets', value: set });
         },
-        addArticleToSet(article, set) {
-            this.createSimpleRelation({
-                obj1: {
-                    route: 'sets',
-                    value: set
-                },
-                obj2: {
-                    route: 'articles',
-                    value: article
-                }
-            });
-        },
-        removeArticleFromSet(article, set) {
-            this.removeSimpleRelation({
-                obj1: {
-                    route: 'sets',
-                    value: set
-                },
-                obj2: {
-                    route: 'articles',
-                    value: article
-                }
-            });
-        },
         chooseStepToAdd(article) {
             this.displayRemove = false;
             this.displayChoose = true;
@@ -313,11 +291,6 @@ export default {
                         promotion
                     });
 
-                    this.modObject.sets.push({
-                        name    : promotion.name,
-                        articles: [step.articles[0], this.chosenArticle]
-                    });
-
                     this.removeArticleFromPromotion(promotion, step.articles[0]);
                 } else {
                     this.showClientError({ message: 'L\'article est déjà présent dans l\'ensemble.' });
@@ -326,7 +299,7 @@ export default {
                 const articlesIds = step.set.articles.map(article => article.id);
 
                 if (articlesIds.indexOf(this.chosenArticle.id) === -1) {
-                    this.addArticleToSet(this.chosenArticle, step.set);
+                    this.addArticleToSet({ article: this.chosenArticle, set: step.set });
                 } else {
                     this.showClientError({ message: 'L\'article est déjà présent dans l\'ensemble.' });
                 }
@@ -342,7 +315,7 @@ export default {
                 this.removeArticleFromPromotion(promotion, this.chosenArticle);
             } else if (step.type === 'set') {
                 if (step.set.articles.length > 2) {
-                    this.removeArticleFromSet(this.chosenArticle, step.set);
+                    this.removeArticleFromSet({ article: this.chosenArticle, set: step.set });
                 } else {
                     let keptArticle = {};
                     step.set.articles.forEach((article) => {
@@ -351,7 +324,7 @@ export default {
                         }
                     });
 
-                    this.removeArticleFromSet(this.chosenArticle, step.set);
+                    this.removeArticleFromSet({ article: this.chosenArticle, set: step.set });
                     this.removeSetFromPromotion(promotion, step.set);
                     this.addArticleToPromotion(promotion, keptArticle);
                 }

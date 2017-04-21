@@ -1,3 +1,4 @@
+import lodget  from 'lodash.get';
 import { get } from '../../lib/fetch';
 
 /**
@@ -10,7 +11,7 @@ export function clearModObject({ commit }) {
 
 export function updateModObject({ commit, state }, payload) {
     if (payload.relation) {
-        const index = state.app.modObject[payload.relation].findIndex(o => (o.id === payload.value.id));
+        const index = lodget(state.app.modObject, payload.relation).findIndex(o => (o.id === payload.value.id));
 
         if (index === -1) {
             commit('ADDMODOBJECTRELATION', payload);

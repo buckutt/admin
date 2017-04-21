@@ -5,7 +5,7 @@ import { isAdmin }                 from '../../lib/isAdmin.js';
  * Sets actions
  */
 
-export function createSetWithArticles({ commit, state }, payload) {
+export function createSetWithArticles({ commit, dispatch, state }, payload) {
     const set       = payload.set;
     const articles  = payload.articles;
     const promotion = payload.promotion;
@@ -24,10 +24,59 @@ export function createSetWithArticles({ commit, state }, payload) {
             post(`sets/${result.id}/articles`, { id: article.id });
         });
 
+        dispatch('updateModObject', {
+            relation: 'sets',
+            value   : {
+                id  : result.id,
+                name: set.name,
+                articles
+            }
+        });
+
         commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
     })
     .catch((err) => {
         commit('UPDATEAPIERROR', err);
+    });
+}
+
+export function addArticleToSet({ commit, dispatch, state }, payload) {
+    dispatch('createSimpleRelation', {
+        obj1: {
+            route: 'sets',
+            value: payload.set
+        },
+        obj2: {
+            route: 'articles',
+            value: payload.article
+        }
+    });
+
+    const index = state.app.modObject.sets.findIndex(s => (s.id === payload.set.id));
+
+    dispatch('updateModObject', {
+        relation: `sets[${index}].articles`,
+        value   : payload.article
+    });
+}
+
+export function removeArticleFromSet({ commit, dispatch, state }, payload) {
+    dispatch('removeSimpleRelation', {
+        obj1: {
+            route: 'sets',
+            value: payload.set
+        },
+        obj2: {
+            route: 'articles',
+            value: payload.article
+        }
+    });
+
+    const index = state.app.modObject.sets.findIndex(s => (s.id === payload.set.id));
+
+    dispatch('removeModObjectRelation', {
+        relation: `sets[${index}].articles`,
+        value   : payload.article
     });
 }
 
