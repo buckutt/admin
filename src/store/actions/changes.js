@@ -18,19 +18,19 @@ export function registerModels({ commit, state }, routes) {
 export function initListeners({ commit, state }) {
     state.changes.socket.on('create', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
-        if (state.app[route].findIndex(object => (object.id === doc.data.id)) === -1) {
+        if (state.objects[route].findIndex(object => (object.id === doc.data.id)) === -1) {
             commit(modelTocommit[route].add, [doc.data]);
         }
     });
 
     state.changes.socket.on('update', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
-        const index = state.app[route].findIndex(object => (object.id === doc.data.to.id));
+        const index = state.objects[route].findIndex(object => (object.id === doc.data.to.id));
 
         if (index !== -1) {
             if (doc.data.to.isRemoved) {
                 commit(modelTocommit[route].delete, doc.data.to);
-            } else if (state.app[route][index].editedAt !== doc.data.to.editedAt) {
+            } else if (state.objects[route][index].editedAt !== doc.data.to.editedAt) {
                 commit(modelTocommit[route].update, doc.data.to);
             }
         }
@@ -39,7 +39,7 @@ export function initListeners({ commit, state }) {
     state.changes.socket.on('delete', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
 
-        if (state.app[route].findIndex(object => (object.id === doc.data.id)) !== -1) {
+        if (state.objects[route].findIndex(object => (object.id === doc.data.id)) !== -1) {
             commit(modelTocommit[route].delete, doc.data);
         }
     });
