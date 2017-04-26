@@ -69,7 +69,8 @@ export function load({ dispatch }) {
         'categories',
         'promotions',
         'sets',
-        'events'
+        'events',
+        'meansofpayment'
     ];
 
     dispatch('initSocket', sessionStorage.getItem('token'));

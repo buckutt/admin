@@ -14,30 +14,24 @@ import 'jquery-datetimepicker/build/jquery.datetimepicker.full.min.js';
 import 'jquery-datetimepicker/jquery.datetimepicker.css';
 import './assets/font.css';
 
-import App        from './App.vue';
-import Home       from './components/Home.vue';
-import Dashboard  from './components/Dashboard.vue';
-import Devices    from './components/Devices.vue';
-import Articles   from './components/Articles.vue';
-import Treasury   from './components/Treasury.vue';
-import Purchases  from './components/Purchases.vue';
-import Users      from './components/Users.vue';
-import Periods    from './components/Periods.vue';
-import Fundations from './components/Fundations.vue';
-import Points     from './components/Points.vue';
-import Promotions from './components/Promotions.vue';
-import Groups     from './components/Groups.vue';
-import Categories from './components/Categories.vue';
-import Events     from './components/Events.vue';
-import Logout     from './components/Logout.vue';
-import Confirm    from './components/Confirm.vue';
-
-import {
-    updateLogged,
-    updateLoggedUser,
-    clearModObject,
-    load
-} from './store/actions';
+import App            from './App.vue';
+import Home           from './components/Home.vue';
+import Dashboard      from './components/Dashboard.vue';
+import Devices        from './components/Devices.vue';
+import Articles       from './components/Articles.vue';
+import Treasury       from './components/Treasury.vue';
+import Purchases      from './components/Purchases.vue';
+import Users          from './components/Users.vue';
+import Periods        from './components/Periods.vue';
+import Fundations     from './components/Fundations.vue';
+import Points         from './components/Points.vue';
+import Promotions     from './components/Promotions.vue';
+import Groups         from './components/Groups.vue';
+import Categories     from './components/Categories.vue';
+import Events         from './components/Events.vue';
+import Logout         from './components/Logout.vue';
+import Confirm        from './components/Confirm.vue';
+import PaginatedTable from './components/PaginatedTable.vue';
 
 import store from './store/index';
 
@@ -48,6 +42,7 @@ Vue.use(Vuex);
 Vue.use(VueMdl);
 
 Vue.component('b-confirm', Confirm);
+Vue.component('b-table', PaginatedTable);
 
 window.jQuery = jQuery;
 
@@ -126,7 +121,7 @@ const withoutEventRoutes = ['', 'logout', 'events', 'treasury'];
 const router = new VueRouter({ routes });
 
 router.beforeEach((route, from, next) => {
-    clearModObject(store);
+    store.dispatch('clearModObject');
     const path = route.path.split('/')[1];
 
     if ((path !== '' && !store.state.app.logged)
@@ -144,7 +139,7 @@ const Admin = Vue.extend({
     template  : '<App></App>',
     methods   : {
         goBack() {
-            clearModObject(store);
+            store.dispatch('clearModObject');
             router.push(`/${store.state.route.path.split('/')[1]}`);
         }
     }
@@ -176,7 +171,7 @@ store.subscribe((mutation) => {
 });
 
 if (sessionStorage.hasOwnProperty('token')) {
-    updateLogged(router.app.$store, true);
-    updateLoggedUser(router.app.$store, JSON.parse(sessionStorage.getItem('user')));
-    load(router.app.$store);
+    store.dispatch('updateLogged', true);
+    store.dispatch('updateLoggedUser', JSON.parse(sessionStorage.getItem('user')));
+    store.dispatch('load');
 }

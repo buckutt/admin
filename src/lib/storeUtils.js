@@ -54,5 +54,8 @@ export const modelTocommit = {
         update: 'UPDATEUSER',
         delete: 'DELETEUSER',
         clear : 'CLEARUSERS'
+    },
+    meansofpayment: {
+        add: 'ADDMEANSOFPAYMENT'
     }
 };

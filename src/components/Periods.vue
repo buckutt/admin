@@ -31,29 +31,23 @@
 
                     <br />
 
-                    <div class="b-responsive-table">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Période</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Début</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Fin</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="period in periods" v-show="currentEvent.id == period.Event_id">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ period.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ period.start | date }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ period.end | date }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                        <mdl-button raised colored @click.native="expandPeriod(period)">Modifier</mdl-button>
-                                        <b-confirm @confirm="removeObject({ route: 'periods', value: period })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[
+                            { title: 'Période', field: 'name' },
+                            { title: 'Début', field: 'start', type: 'date' },
+                            { title: 'Fin', field: 'end', type: 'date'}
+                        ]"
+                        :data="displayedPeriods"
+                        :sort="{ field: 'start', order: 'ASC' }"
+                        :actions="[
+                            { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="periods"
+                        :paging="10"
+                        @edit="expandPeriod"
+                        @remove="removeObject">
+                    </b-table>
                 </div>
             </transition>
         </div>
@@ -140,7 +134,15 @@ export default {
             currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject,
             params      : state => state.route.params
-        })
+        }),
+        displayedPeriods() {
+            return this.periods.map((period) => {
+                if (period.Event_id === this.currentEvent.id) {
+                    return period;
+                }
+                return null;
+            }).filter(a => a);
+        }
     },
 
     mounted() {

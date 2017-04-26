@@ -26,31 +26,24 @@
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
                     <br />
-                    <div class="b-responsive-table">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="events.length > 0">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Évenement</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Rechargement minimal</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Solde maximal</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Alcool maximal</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="event in events">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ event.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ event.config.minReload | price(true) }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxPerAccount | price(true) }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ event.config.maxAlcohol }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                        <mdl-button raised colored @click.native="expandEvent(event)">Modifier</mdl-button>
-                                        <b-confirm @confirm="removeObject({ route: 'events', value: event })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[
+                            { title: 'Évenement', field: 'name' },
+                            { title: 'Rechargement minimal', field: 'config.minReload', type: 'price' },
+                            { title: 'Solde maximal', field: 'config.maxPerAccount', type: 'price' },
+                            { title: 'Alcool maximal', field: 'config.maxAlcohol' }
+                        ]"
+                        :data="events"
+                        :sort="{ field: 'name', order: 'ASC' }"
+                        :actions="[
+                            { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="events"
+                        :paging="10"
+                        @edit="expandEvent"
+                        @remove="removeObject">
+                    </b-table>
                 </div>
             </transition>
         </div>
@@ -59,7 +52,6 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import '../lib/price';
 
 const eventPattern = {
     name  : '',

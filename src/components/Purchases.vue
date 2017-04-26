@@ -30,28 +30,16 @@
 
             <h4>Ventes <span class="small">(total TTC: {{ totalSell | price(true) }}, total HT: {{ totalSellWT | price(true) }})</span></h4>
 
-            <div class="b-responsive-table">
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th>Quantité</th>
-                            <th class="mdl-data-table__cell--non-numeric">Article</th>
-                            <th>Prix unitaire TTC</th>
-                            <th>Total TTC</th>
-                            <th>Total HT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="purchase in purchases">
-                            <td>{{ purchase.count }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ purchase.name }}</td>
-                            <td>{{ purchase.price | price(true) }}</td>
-                            <td>{{ purchase.totalVAT | price(true) }}</td>
-                            <td>{{ purchase.totalWT | price(true) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <b-table
+                :headers="[
+                    { title: 'Quantité', field: 'count' },
+                    { title: 'Article', field: 'name'},
+                    { title: 'Prix unitaire TTC', field: 'price', type: 'price' },
+                    { title: 'Total TTC', field: 'totalVAT', type: 'price' },
+                    { title: 'Total HT', field: 'totalWT', type: 'price' }
+                ]"
+                :data="purchases">
+            </b-table>
         </div>
     </div>
 </template>

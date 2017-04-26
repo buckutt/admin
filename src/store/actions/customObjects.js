@@ -118,6 +118,7 @@ export function searchUsers({ commit }, name) {
 
                 return get(`users/search?q=${orQ}&embed=${encodeURIComponent(JSON.stringify(config.relations.users))}`);
             }
+            return [];
         })
         .then((results) => {
             commit('CLEARUSERS');

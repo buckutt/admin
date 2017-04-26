@@ -19,29 +19,20 @@
                     </div>
 
                     <h5>Rechercher un article:</h5>
-                    <form @submit.prevent>
-                        <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>
-                    </form>
+                    <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>
 
-                    <div class="b-responsive-table" v-show="articleName.length > 0 && filteredArticles.length > 0">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Objet</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="article in filteredArticles">
-                                    <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ article.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                        <mdl-button raised colored @click.native="addToCategory(modObject, article)" v-show="!isInCategory(article)">Ajouter</mdl-button>
-                                        <mdl-button raised accent @click.native="removeFromCategory(modObject, article)" v-show="isInCategory(article)">Enlever</mdl-button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[{ title: 'Article', field: 'name' }]"
+                        :data="displayedArticles"
+                        :filter="{ val: this.articleName, field: 'name' }"
+                        :sort="{ field: 'name', order: 'ASC' }"
+                        :actions="[
+                            { action: 'move', text1: 'Ajouter', text2: 'Enlever', field: 'inCurrentCategory', type: 'reversible' }
+                        ]"
+                        route="articles"
+                        :paging="5"
+                        @move="moveFromCurrentCategory">
+                    </b-table>
                     <br />
                     <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
                 </div>
@@ -56,25 +47,19 @@
 
                     <br />
 
-                    <div class="b-responsive-table">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Catégorie</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="category in categories">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ category.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button raised colored @click.native="expandCategory(category)">Modifier</mdl-button>
-                                        <b-confirm @confirm="removeObject({ route: 'categories', value: category })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[{ title: 'Catégorie', field: 'name' }]"
+                        :data="categories"
+                        :sort="{ field: 'name', order: 'ASC' }"
+                        :actions="[
+                            { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="categories"
+                        :paging="10"
+                        @edit="expandCategory"
+                        @remove="removeObject">
+                    </b-table>
                 </div>
             </transition>
         </div>
@@ -83,7 +68,6 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import fuzzy from 'fuzzy';
 
 const categoryPattern = {
     name: ''
@@ -118,18 +102,9 @@ export default {
         search(article) {
             this.articleName = article.name;
         },
-        isInCategory(article) {
-            let isInCategory = false;
-            if (this.modObject.articles) {
-                if (this.modObject.articles.length > 0) {
-                    this.modObject.articles.forEach((a) => {
-                        if (a.id === article.id) {
-                            isInCategory = true;
-                        }
-                    });
-                }
-            }
-            return isInCategory;
+        isInCurrentCategory(article) {
+            const index = this.modObject.articles.findIndex(a => (a.id === article.id));
+            return (index !== -1);
         },
         addToCategory(category, article) {
             this.createSimpleRelation({
@@ -155,6 +130,13 @@ export default {
                 }
             });
         },
+        moveFromCurrentCategory(article) {
+            if (this.isInCurrentCategory(article)) {
+                this.removeFromCategory(this.modObject, article);
+            } else {
+                this.addToCategory(this.modObject, article);
+            }
+        },
         inputCategory() {
             const inputCategory = Object.assign({}, this.newCategory);
             this.newCategory    = Object.assign({}, categoryPattern);
@@ -170,10 +152,11 @@ export default {
             modObject : state => state.app.modObject,
             params    : state => state.route.params
         }),
-        filteredArticles() {
-            const val           = this.articleName;
-            const articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
-            return articlesNames.map(article => article.original);
+        displayedArticles() {
+            return this.articles.map((article) => {
+                article.inCurrentCategory = this.isInCurrentCategory(article);
+                return article;
+            });
         }
     },
 

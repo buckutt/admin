@@ -25,27 +25,19 @@
 
                         <mdl-button colored raised>Ajouter</mdl-button>
                     </form>
-                    <div class="b-responsive-table">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Point</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Période</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="periodPoint in modObject.periodPoints" v-show="periodPoint.period.Event_id == currentEvent.id">
-                                    <td class="mdl-data-table__cell--non-numeric" v-if="periodPoint.point">{{ periodPoint.point.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ periodPoint.period.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <b-confirm @confirm="removeObject({ route: 'periodPoints', value: periodPoint })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[
+                            { title: 'Point', field: 'point.name' },
+                            { title: 'Période', field: 'period.name' }
+                        ]"
+                        :data="displayedPeriodPoints"
+                        :actions="[
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="periodPoints"
+                        :paging="5"
+                        @remove="removeObject">
+                    </b-table>
                     <br />
                     <h5>Génération du certificat SSL</h5>
                     <br />
@@ -64,47 +56,27 @@
                         <mdl-button colored raised>Créer</mdl-button>
                     </form>
                     <br />
-                    <div class="b-responsive-table">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Equipement</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Temps réel</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Intervalle</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Revalidation</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Alcool</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Catégories</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Image</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="device in devices">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ device.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.realtime" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ device.refreshInterval }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.doubleValidation" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.alcohol" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.showCategories" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-checkbox v-model="device.showPicture" disabled></mdl-checkbox>
-                                    </td>
-                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                        <mdl-button raised colored @click.native="expandDevice(device)">Modifier</mdl-button>
-                                        <b-confirm @confirm="removeObject({ route: 'devices', value: device })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[
+                            { title: 'Équipement', field: 'name' },
+                            { title: 'Temps réel', field: 'realtime', type: 'checkbox'},
+                            { title: 'Intervalle', field: 'refreshInterval'},
+                            { title: 'Revalidation', field: 'doubleValidation', type: 'checkbox'},
+                            { title: 'Alcool', field: 'alcohol', type: 'checkbox'},
+                            { title: 'Catégories', field: 'showCategories', type: 'checkbox'},
+                            { title: 'Images', field: 'showPicture', type: 'checkbox'}
+                        ]"
+                        :data="devices"
+                        :sort="{ field: 'name', order: 'ASC' }"
+                        :actions="[
+                            { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="devices"
+                        :paging="10"
+                        @edit="expandDevice"
+                        @remove="removeObject">
+                    </b-table>
                 </div>
             </transition>
         </div>
@@ -249,6 +221,21 @@ export default {
         },
         pointOptions() {
             return this.points.map(point => ({ name: point.name, value: point }));
+        },
+        displayedPeriodPoints() {
+            if (!this.modObject) {
+                return [];
+            }
+
+            return this.modObject.periodPoints.map((periodPoint) => {
+                if (periodPoint.period.Event_id === this.currentEvent.id) {
+                    if (!periodPoint.point) {
+                        periodPoint.point = { name: 'Aucun' };
+                    }
+                    return periodPoint;
+                }
+                return null;
+            }).filter(a => a);
         }
     },
 

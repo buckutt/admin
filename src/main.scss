@@ -48,6 +48,10 @@ html, body, main {
 
 .b-actions-cell {
     min-width: 250px;
+
+    > * {
+        margin-right: 5px;
+    }
 }
 
 .b--capitalized {
@@ -58,8 +62,16 @@ html, body, main {
     clear:both;
 }
 
-.b--right {
+.b--center {
     text-align: center;
+}
+
+.b--fullwidth {
+    width: 100%;
+}
+
+.b--inline {
+    display: inline-block;
 }
 
 // Transitions

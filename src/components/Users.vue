@@ -24,28 +24,21 @@
                     </transition>
 
                     <h5>Identifiants de connexion</h5>
-                    <div class="b-responsive-table" v-show="modObject.meansOfLogin">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Type</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Contenu</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="meanOfLogin in modObject.meansOfLogin">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.type }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ meanOfLogin.data }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button raised accent @click.native="lockMol(meanOfLogin, true)" v-if="!meanOfLogin.blocked">Bloquer</mdl-button>
-                                        <mdl-button raised @click.native="lockMol(meanOfLogin, false)" v-if="meanOfLogin.blocked">Débloquer</mdl-button>
-                                        <b-confirm @confirm="removeObject({ route: 'meansOfLogin', value: meanOfLogin })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[
+                            { title: 'Type', field: 'type' },
+                            { title: 'Contenu', field: 'data'}
+                        ]"
+                        :data="modObject.meansOfLogin"
+                        :actions="[
+                            { action: 'lock', text1: 'Bloquer', text2: 'Débloquer', field: 'blocked', type: 'reversible' },
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="meansOfLogin"
+                        :paging="5"
+                        @lock="lockMol"
+                        @remove="removeObject">
+                    </b-table>
                     <h5>Droits</h5>
                     <form @submit.prevent="createUserRight(modObject, inputRight())">
                         <mdl-select label="Droit" id="right-select" v-model="userRight.name" :options="rightsList"></mdl-select>
@@ -54,29 +47,20 @@
                         <mdl-button colored raised>Ajouter</mdl-button>
                     </form>
                     <br />
-                    <div class="b-responsive-table" v-show="modObject.rights">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Droit</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Point</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Période</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="right in modObject.rights" v-show="right.period.Event_id == currentEvent.id">
-                                    <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ right.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric" v-if="right.point">{{ right.point.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric" v-else>Aucun</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ right.period.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <b-confirm @confirm="removeObject({ route: 'rights', value: right })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[
+                            { title: 'Droit', field: 'name' },
+                            { title: 'Point', field: 'point.name'},
+                            { title: 'Période', field: 'period.name' }
+                        ]"
+                        :data="displayedRights"
+                        :actions="[
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="rights"
+                        :paging="5"
+                        @remove="removeObject">
+                    </b-table>
                     <h5>Groupes</h5>
                     <form @submit.prevent="createGroupPeriod(modObject, inputGroupPeriod())">
                         <mdl-select label="Groupe" id="group-select" v-model="groupPeriod.group" :options="groupOptions"></mdl-select>
@@ -84,26 +68,19 @@
                         <mdl-button colored raised>Ajouter</mdl-button>
                     </form>
                     <br />
-                    <div class="b-responsive-table" v-show="modObject.groupPeriods">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Groupe</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Période</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="groupPeriod in modObject.groupPeriods" v-show="groupPeriod.period.Event_id == currentEvent.id">
-                                    <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ groupPeriod.group.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ groupPeriod.period.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <b-confirm @confirm="removeObject({ route: 'groupPeriods', value: groupPeriod })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[
+                            { title: 'Groupe', field: 'group.name' },
+                            { title: 'Période', field: 'period.name' }
+                        ]"
+                        :data="displayedGroupPeriods"
+                        :actions="[
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="groupPeriods"
+                        :paging="5"
+                        @remove="removeObject">
+                    </b-table>
                     <br />
                     <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
                 </div>
@@ -126,30 +103,21 @@
                     </form>
 
                     <h5>Rechercher un utilisateur</h5>
-                    <form @submit.prevent="searchUsers(userName)">
-                        <mdl-textfield floating-label="Prénom" v-model="userName"></mdl-textfield>
-                        <mdl-button colored raised>Rechercher</mdl-button>
-                    </form>
+                    <mdl-textfield floating-label="Prénom" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
 
-                    <div class="b-responsive-table" v-show="users.length > 0">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Utilisateur</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="user in users">
-                                    <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ user.firstname }} {{ user.lastname }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <mdl-button raised colored @click.native="expandUser(user)">Modifier</mdl-button>
-                                        <b-confirm @confirm="removeObject({ route: 'users', value: user })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' }]"
+                        :data="displayedUsers"
+                        :sort="{ field: 'firstname', order: 'ASC' }"
+                        :actions="[
+                            { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="users"
+                        :paging="5"
+                        @edit="expandUser"
+                        @remove="removeObject">
+                    </b-table>
                 </div>
             </transition>
         </div>
@@ -157,7 +125,8 @@
 </template>
 
 <script>
-import bcrypt from 'bcryptjs';
+import bcrypt   from 'bcryptjs';
+import debounce from 'lodash.debounce';
 import { mapState, mapActions } from 'vuex';
 
 const userPattern = {
@@ -209,10 +178,10 @@ export default {
                 value: user
             });
         },
-        lockMol(meanOfLogin, blocked) {
+        lockMol(meanOfLogin) {
             const modMol = {
-                id: meanOfLogin.id,
-                blocked
+                id     : meanOfLogin.id,
+                blocked: !meanOfLogin.blocked
             };
 
             this.updateObject({
@@ -408,6 +377,39 @@ export default {
         },
         groupOptions() {
             return this.groups.map(group => ({ name: group.name, value: group }));
+        },
+        displayedUsers() {
+            return this.users.map((user) => {
+                user.fullname = `${user.firstname} ${user.lastname}`;
+                return user;
+            });
+        },
+        displayedRights() {
+            if (!this.modObject) {
+                return [];
+            }
+
+            return this.modObject.rights.map((right) => {
+                if (right.period.Event_id === this.currentEvent.id) {
+                    if (!right.point) {
+                        right.point = { name: 'Aucun' };
+                    }
+                    return right;
+                }
+                return null;
+            }).filter(a => a);
+        },
+        displayedGroupPeriods() {
+            if (!this.modObject) {
+                return [];
+            }
+
+            return this.modObject.groupPeriods.map((groupPeriod) => {
+                if (groupPeriod.period.Event_id === this.currentEvent.id) {
+                    return groupPeriod;
+                }
+                return null;
+            }).filter(a => a);
         }
     },
 
@@ -417,6 +419,9 @@ export default {
         if (this.params.id) {
             this.expandUser({ id: this.params.id });
         }
+
+        const searchUsers = this.searchUsers;
+        this.searchUsers  = debounce(name => searchUsers(name), 500);
     }
 };
 </script>

@@ -17,29 +17,20 @@
                     </div>
 
                     <h5>Rechercher une catégorie:</h5>
-                    <form @submit.prevent>
-                        <mdl-textfield floating-label="Nom" v-model="categoryName"></mdl-textfield>
-                    </form>
+                    <mdl-textfield floating-label="Nom" v-model="categoryName"></mdl-textfield>
 
-                    <div class="b-responsive-table" v-show="categoryName.length > 0 && filteredCategories.length > 0">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Catégorie</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="category in filteredCategories">
-                                    <td class="mdl-data-table__cell--non-numeric b--capitalized">{{ category.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                        <mdl-button raised colored @click.native="addToPoint(modObject, category)" v-show="!isInPoint(category)">Ajouter</mdl-button>
-                                        <mdl-button raised accent @click.native="removeFromPoint(modObject, category)" v-show="isInPoint(category)">Enlever</mdl-button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[{ title: 'Catégorie', field: 'name' }]"
+                        :data="displayedCategories"
+                        :filter="{ val: this.categoryName, field: 'name' }"
+                        :sort="{ field: 'name', order: 'ASC' }"
+                        :actions="[
+                            { action: 'move', text1: 'Ajouter', text2: 'Enlever', field: 'inCurrentPoint', type: 'reversible' }
+                        ]"
+                        route="categories"
+                        :paging="5"
+                        @move="moveFromCurrentPoint">
+                    </b-table>
                     <br />
                     <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
                 </div>
@@ -54,25 +45,19 @@
 
                     <br />
 
-                    <div class="b-responsive-table">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Point</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="point in points">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ point.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                        <mdl-button raised colored @click.native="expandPoint(point)">Modifier</mdl-button>
-                                        <b-confirm @confirm="removeObject({ route: 'points', value: point })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[{ title: 'Point', field: 'name' }]"
+                        :data="points"
+                        :sort="{ field: 'name', order: 'ASC' }"
+                        :actions="[
+                            { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="points"
+                        :paging="10"
+                        @edit="expandPoint"
+                        @remove="removeObject">
+                    </b-table>
                 </div>
             </transition>
         </div>
@@ -81,7 +66,6 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import fuzzy from 'fuzzy';
 
 const pointPattern = {
     name: ''
@@ -116,18 +100,9 @@ export default {
         search(category) {
             this.categoryName = category.name;
         },
-        isInPoint(category) {
-            let isInPoint = false;
-            if (this.modObject.categories) {
-                if (this.modObject.categories.length > 0) {
-                    this.modObject.categories.forEach((c) => {
-                        if (c.id === category.id) {
-                            isInPoint = true;
-                        }
-                    });
-                }
-            }
-            return isInPoint;
+        isInCurrentPoint(category) {
+            const index = this.modObject.categories.findIndex(c => (c.id === category.id));
+            return (index !== -1);
         },
         addToPoint(point, category) {
             this.createSimpleRelation({
@@ -153,6 +128,13 @@ export default {
                 }
             });
         },
+        moveFromCurrentPoint(category) {
+            if (this.isInCurrentPoint(category)) {
+                this.removeFromPoint(this.modObject, category);
+            } else {
+                this.addToPoint(this.modObject, category);
+            }
+        },
         inputPoint() {
             const inputPoint = Object.assign({}, this.newPoint);
             this.newPoint    = Object.assign({}, pointPattern);
@@ -168,10 +150,11 @@ export default {
             modObject : state => state.app.modObject,
             params    : state => state.route.params
         }),
-        filteredCategories() {
-            const val           = this.categoryName;
-            const categoryNames = fuzzy.filter(val, this.categories, { extract: el => el.name });
-            return categoryNames.map(category => category.original);
+        displayedCategories() {
+            return this.categories.map((category) => {
+                category.inCurrentPoint = this.isInCurrentPoint(category);
+                return category;
+            });
         }
     },
 

@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div class="b--inline">
         <transition name="fade">
             <mdl-button raised accent :disabled="confirm" @click.native="switchConfirm()">
                 <slot></slot>
             </mdl-button>
         </transition>
         <transition name="fade">
-            <div v-show="confirm">
+            <div v-show="confirm" class="b--inline">
                 <mdl-button mini-fab colored @click.native="validate()">
                     <i class="material-icons">done</i>
                 </mdl-button>

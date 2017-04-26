@@ -22,25 +22,19 @@
 
                     <br />
 
-                    <div class="b-responsive-table">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Groupe</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="group in groups">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                        <mdl-button raised colored @click.native="expandGroup(group)">Modifier</mdl-button>
-                                        <b-confirm @confirm="removeObject({ route: 'groups', value: group })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[{ title: 'Groupe', field: 'name' }]"
+                        :data="groups"
+                        :sort="{ field: 'name', order: 'ASC' }"
+                        :actions="[
+                            { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="groups"
+                        :paging="10"
+                        @edit="expandGroup"
+                        @remove="removeObject">
+                    </b-table>
                 </div>
             </transition>
         </div>

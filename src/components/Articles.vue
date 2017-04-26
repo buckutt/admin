@@ -17,18 +17,16 @@
                         </div>
                         <div>
                             <h5>Image</h5>
-                            <form>
-                                <div class="b-articles-container-preview">
-                                    <img :src="image" :alt="modObject.name" v-show="image" class="b-articles-container-preview__image" />
-                                    <div class="b-articles-container-preview__image" v-show="!image"></div>
-                                    <mdl-tooltip target="add-button">Parcourir</mdl-tooltip>
-                                    <mdl-button id="add-button" fab colored
-                                        class="b-articles-container-preview__add mdl-js-ripple-effect">
-                                      <i class="material-icons">attach_file</i>
-                                      <input type="file" @change="onImageChange" accept="image/*" />
-                                    </mdl-button>
-                                </div>
-                            </form>
+                            <div class="b-articles-container-preview">
+                                <img :src="image" :alt="modObject.name" v-show="image" class="b-articles-container-preview__image" />
+                                <div class="b-articles-container-preview__image" v-show="!image"></div>
+                                <mdl-tooltip target="add-button">Parcourir</mdl-tooltip>
+                                <mdl-button id="add-button" fab colored
+                                    class="b-articles-container-preview__add mdl-js-ripple-effect">
+                                  <i class="material-icons">attach_file</i>
+                                  <input type="file" @change="onImageChange" accept="image/*" />
+                                </mdl-button>
+                            </div>
                         </div>
                     </div>
                     <br />
@@ -42,32 +40,22 @@
                         <mdl-button colored raised>Ajouter</mdl-button>
                     </form>
                     <br />
-                    <div class="b-responsive-table">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Montant</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Point</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Fondation</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Groupe</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Période</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="price in modObject.prices" v-if="price.period.Event_id == currentEvent.id">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.amount | price(true) }} TTC <span v-if="modObject.vat > 0">({{ price.amount/(1+modObject.vat/100) | price(true) }} HT)</span></td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.point.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.fundation.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.group.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ price.period.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                        <b-confirm @confirm="removeObject({ route: 'prices', value: price })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[
+                            { title: 'Montant', field: 'displayedPrice' },
+                            { title: 'Point', field: 'point.name' },
+                            { title: 'Fondation', field: 'fundation.name' },
+                            { title: 'Groupe', field: 'group.name' },
+                            { title: 'Période', field: 'period.name' }
+                        ]"
+                        :data="displayedPrices"
+                        :actions="[
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="prices"
+                        :paging="5"
+                        @remove="removeObject">
+                    </b-table>
                     <br />
                     <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
                 </div>
@@ -81,29 +69,22 @@
                     </form>
 
                     <h5>Rechercher un article</h5>
-                    <form @submit.prevent>
-                        <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
-                    </form>
+                    <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
 
-                    <div class="b-responsive-table">
-                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-show="name.length > 0 && filteredArticles.length > 0">
-                            <thead>
-                                <tr>
-                                    <th class="mdl-data-table__cell--non-numeric">Objet</th>
-                                    <th class="mdl-data-table__cell--non-numeric">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="article in filteredArticles">
-                                    <td class="mdl-data-table__cell--non-numeric">{{ article.name }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                                        <mdl-button raised colored @click.native="expandArticle(article)">Modifier</mdl-button>
-                                        <b-confirm @confirm="removeObject({ route: 'articles', value: article })">Supprimer</b-confirm>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <b-table
+                        :headers="[{ title: 'Article', field: 'name' }]"
+                        :data="articles"
+                        :filter="{ val: this.name, field: 'name' }"
+                        :sort="{ field: 'name', order: 'ASC' }"
+                        :actions="[
+                            { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                        ]"
+                        route="articles"
+                        :paging="5"
+                        @edit="expandArticle"
+                        @remove="removeObject">
+                    </b-table>
                 </div>
             </transition>
         </div>
@@ -112,8 +93,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import fuzzy from 'fuzzy';
-import '../lib/price';
+import { parsePrice } from '../lib/price';
 
 const articlePattern = {
     name   : '',
@@ -239,11 +219,6 @@ export default {
             modObject   : state => state.app.modObject,
             params      : state => state.route.params
         }),
-        filteredArticles() {
-            const val           = this.name;
-            const articlesNames = fuzzy.filter(val, this.articles, { extract: el => el.name });
-            return articlesNames.map(article => article.original);
-        },
         periodOptions() {
             return this.periods.map((period) => {
                 if (period.Event_id === this.currentEvent.id) {
@@ -260,6 +235,23 @@ export default {
         },
         groupOptions() {
             return this.groups.map(group => ({ name: group.name, value: group }));
+        },
+        displayedPrices() {
+            if (!this.modObject) {
+                return [];
+            }
+
+            return this.modObject.prices.map((price) => {
+                if (price.period.Event_id === this.currentEvent.id) {
+                    price.wt             = price.amount / (1 + (this.modObject.vat / 100));
+                    price.displayedPrice = `${parsePrice(price.amount)} TTC`;
+                    if (price.amount !== price.wt) {
+                        price.displayedPrice += ` (${parsePrice(price.wt)} HT)`;
+                    }
+                    return price;
+                }
+                return null;
+            }).filter(a => a);
         }
     },
 

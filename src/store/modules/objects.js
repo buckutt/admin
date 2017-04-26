@@ -1,18 +1,19 @@
 const state = {
-    points    : [],
-    devices   : [],
-    periods   : [],
-    articles  : [],
-    fundations: [],
-    groups    : [],
-    categories: [],
-    promotions: [],
-    sets      : [],
-    events    : [],
-    users     : [],
-    transfers : [],
-    reloads   : [],
-    purchases : []
+    points        : [],
+    devices       : [],
+    periods       : [],
+    articles      : [],
+    fundations    : [],
+    groups        : [],
+    categories    : [],
+    promotions    : [],
+    sets          : [],
+    events        : [],
+    users         : [],
+    transfers     : [],
+    reloads       : [],
+    purchases     : [],
+    meansofpayment: []
 };
 
 // mutations
@@ -75,6 +76,9 @@ const mutations = {
     },
     ADDRELOADS(state_, reloads) {
         state_.reloads.push(...reloads);
+    },
+    ADDMEANSOFPAYMENT(state_, meansofpayment) {
+        state_.meansofpayment.push(...meansofpayment);
     },
     UPDATEPERIOD(state_, period) {
         const i = state_.periods.findIndex(p => (p.id === period.id));

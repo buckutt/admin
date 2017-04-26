@@ -15,42 +15,23 @@
             </form>
 
             <h4>Rechargements <span class="small">(total: {{ totalReload | price(true) }})</span></h4>
-            <div class="b-responsive-table">
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Moyen de paiement</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="reload in reloads">
-                            <td class="mdl-data-table__cell--non-numeric">{{ reload.group | reloadType }}</td>
-                            <td>{{ reload.reduction | price(true) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <b-table
+                :headers="[
+                    { title: 'Moyen de paiement', field: 'type' },
+                    { title: 'Total', field: 'reduction', type: 'price' }
+                ]"
+                :data="displayedReloads">
+            </b-table>
 
             <h4>Transferts <span class="small">(total: {{ totalTransfer | price(true) }})</span></h4>
-            <div class="b-responsive-table">
-                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                    <thead>
-                        <tr>
-                            <th class="mdl-data-table__cell--non-numeric">De</th>
-                            <th class="mdl-data-table__cell--non-numeric">À</th>
-                            <th>Montant</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="transfer in transfers">
-                            <td class="mdl-data-table__cell--non-numeric">{{ transfer.sender.firstname }} {{ transfer.sender.lastname }}</td>
-                            <td class="mdl-data-table__cell--non-numeric">{{ transfer.reciever.firstname }} {{ transfer.reciever.lastname }}</td>
-                            <td>{{ transfer.amount | price(true) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <b-table
+                :headers="[
+                    { title: 'De', field: 'sender.fullname', class: 'b--capitalized' },
+                    { title: 'À', field: 'reciever.fullname', class: 'b--capitalized' },
+                    { title: 'Montant', field: 'amount', type: 'price' },
+                ]"
+                :data="displayedTransfers">
+            </b-table>
         </div>
     </div>
 </template>
@@ -58,7 +39,6 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import '../lib/price';
-import '../lib/reloadType';
 import { convertDate } from '../lib/date';
 
 const fieldsPattern = {
@@ -76,9 +56,10 @@ export default {
 
     computed: {
         ...mapState({
-            points   : state => state.objects.points,
-            transfers: state => state.objects.transfers,
-            reloads  : state => state.objects.reloads
+            points        : state => state.objects.points,
+            transfers     : state => state.objects.transfers,
+            reloads       : state => state.objects.reloads,
+            meansofpayment: state => state.objects.meansofpayment
         }),
         totalReload() {
             let sum = 0;
@@ -100,10 +81,22 @@ export default {
         },
         pointOptions() {
             const options = this.points.map(point => ({ name: point.name, value: point.id }));
-
             options.unshift({ name: 'Tous', value: null });
 
             return options;
+        },
+        displayedReloads() {
+            return this.reloads.map((reload) => {
+                reload.type = this.slugToName(reload.group);
+                return reload;
+            });
+        },
+        displayedTransfers() {
+            return this.transfers.map((transfer) => {
+                transfer.sender.fullname = `${transfer.sender.firstname} ${transfer.sender.lastname}`;
+                transfer.reciever.fullname = `${transfer.reciever.firstname} ${transfer.reciever.lastname}`;
+                return transfer;
+            });
         }
     },
 
@@ -137,6 +130,10 @@ export default {
         },
         convertDate(date) {
             return convertDate(date);
+        },
+        slugToName(slug) {
+            const index = this.meansofpayment.findIndex(mop => (mop.slug === slug));
+            return (index !== -1) ? this.meansofpayment[index].name : slug;
         }
     },
 
