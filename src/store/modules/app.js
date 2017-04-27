@@ -4,8 +4,8 @@ import lodget from 'lodash.get';
 const state = {
     modObject   : null,
     currentEvent: null,
-    logged      : false,
-    loggedUser  : null
+    loggedUser  : null,
+    firstLoad   : false
 };
 
 // mutations
@@ -39,11 +39,11 @@ const mutations = {
     UPDATECURRENTEVENT(state_, currentEvent) {
         state_.currentEvent = currentEvent;
     },
-    UPDATELOGGED(state_, logged) {
-        state_.logged = logged;
-    },
     UPDATELOGGEDUSER(state_, loggedUser) {
         state_.loggedUser = loggedUser;
+    },
+    UPDATEFIRSTLOAD(state_, firstLoad) {
+        state_.firstLoad = firstLoad;
     }
 };
 

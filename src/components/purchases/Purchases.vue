@@ -1,12 +1,12 @@
 <template>
-    <div class="b-purchases">
+    <div class="b-purchases b-page">
         <div class="mdl-card mdl-shadow--2dp">
             <h3 v-if="currentEvent">Achats de "{{ currentEvent.name }}"</h3>
             <h4>Recherche</h4>
             <form @submit.prevent="filter()">
                 <div>
-                    <mdl-select label="Point" id="point-select" v-model="fields.point" :options="pointOptions"></mdl-select>
-                    <mdl-select label="Fondation" id="select-fundations" v-model="fields.fundation" :options="fundationOptions"></mdl-select>
+                    <mdl-select label="Point" id="point-select" v-model="fields.point" :options="pointOptionsAll"></mdl-select>
+                    <mdl-select label="Fondation" id="select-fundations" v-model="fields.fundation" :options="fundationOptionsAll"></mdl-select>
                 </div>
                 <div>
                     Recherche par:<br />
@@ -21,7 +21,7 @@
                     </transition>
                     <transition name="fade">
                         <div v-show="dateChoice == 0">
-                            <mdl-select label="Periode" id="select-periods" v-model="fields.period" :options="periodOptions"></mdl-select>
+                            <mdl-select label="Periode" id="select-periods" v-model="fields.period" :options="periodOptionsAll"></mdl-select>
                         </div>
                     </transition>
                 </div>
@@ -45,9 +45,9 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
-import '../lib/price';
-import { convertDate } from '../lib/date';
+import { mapState, mapActions, mapGetters } from 'vuex';
+import '../../lib/price';
+import { convertDate } from '../../lib/date';
 
 const fieldsPattern = {
     point    : null,
@@ -68,11 +68,13 @@ export default {
     computed: {
         ...mapState({
             purchases   : state => state.objects.purchases,
-            points      : state => state.objects.points,
-            fundations  : state => state.objects.fundations,
-            periods     : state => state.objects.periods,
             currentEvent: state => state.app.currentEvent
         }),
+        ...mapGetters([
+            'periodOptions',
+            'pointOptions',
+            'fundationOptions'
+        ]),
         totalSell() {
             let sum = 0;
 
@@ -91,35 +93,20 @@ export default {
 
             return sum;
         },
-        periodOptions() {
-            if (!this.currentEvent) {
-                return [];
-            }
-
-            const periods = this.periods.map((period) => {
-                if (period.Event_id === this.currentEvent.id) {
-                    return { name: period.name, value: period.id };
-                }
-                return null;
-            });
-
+        periodOptionsAll() {
+            const periods = this.periodOptions;
             periods.unshift({ name: 'Toutes', value: null });
-
-            return periods.filter(a => a);
+            return periods;
         },
-        pointOptions() {
-            const options = this.points.map(point => ({ name: point.name, value: point.id }));
-
-            options.unshift({ name: 'Tous', value: null });
-
-            return options;
+        pointOptionsAll() {
+            const points = this.pointOptions;
+            points.unshift({ name: 'Tous', value: null });
+            return points;
         },
-        fundationOptions() {
-            const options = this.fundations.map(fundation => ({ name: fundation.name, value: fundation.id }));
-
-            options.unshift({ name: 'Toutes', value: null });
-
-            return options;
+        fundationOptionsAll() {
+            const fundations = this.fundationOptions;
+            fundations.unshift({ name: 'Toutes', value: null });
+            return fundations;
         }
     },
 
@@ -177,33 +164,5 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../main.scss';
-
-    .b-purchases {
-        > div {
-            min-height: calc(100% - 40px);
-            margin: 20px ((100% - $cardSize) / 2);
-            overflow-y: hidden;
-            padding: 20px;
-            width: $cardSize;
-
-            > h3 {
-                margin: 0;
-            }
-
-            > select {
-                display: inline-block;
-                max-width: 150px;
-            }
-
-            button {
-                max-width: 300px;
-            }
-
-            table {
-                width: 100%;
-                white-space: normal;
-            }
-        }
-    }
+    @import '../../main.scss';
 </style>

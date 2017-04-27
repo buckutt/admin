@@ -1,11 +1,11 @@
 <template>
-    <div class="b-treasury">
+    <div class="b-treasury b-page">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Trésorerie</h3>
             <h4>Recherche</h4>
             <form @submit.prevent="filter()">
                 <div>
-                    <mdl-select label="Point" id="point-select" v-model="fields.point" :options="pointOptions"></mdl-select>
+                    <mdl-select label="Point" id="point-select" v-model="fields.point" :options="pointOptionsAll"></mdl-select>
                 </div>
                 <div>
                     <mdl-textfield floating-label="Début" :value="fields.dateIn | date" @input="updateField('dateIn', convertDate($event))" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" ref="datein"></mdl-textfield>
@@ -37,9 +37,9 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
-import '../lib/price';
-import { convertDate } from '../lib/date';
+import { mapState, mapActions, mapGetters } from 'vuex';
+import '../../lib/price';
+import { convertDate } from '../../lib/date';
 
 const fieldsPattern = {
     point  : null,
@@ -56,11 +56,13 @@ export default {
 
     computed: {
         ...mapState({
-            points        : state => state.objects.points,
             transfers     : state => state.objects.transfers,
             reloads       : state => state.objects.reloads,
             meansofpayment: state => state.objects.meansofpayment
         }),
+        ...mapGetters([
+            'pointOptions'
+        ]),
         totalReload() {
             let sum = 0;
 
@@ -79,11 +81,10 @@ export default {
 
             return sum;
         },
-        pointOptions() {
-            const options = this.points.map(point => ({ name: point.name, value: point.id }));
-            options.unshift({ name: 'Tous', value: null });
-
-            return options;
+        pointOptionsAll() {
+            const points = this.pointOptions;
+            points.unshift({ name: 'Tous', value: null });
+            return points;
         },
         displayedReloads() {
             return this.reloads.map((reload) => {
@@ -157,33 +158,5 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../main.scss';
-
-    .b-treasury {
-        > div {
-            min-height: calc(100% - 40px);
-            margin: 20px ((100% - $cardSize) / 2);
-            overflow-y: auto;
-            padding: 20px;
-            width: $cardSize;
-
-            > h3 {
-                margin: 0;
-            }
-
-            > select {
-                display: inline-block;
-                max-width: 150px;
-            }
-
-            button {
-                max-width: 300px;
-            }
-
-            table {
-                width: 100%;
-                white-space: normal;
-            }
-        }
-    }
+    @import '../../main.scss';
 </style>

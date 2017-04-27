@@ -1,9 +1,7 @@
 <template>
-    <div class="b-points">
+    <div class="b-points b-page">
         <div class="mdl-card mdl-shadow--2dp">
             <h3>Points</h3>
-            <transition name="fade">
-                <div v-if="modObject">
                     <h5>Modifier le point {{ modObject.name }}:</h5>
                     <form @submit.prevent="updateObject({ route: 'points', value: modObject })">
                         <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
@@ -33,33 +31,6 @@
                     </b-table>
                     <br />
                     <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
-                </div>
-            </transition>
-            <transition name="fade">
-                <div v-if="!modObject">
-                    <form @submit.prevent="createObject({ route: 'points', value: inputPoint() })">
-                        <mdl-textfield floating-label="Nom" v-model="newPoint.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
-                        <br />
-                        <mdl-button colored raised>Créer</mdl-button>
-                    </form>
-
-                    <br />
-
-                    <b-table
-                        :headers="[{ title: 'Point', field: 'name' }]"
-                        :data="points"
-                        :sort="{ field: 'name', order: 'ASC' }"
-                        :actions="[
-                            { action: 'edit', text: 'Modifier', raised: true, colored: true },
-                            { action: 'remove', text: 'Supprimer', type: 'confirm' }
-                        ]"
-                        route="points"
-                        :paging="10"
-                        @edit="expandPoint"
-                        @remove="removeObject">
-                    </b-table>
-                </div>
-            </transition>
         </div>
     </div>
 </template>
@@ -67,36 +38,20 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 
-const pointPattern = {
-    name: ''
-};
-
 export default {
     data() {
         return {
-            newPoint    : Object.assign({}, pointPattern),
             categoryName: ''
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject',
             'updateObject',
-            'removeObject',
             'createSimpleRelation',
             'removeSimpleRelation',
-            'expandObject',
             'updateModObject'
         ]),
-        expandPoint(point) {
-            this.$router.push(`/points/${point.id}`);
-
-            this.expandObject({
-                route: 'points',
-                value: point
-            });
-        },
         search(category) {
             this.categoryName = category.name;
         },
@@ -134,21 +89,13 @@ export default {
             } else {
                 this.addToPoint(this.modObject, category);
             }
-        },
-        inputPoint() {
-            const inputPoint = Object.assign({}, this.newPoint);
-            this.newPoint    = Object.assign({}, pointPattern);
-
-            return inputPoint;
         }
     },
 
     computed: {
         ...mapState({
-            points    : state => state.objects.points,
             categories: state => state.objects.categories,
-            modObject : state => state.app.modObject,
-            params    : state => state.route.params
+            modObject : state => state.app.modObject
         }),
         displayedCategories() {
             return this.categories.map((category) => {
@@ -156,43 +103,10 @@ export default {
                 return category;
             });
         }
-    },
-
-    mounted() {
-        if (this.params.id) {
-            this.expandPoint({ id: this.params.id });
-        }
     }
 };
 </script>
 
 <style lang="scss">
-    @import '../main.scss';
-
-    .b-points {
-        > div {
-            min-height: calc(100% - 40px);
-            margin: 20px ((100% - $cardSize) / 2);
-            padding: 20px;
-            width: $cardSize;
-
-            > h3 {
-                margin: 0;
-            }
-
-            > select {
-                display: inline-block;
-                max-width: 150px;
-            }
-
-            button {
-                max-width: 300px;
-            }
-
-            table {
-                width: 100%;
-                white-space: normal;
-            }
-        }
-    }
+    @import '../../main.scss';
 </style>

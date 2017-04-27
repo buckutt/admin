@@ -11,9 +11,7 @@ export function createSetWithArticles({ commit, dispatch, state }, payload) {
     const promotion = payload.promotion;
 
     post('sets', set).then((result) => {
-        if (state.objects.sets.findIndex(object => (object.id === result.id)) === -1) {
-            commit('ADDSETS', [result]);
-        }
+        dispatch('checkAndAddObjects', { route: 'sets', objects: [result] });
 
         post(`sets/${result.id}/promotions`, { id: promotion.id })
             .catch((err) => {
@@ -84,14 +82,14 @@ export function removeArticleFromSet({ commit, dispatch, state }, payload) {
  * Users actions
  */
 
-export function createUserWithMol({ commit }, user) {
+export function createUserWithMol({ commit, dispatch }, user) {
     post('users', user)
         .then((result) => {
             if (result.mail) {
                 post('meansoflogin', { type: 'etuMail', data: result.mail, User_id: result.id });
             }
 
-            commit('ADDUSERS', [result]);
+            dispatch('checkAndAddObjects', { route: 'users', objects: [result] });
             commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
         })
         .catch((err) => {
@@ -99,7 +97,7 @@ export function createUserWithMol({ commit }, user) {
         });
 }
 
-export function searchUsers({ commit }, name) {
+export function searchUsers({ commit, dispatch }, name) {
     get(`services/manager/searchuser?name=${name}`)
         .then((results) => {
             if (results.length > 0) {
@@ -121,14 +119,15 @@ export function searchUsers({ commit }, name) {
             return [];
         })
         .then((results) => {
-            commit('CLEARUSERS');
-            commit('ADDUSERS', results.map((result) => {
+            commit('CLEAROBJECT', 'users');
+            const users = results.map((result) => {
                 Object.keys(config.relations.users).forEach((key) => {
                     result[key] = result[key].filter(rel => !rel.isRemoved);
                 });
 
                 return result;
-            }));
+            });
+            dispatch('checkAndAddObjects', { route: 'users', objects: users });
         })
         .catch((err) => {
             commit('UPDATEAPIERROR', err);
@@ -139,7 +138,7 @@ export function searchUsers({ commit }, name) {
  * Purchases actions
  */
 
-export function getPurchases({ commit }, fields) {
+export function getPurchases({ commit, dispatch }, fields) {
     const q = [];
 
     q.push(`event=${fields.event}`);
@@ -169,14 +168,15 @@ export function getPurchases({ commit }, fields) {
 
     get(`services/treasury/purchases?${qString}`)
         .then((purchases) => {
-            commit('CLEARPURCHASES');
-            commit('ADDPURCHASES', purchases.map((purchase) => {
+            commit('CLEAROBJECT', 'purchases');
+            const purchasesWT = purchases.map((purchase) => {
                 if (!purchase.totalWT) {
                     purchase.totalWT = purchase.totalVAT;
                 }
 
                 return purchase;
-            }));
+            });
+            dispatch('checkAndAddObjects', { route: 'purchases', objects: purchasesWT });
         })
         .catch((err) => {
             commit('UPDATEAPIERROR', err);
@@ -187,7 +187,7 @@ export function getPurchases({ commit }, fields) {
  * Treasury actions
  */
 
-export function getTreasury({ commit }, fields) {
+export function getTreasury({ commit, dispatch }, fields) {
     const q  = [];
     const qt = [];
 
@@ -229,16 +229,16 @@ export function getTreasury({ commit }, fields) {
 
     get(`services/treasury/reloads?${qString}`)
         .then((reloads) => {
-            commit('CLEARRELOADS');
-            commit('ADDRELOADS', reloads);
+            commit('CLEAROBJECT', 'reloads');
+            dispatch('checkAndAddObjects', { route: 'reloads', objects: reloads });
 
             const relEmbed = encodeURIComponent(JSON.stringify(config.relations.transfers));
 
             return get(`transfers/search?q=${orQt}&embed=${relEmbed}`);
         })
         .then((transfers) => {
-            commit('CLEARTRANSFERS');
-            commit('ADDTRANSFERS', transfers.filter(t => !t.isRemoved));
+            commit('CLEAROBJECT', 'transfers');
+            dispatch('checkAndAddObjects', { route: 'transfers', objects: transfers.filter(t => !t.isRemoved) });
         })
         .catch((err) => {
             commit('UPDATEAPIERROR', err);
@@ -256,7 +256,6 @@ export function login({ commit, dispatch }, credentials) {
                 sessionStorage.setItem('user', JSON.stringify(result.user));
                 sessionStorage.setItem('token', result.token);
 
-                commit('UPDATELOGGED', true);
                 commit('UPDATELOGGEDUSER', result.user);
                 updateBearer(result.token);
 

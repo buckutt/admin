@@ -5,27 +5,19 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
     methods: {
         ...mapActions([
-            'updateLogged',
             'updateLoggedUser',
             'clearAppStore',
             'closeSocket'
         ])
     },
 
-    computed: {
-        ...mapState({
-            logged: state => state.app.logged
-        })
-    },
-
     mounted() {
         sessionStorage.clear();
-        this.updateLogged(false);
         this.updateLoggedUser(null);
         this.clearAppStore();
         this.closeSocket();

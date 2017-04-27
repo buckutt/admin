@@ -18,7 +18,7 @@
         </div>
 
         <transition name="fade">
-            <div class="b-container__home" v-if="logged">
+            <div class="b-container__home b-page" v-if="logged">
                 <div class="mdl-card mdl-shadow--2dp">
                     <h3>Bonjour {{ loggedUser.firstname }} {{ loggedUser.lastname }} !</h3>
                     Stats générales de buckless + proposition de sélection d'événement + help ?
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
     data() {
@@ -50,15 +50,17 @@ export default {
 
     computed: {
         ...mapState({
-            logged    : state => state.app.logged,
             loggedUser: state => state.app.loggedUser
-        })
+        }),
+        ...mapGetters([
+            'logged'
+        ])
     }
 };
 </script>
 
 <style lang="scss">
-    @import '../main.scss';
+    @import '../../main.scss';
 
     .b-container {
         &.b-container__display {
@@ -78,28 +80,6 @@ export default {
 
             .mdl-textfield {
                 width: 100%;
-            }
-        }
-    }
-
-    .b-container__home {
-        > div {
-            min-height: calc(100% - 40px);
-            margin: 20px ((100% - $cardSize) / 2);
-            padding: 20px;
-            width: $cardSize;
-
-            > h3 {
-                margin: 0;
-            }
-
-            button {
-                max-width: 300px;
-            }
-
-            table {
-                width: 100%;
-                white-space: normal;
             }
         }
     }

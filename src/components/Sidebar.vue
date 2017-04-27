@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
     methods: {
@@ -133,25 +133,17 @@ export default {
 
     computed: {
         ...mapState({
-            events      : state => state.objects.events,
-            currentEvent: state => state.app.currentEvent,
-            logged      : state => state.app.logged
+            currentEvent: state => state.app.currentEvent
         }),
-        eventOptions() {
-            return this.events.map(event => ({ name: event.name, value: event }));
-        },
+        ...mapGetters([
+            'logged',
+            'eventOptions'
+        ]),
         displayEvent() {
             if (!this.currentEvent) {
                 return '';
             }
             return this.currentEvent.name;
-        }
-    },
-
-    mounted() {
-        if (sessionStorage.hasOwnProperty('event')) {
-            const parsedEvent = JSON.parse(sessionStorage.getItem('event'));
-            this.updateCurrentEvent(parsedEvent);
         }
     }
 };

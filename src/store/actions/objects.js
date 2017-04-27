@@ -1,5 +1,4 @@
 import { get, post, put, del } from '../../lib/fetch';
-import { modelTocommit }       from '../../lib/storeUtils.js';
 
 /**
  * App actions
@@ -10,33 +9,70 @@ export function clearAppStore({ commit }) {
 }
 
 export function clearObject({ commit }, route) {
-    commit(modelTocommit[route].clear);
+    commit('CLEAROBJECT', route);
 }
 
-export function expandObject({ commit }, object) {
+export function expandObject({ commit, dispatch }, object) {
     let embed = '';
     if (config.relations[object.route]) {
         embed = `?embed=${encodeURIComponent(JSON.stringify(config.relations[object.route]))}`;
     }
 
-    get(`${object.route}/${object.value.id}${embed}`).then((result) => {
-        if (config.relations[object.route]) {
-            Object.keys(config.relations[object.route]).forEach((key) => {
-                result[key] = result[key].filter(rel => !rel.isRemoved);
-            });
-        }
+    return new Promise((resolve, reject) => {
+        get(`${object.route}/${object.value.id}${embed}`).then((result) => {
+            if (config.relations[object.route]) {
+                Object.keys(config.relations[object.route]).forEach((key) => {
+                    result[key] = result[key].filter(rel => !rel.isRemoved);
+                });
+            }
 
-        commit(modelTocommit[object.route].update, result);
-        commit('UPDATEMODOBJECT', result);
-    })
-    .catch((err) => {
-        commit('UPDATEAPIERROR', err);
+            dispatch('checkAndUpdateObject', { route: object.route, object: result });
+            commit('UPDATEMODOBJECT', result);
+
+            resolve(result);
+        })
+        .catch((err) => {
+            commit('UPDATEAPIERROR', err);
+            reject(err);
+        });
     });
 }
 
-export function fetchObjects({ commit }, route) {
+export function checkAndAddObjects({ commit, state }, data) {
+    if (state.objects[data.route]) {
+        const objectsToAdd = data.objects.map((object) => {
+            if (state.objects[data.route].findIndex(o => (o.id === object.id)) === -1) {
+                return object;
+            }
+            return null;
+        }).filter(a => a);
+
+        commit('ADDOBJECTS', { route: data.route, objects: objectsToAdd });
+    }
+}
+
+export function checkAndUpdateObject({ commit, state }, data) {
+    if (state.objects[data.route]) {
+        const index = state.objects[data.route].findIndex(o => (o.id === data.object.id));
+        if (index !== -1) {
+            if (state.objects[data.route][index].editedAt !== data.object.editedAt) {
+                commit('UPDATEOBJECT', data);
+            }
+        }
+    }
+}
+
+export function checkAndDeleteObject({ commit, state }, data) {
+    if (state.objects[data.route]) {
+        if (state.objects[data.route].findIndex(o => (o.id === data.object.id)) !== -1) {
+            commit('DELETEOBJECT', data);
+        }
+    }
+}
+
+export function fetchObjects({ commit, dispatch }, route) {
     get(route.toLowerCase()).then((results) => {
-        commit(modelTocommit[route].add, results);
+        dispatch('checkAndAddObjects', { route, objects: results });
     })
     .catch((err) => {
         commit('UPDATEAPIERROR', err);
@@ -46,9 +82,7 @@ export function fetchObjects({ commit }, route) {
 export function createObject({ commit, dispatch, state }, object) {
     post(object.route.toLowerCase(), object.value).then((result) => {
         if (state.objects[object.route]) {
-            if (state.objects[object.route].findIndex(o => (o.id === result.id)) === -1) {
-                commit(modelTocommit[object.route].add, [result]);
-            }
+            dispatch('checkAndAddObjects', { route: object.route, objects: [result] });
         }
 
         if (state.app.modObject) {
@@ -69,17 +103,12 @@ export function createObject({ commit, dispatch, state }, object) {
 
 export function updateObject({ commit, dispatch, state }, object) {
     put(`${object.route.toLowerCase()}/${object.value.id}`, object.value).then((result) => {
-        if (state.objects[object.route]) {
-            const index = state.objects[object.route].findIndex(o => (o.id === result.id));
-
-            if (index !== -1) {
-                if (result.isRemoved) {
-                    commit(modelTocommit[object.route].delete, result);
-                } else if (state.objects[object.route][index].editedAt !== result.editedAt) {
-                    commit(modelTocommit[object.route].update, result);
-                }
-            }
+        if (result.isRemoved) {
+            dispatch('checkAndDeleteObject', { route: object.route, object: result });
+        } else {
+            dispatch('checkAndUpdateObject', { route: object.route, object: result });
         }
+
 
         if (state.app.modObject) {
             if (state.app.modObject[object.route]) {
@@ -99,11 +128,7 @@ export function updateObject({ commit, dispatch, state }, object) {
 
 export function removeObject({ commit, dispatch, state }, object) {
     put(`${object.route.toLowerCase()}/${object.value.id}`, { isRemoved: true }).then((result) => {
-        if (state.objects[object.route]) {
-            if (state.objects[object.route].findIndex(o => (o.id === result.id)) !== -1) {
-                commit(modelTocommit[object.route].delete, result);
-            }
-        }
+        dispatch('checkAndDeleteObject', { route: object.route, object: result });
 
         if (state.app.modObject) {
             if (state.app.modObject[object.route]) {

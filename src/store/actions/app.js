@@ -36,14 +36,18 @@ export function updateCurrentEvent({ commit }, currentEvent) {
         periods: true
     }));
 
-    get(`events/${currentEvent.id}?embed=${embedEvents}`)
-        .then((result) => {
-            if (result.periods) {
-                result.periods = result.periods.filter(period => !period.isRemoved);
-            }
-            sessionStorage.setItem('event', JSON.stringify(result));
-            commit('UPDATECURRENTEVENT', result);
-        });
+    return new Promise((resolve, reject) => {
+        get(`events/${currentEvent.id}?embed=${embedEvents}`)
+            .then((result) => {
+                if (result.periods) {
+                    result.periods = result.periods.filter(period => !period.isRemoved);
+                }
+                sessionStorage.setItem('event', JSON.stringify(result));
+                commit('UPDATECURRENTEVENT', result);
+                resolve();
+            })
+            .catch(() => reject());
+    });
 }
 
 export function updateLogged({ commit }, logged) {
@@ -80,4 +84,30 @@ export function load({ dispatch }) {
     });
 
     dispatch('registerModels', routes);
+}
+
+export function checkAndCreateNeededRouterData({ state, commit, dispatch }) {
+    return new Promise((resolve, reject) => {
+        if (state.app.firstLoad) {
+            resolve();
+        } else {
+            const actions = [];
+
+            if (sessionStorage.hasOwnProperty('token')) {
+                commit('UPDATELOGGEDUSER', JSON.parse(sessionStorage.getItem('user')));
+                dispatch('load');
+            }
+
+            if (sessionStorage.hasOwnProperty('event')) {
+                actions.push(dispatch('updateCurrentEvent', JSON.parse(sessionStorage.getItem('event'))));
+            }
+
+            Promise.all(actions)
+                .then(() => {
+                    commit('UPDATEFIRSTLOAD', true);
+                    resolve();
+                })
+                .catch(() => reject());
+        }
+    });
 }

@@ -1,5 +1,6 @@
 @import './variables.scss';
 @import './mixins.scss';
+@import './spinner.scss';
 @import './styles/select.scss';
 @import './styles/modal.scss';
 
@@ -42,8 +43,34 @@ html, body, main {
 .anytime-picker__dates { width: 200px; }
 .anytime-picker__dates > * { box-sizing: border-box; width: 14.28%; display: inline-block; }
 
+.b-page {
+    > div {
+        min-height: calc(100% - 40px);
+        margin: 20px ((100% - $cardSize) / 2);
+        padding: 20px;
+        width: $cardSize;
+
+        > h3 {
+            margin: 0;
+        }
+
+        > select {
+            display: inline-block;
+            max-width: 150px;
+        }
+
+        button {
+            max-width: 300px;
+        }
+    }
+}
+
 .b-responsive-table {
     overflow-x: auto;
+
+    > table {
+        width: 100%;
+    }
 }
 
 .b-actions-cell {

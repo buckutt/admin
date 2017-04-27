@@ -1,7 +1,5 @@
 import io from 'socket.io-client';
 
-import { modelTocommit } from '../../lib/storeUtils.js';
-
 export function registerModels({ commit, state }, routes) {
     state.changes.socket.emit('listen', routes);
 
@@ -15,37 +13,28 @@ export function registerModels({ commit, state }, routes) {
     });
 }
 
-export function initListeners({ commit, state }) {
+export function initListeners({ dispatch, state }) {
     state.changes.socket.on('create', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
-        if (state.objects[route].findIndex(object => (object.id === doc.data.id)) === -1) {
-            commit(modelTocommit[route].add, [doc.data]);
-        }
+        dispatch('checkAndAddObjects', { route, objects: [doc.data] });
     });
 
     state.changes.socket.on('update', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
-        const index = state.objects[route].findIndex(object => (object.id === doc.data.to.id));
-
-        if (index !== -1) {
-            if (doc.data.to.isRemoved) {
-                commit(modelTocommit[route].delete, doc.data.to);
-            } else if (state.objects[route][index].editedAt !== doc.data.to.editedAt) {
-                commit(modelTocommit[route].update, doc.data.to);
-            }
+        if (doc.data.to.isRemoved) {
+            dispatch('checkAndDeleteObject', { route, object: doc.data.to });
+        } else {
+            dispatch('checkAndUpdateObject', { route, object: doc.data.to });
         }
     });
 
     state.changes.socket.on('delete', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
-
-        if (state.objects[route].findIndex(object => (object.id === doc.data.id)) !== -1) {
-            commit(modelTocommit[route].delete, doc.data);
-        }
+        dispatch('checkAndDeleteObject', { route, object: doc.data });
     });
 }
 
-export function initSocket({ commit, state }, token) {
+export function initSocket({ commit, dispatch, state }, token) {
     commit('CHANGESOCKET', io(config.api, {
         transportOptions: {
             polling: {
@@ -57,7 +46,7 @@ export function initSocket({ commit, state }, token) {
     }));
 
     state.changes.socket.on('connected', () => {
-        initListeners({ commit, state });
+        dispatch('initListeners');
     });
 
     state.changes.socket.on('APIError', (error) => {
