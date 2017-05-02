@@ -150,9 +150,9 @@ export default {
             return this.modObject.prices.map((price) => {
                 if (price.period.Event_id === this.currentEvent.id) {
                     price.wt             = price.amount / (1 + (this.modObject.vat / 100));
-                    price.displayedPrice = `${parsePrice(price.amount)} TTC`;
+                    price.displayedPrice = `${parsePrice(price.amount, true)} TTC`;
                     if (price.amount !== price.wt) {
-                        price.displayedPrice += ` (${parsePrice(price.wt)} HT)`;
+                        price.displayedPrice += ` (${parsePrice(price.wt, true)} HT)`;
                     }
                     return price;
                 }
