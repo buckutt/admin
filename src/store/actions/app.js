@@ -13,11 +13,11 @@ export function updateModObject({ commit, state }, payload) {
     if (payload.relation) {
         const index = lodget(state.app.modObject, payload.relation).findIndex(o => (o.id === payload.value.id));
 
-        if (index === -1) {
-            commit('ADDMODOBJECTRELATION', payload);
-        } else {
+        if (index !== -1) {
             commit('UPDATEMODOBJECTRELATION', payload);
         }
+    } else if (payload.newRelation) {
+        commit('ADDMODOBJECTRELATION', payload);
     } else {
         commit('UPDATEMODOBJECTFIELD', payload);
     }

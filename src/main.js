@@ -110,7 +110,9 @@ router.beforeEach((route, from, next) => {
                 next();
             }
         })
-        .catch(() => store.dipatch('showClientError', 'Impossible de récupérer l\'événement, veuillez actualiser la page'));
+        .catch(() =>
+            store.dipatch('showClientError', 'Impossible de récupérer l\'événement, veuillez actualiser la page')
+        );
 });
 
 const Admin = Vue.extend({

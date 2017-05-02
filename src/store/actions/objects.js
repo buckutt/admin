@@ -88,8 +88,8 @@ export function createObject({ commit, dispatch, state }, object) {
         if (state.app.modObject) {
             if (state.app.modObject[object.route]) {
                 dispatch('updateModObject', {
-                    relation: object.route,
-                    value   : result
+                    newRelation: object.route,
+                    value      : result
                 });
             }
         }
@@ -151,15 +151,15 @@ export function createSimpleRelation({ commit, dispatch, state }, relation) {
         .then(() => {
             if (relation.obj1.value.id === state.app.modObject.id) {
                 dispatch('updateModObject', {
-                    relation: relation.obj2.route,
-                    value   : relation.obj2.value
+                    newRelation: relation.obj2.route,
+                    value      : relation.obj2.value
                 });
             }
 
             if (relation.obj2.value.id === state.app.modObject.id) {
                 dispatch('updateModObject', {
-                    relation: relation.obj1.route,
-                    value   : relation.obj1.value
+                    newRelation: relation.obj1.route,
+                    value      : relation.obj1.value
                 });
             }
 
@@ -209,16 +209,16 @@ export function createMultipleRelation({ commit, dispatch, state }, relation) {
         .then(() => {
             if (relation.obj.value.id === state.app.modObject.id) {
                 dispatch('updateModObject', {
-                    relation: relation.relation.route,
-                    value   : firstObject
+                    newRelation: relation.relation.route,
+                    value      : firstObject
                 });
             } else if (state.app.modObject[relation.relation.route]) {
                 const objectIds = Object.values(firstObject);
                 if (objectIds.indexOf(state.app.modObject.id) > -1) {
                     firstObject[relation.obj.route].push(relation.obj.value);
                     dispatch('updateModObject', {
-                        relation: relation.relation.route,
-                        value   : firstObject
+                        newRelation: relation.relation.route,
+                        value      : firstObject
                     });
                 }
             }

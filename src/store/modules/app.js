@@ -17,7 +17,7 @@ const mutations = {
         lodset(state_.modObject, payload.field, payload.value);
     },
     ADDMODOBJECTRELATION(state_, payload) {
-        lodget(state_.modObject, payload.relation).push(payload.value);
+        lodget(state_.modObject, payload.newRelation).push(payload.value);
     },
     UPDATEMODOBJECTRELATION(state_, payload) {
         const relations = lodget(state_.modObject, payload.relation).slice(0);

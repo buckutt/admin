@@ -23,8 +23,8 @@ export function createSetWithArticles({ commit, dispatch, state }, payload) {
         });
 
         dispatch('updateModObject', {
-            relation: 'sets',
-            value   : {
+            newRelation: 'sets',
+            value      : {
                 id  : result.id,
                 name: set.name,
                 articles
@@ -53,8 +53,8 @@ export function addArticleToSet({ commit, dispatch, state }, payload) {
     const index = state.app.modObject.sets.findIndex(s => (s.id === payload.set.id));
 
     dispatch('updateModObject', {
-        relation: `sets[${index}].articles`,
-        value   : payload.article
+        newRelation: `sets[${index}].articles`,
+        value      : payload.article
     });
 }
 

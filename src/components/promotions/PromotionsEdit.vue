@@ -35,69 +35,7 @@
                 @remove="removeObject">
             </b-table>
             <br />
-            <div class="b-promotions__contentManager">
-                <div>
-                    <h5>Contenu de la promotion :</h5>
-                    <transition name="fade">
-                        <div class="b-responsive-table">
-                            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="promotionFormat.length > 0">
-                               <thead>
-                                    <tr>
-                                        <th class="mdl-data-table__cell--non-numeric">Ensemble</th>
-                                        <th class="mdl-data-table__cell--non-numeric">Choix possibles</th>
-                                        <th class="mdl-data-table__cell--non-numeric" v-show="typeof displayRemove === 'number' || displayChoose">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(set, index) in promotionFormat">
-                                        <td class="mdl-data-table__cell--non-numeric">
-                                            <strong>{{ index + 1 }}</strong>
-                                        </td>
-                                        <td class="mdl-data-table__cell--non-numeric">
-                                            <transition-group name="fade">
-                                                <mdl-button v-for="(article, indexA) in set.articles" :key="index+'_'+indexA" @click.native="chooseArticle(article, index)">{{ article.name }}</mdl-button>
-                                            </transition-group>
-                                        </td>
-                                        <transition name="fade">
-                                            <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayChoose">
-                                                <mdl-button raised colored @click.native="addChosenArticleToStep(modObject, index)"><i class="material-icons">add</i></mdl-button>
-                                            </td>
-                                        </transition>
-                                        <transition name="fade">
-                                            <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayRemove === index">
-                                                <mdl-button raised accent @click.native="removeChosenArticleFromStep(modObject, index)"><i class="material-icons">remove</i></mdl-button>
-                                            </td>
-                                        </transition>
-                                        <td v-show="typeof displayRemove === 'number' && displayRemove !== index"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </transition>
-                    <transition name="fade">
-                        <p v-if="promotionFormat.length == 0">La promotion est vide.</p>
-                    </transition>
-                </div>
-                <div>
-                    <h5>Rechercher un article:</h5>
-                    <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>
-
-                    <b-table
-                        :headers="[{ title: 'Article', field: 'name' }]"
-                        :data="articles"
-                        :filter="{ val: this.articleName, field: 'name' }"
-                        :sort="{ field: 'name', order: 'ASC' }"
-                        :actions="[
-                            { action: 'addTo', text: 'Nouvel ensemble', raised: true },
-                            { action: 'choose', text: 'Ajouter à un ensemble', raised: true },
-                        ]"
-                        route="articles"
-                        :paging="5"
-                        @addTo="addArticleToCurrentPromotion"
-                        @choose="chooseStepToAdd">
-                    </b-table>
-                </div>
-            </div>
+            <b-promotion-manager :promotion="modObject"></b-promotion-manager>
             <br />
             <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
         </div>
@@ -106,6 +44,7 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
+import PromotionManager from './PromotionManager.vue';
 
 const pricePattern = {
     amount   : 0,
@@ -116,13 +55,13 @@ const pricePattern = {
 };
 
 export default {
+    components: {
+        'b-promotion-manager': PromotionManager
+    },
+
     data() {
         return {
-            newPrice     : Object.assign({}, pricePattern),
-            articleName  : '',
-            chosenArticle: {},
-            displayChoose: false,
-            displayRemove: false
+            newPrice: Object.assign({}, pricePattern)
         };
     },
 
@@ -130,18 +69,11 @@ export default {
         ...mapActions([
             'updateObject',
             'removeObject',
-            'createSimpleRelation',
-            'removeSimpleRelation',
             'createMultipleRelation',
-            'createSetWithArticles',
-            'addArticleToSet',
             'removeArticleFromSet',
             'updateModObject',
             'showClientError'
         ]),
-        search(article) {
-            this.articleName = article.name;
-        },
         createPromotionPrice(promotion, price) {
             if (!price.Fundation_id || !price.Period_id || !price.Group_id || !price.Point_id) {
                 return this.showClientError({ message: 'Un des champs a mal été renseigné.' });
@@ -157,115 +89,6 @@ export default {
                     fields: price
                 }
             });
-        },
-        addArticleToCurrentPromotion(article) {
-            this.addArticleToPromotion(this.modObject, article);
-        },
-        addArticleToPromotion(promotion, article) {
-            this.displayChoose = false;
-            this.chosenArticle = {};
-
-            this.createSimpleRelation({
-                obj1: {
-                    route: 'promotions',
-                    value: promotion
-                },
-                obj2: {
-                    route: 'articles',
-                    value: article
-                }
-            });
-        },
-        removeArticleFromPromotion(promotion, article) {
-            this.removeSimpleRelation({
-                obj1: {
-                    route: 'promotions',
-                    value: promotion
-                },
-                obj2: {
-                    route: 'articles',
-                    value: article
-                }
-            });
-        },
-        removeSetFromPromotion(promotion, set) {
-            this.removeSimpleRelation({
-                obj1: {
-                    route: 'promotions',
-                    value: promotion
-                },
-                obj2: {
-                    route: 'sets',
-                    value: set
-                }
-            });
-
-            this.removeObject({ route: 'sets', value: set });
-        },
-        chooseStepToAdd(article) {
-            this.displayRemove = false;
-            this.displayChoose = true;
-            this.chosenArticle = article;
-        },
-        chooseArticle(article, index) {
-            this.displayChoose = false;
-            this.displayRemove = index;
-            this.chosenArticle = article;
-        },
-        addChosenArticleToStep(promotion, index) {
-            const step = this.promotionFormat[index];
-
-            if (step.type === 'article') {
-                if (step.articles[0].id !== this.chosenArticle.id) {
-                    this.createSetWithArticles({
-                        set: {
-                            name: promotion.name
-                        },
-                        articles: [step.articles[0], this.chosenArticle],
-                        promotion
-                    });
-
-                    this.removeArticleFromPromotion(promotion, step.articles[0]);
-                } else {
-                    this.showClientError({ message: 'L\'article est déjà présent dans l\'ensemble.' });
-                }
-            } else if (step.type === 'set') {
-                const articlesIds = step.set.articles.map(article => article.id);
-
-                if (articlesIds.indexOf(this.chosenArticle.id) === -1) {
-                    this.addArticleToSet({ article: this.chosenArticle, set: step.set });
-                } else {
-                    this.showClientError({ message: 'L\'article est déjà présent dans l\'ensemble.' });
-                }
-            }
-
-            this.displayChoose = false;
-            this.chosenArticle = {};
-        },
-        removeChosenArticleFromStep(promotion, index) {
-            const step = this.promotionFormat[index];
-
-            if (step.type === 'article') {
-                this.removeArticleFromPromotion(promotion, this.chosenArticle);
-            } else if (step.type === 'set') {
-                if (step.set.articles.length > 2) {
-                    this.removeArticleFromSet({ article: this.chosenArticle, set: step.set });
-                } else {
-                    let keptArticle = {};
-                    step.set.articles.forEach((article) => {
-                        if (article.id !== this.chosenArticle.id) {
-                            keptArticle = article;
-                        }
-                    });
-
-                    this.removeArticleFromSet({ article: this.chosenArticle, set: step.set });
-                    this.removeSetFromPromotion(promotion, step.set);
-                    this.addArticleToPromotion(promotion, keptArticle);
-                }
-            }
-
-            this.displayRemove = false;
-            this.chosenArticle = {};
         },
         inputPrice() {
             const price   = Object.assign({}, this.newPrice);
@@ -297,7 +120,6 @@ export default {
 
     computed: {
         ...mapState({
-            articles    : state => state.objects.articles,
             sets        : state => state.objects.sets,
             currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject
@@ -308,50 +130,6 @@ export default {
             'pointOptions',
             'fundationOptions'
         ]),
-        promotionFormat() {
-            let promotion = [];
-
-            if (this.modObject.articles) {
-                this.modObject.articles.forEach((article) => {
-                    promotion.push({
-                        type    : 'article',
-                        articles: [article]
-                    });
-                });
-            }
-
-            if (this.modObject.sets) {
-                this.modObject.sets.forEach((set) => {
-                    const sortedArticles = set.articles.sort((a, b) => {
-                        if (a.name < b.name) {
-                            return -1;
-                        }
-                        if (a.name > b.name) {
-                            return 1;
-                        }
-                        return 0;
-                    });
-
-                    promotion.push({
-                        type    : 'set',
-                        set,
-                        articles: sortedArticles
-                    });
-                });
-            }
-
-            promotion = promotion.sort((a, b) => {
-                if (a.articles[0].name < b.articles[0].name) {
-                    return -1;
-                }
-                if (a.articles[0].name > b.articles[0].name) {
-                    return 1;
-                }
-                return 0;
-            });
-
-            return promotion;
-        },
         displayedPrices() {
             if (!this.modObject) {
                 return [];
@@ -370,13 +148,4 @@ export default {
 
 <style lang="scss">
     @import '../../main.scss';
-
-    .b-promotions__contentManager {
-        display: flex;
-        justify-content: space-between;
-
-        > div {
-            width: 49%;
-        }
-    }
 </style>
