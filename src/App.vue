@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-show="firstLoad">
-            <Sidebar></Sidebar>
+            <b-sidebar></b-sidebar>
             <router-view></router-view>
             <mdl-snackbar display-on="snackfilter"></mdl-snackbar>
         </div>
@@ -15,7 +15,7 @@ import Sidebar from './components/Sidebar.vue';
 
 export default {
     components: {
-        Sidebar
+        'b-sidebar': Sidebar
     },
 
     computed: {
