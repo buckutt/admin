@@ -94,17 +94,17 @@ export default {
             return sum;
         },
         periodOptionsAll() {
-            const periods = Object.assign({}, this.periodOptions);
+            const periods = Object.assign([], this.periodOptions);
             periods.unshift({ name: 'Toutes', value: null });
             return periods;
         },
         pointOptionsAll() {
-            const points = Object.assign({}, this.pointOptions);
+            const points = Object.assign([], this.pointOptions);
             points.unshift({ name: 'Tous', value: null });
             return points;
         },
         fundationOptionsAll() {
-            const fundations = Object.assign({}, this.fundationOptions);
+            const fundations = Object.assign([], this.fundationOptions);
             fundations.unshift({ name: 'Toutes', value: null });
             return fundations;
         }
