@@ -1,66 +1,71 @@
 <template>
     <div class="b-responsive-table">
-        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="displayedData.length > 0">
-            <thead>
-                <tr>
-                    <th v-for="header in headers" class="mdl-data-table__cell--non-numeric">
-                        {{ header.title }}
-                    </th>
-                    <th class="mdl-data-table__cell--non-numeric" v-if="actions">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="data in displayedData">
-                    <td v-for="header in headers" class="mdl-data-table__cell--non-numeric" :class="header.class">
-                        <span v-if="header.type">
-                            <span v-if="header.type === 'price'">{{ lodget(data, header.field) | price(true) }}</span>
-                            <span v-if="header.type === 'date'">{{ lodget(data, header.field) | date }}</span>
-                            <span v-if="header.type === 'checkbox'">
-                                <mdl-checkbox :value="lodget(data, header.field)" disabled></mdl-checkbox>
-                            </span>
-                        </span>
-                        <span v-else>{{ lodget(data, header.field) }}</span>
-                    </td>
-                    <td class="mdl-data-table__cell--non-numeric b-actions-cell">
-                        <span v-for="action in actions">
-                            <span v-if="action.type">
-                                <b-confirm @confirm="callback(action.action, data)" v-if="action.type === 'confirm'">
-                                    {{ action.text }}
-                                </b-confirm>
-                                <span v-if="action.type === 'reversible'">
-                                    <mdl-button raised accent @click.native="callback(action.action, data)" v-if="!data[action.field]">{{ action.text1 }}</mdl-button>
-                                    <mdl-button raised @click.native="callback(action.action, data)" v-if="data[action.field]">{{ action.text2 }}</mdl-button>
+        <transition name="fade">
+            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="displayedData.length > 0">
+                <thead>
+                    <tr>
+                        <th v-for="header in headers" class="mdl-data-table__cell--non-numeric">
+                            {{ header.title }}
+                        </th>
+                        <th class="mdl-data-table__cell--non-numeric" v-if="actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="data in displayedData">
+                        <td v-for="header in headers" class="mdl-data-table__cell--non-numeric" :class="header.class">
+                            <span v-if="header.type">
+                                <span v-if="header.type === 'price'">{{ lodget(data, header.field) | price(true) }}</span>
+                                <span v-if="header.type === 'date'">{{ lodget(data, header.field) | date }}</span>
+                                <span v-if="header.type === 'checkbox'">
+                                    <mdl-checkbox :value="lodget(data, header.field)" disabled></mdl-checkbox>
                                 </span>
                             </span>
-                            <span v-else>
-                                <mdl-button
-                                    :raised="action.raised"
-                                    :colored="action.colored"
-                                    @click.native="callback(action.action, data)">
-                                    {{ action.text }}
-                                </mdl-button>
+                            <span v-else>{{ lodget(data, header.field) }}</span>
+                        </td>
+                        <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                            <span v-for="action in actions">
+                                <span v-if="action.type">
+                                    <b-confirm @confirm="callback(action.action, data)" v-if="action.type === 'confirm'">
+                                        {{ action.text }}
+                                    </b-confirm>
+                                    <span v-if="action.type === 'reversible'">
+                                        <mdl-button raised accent @click.native="callback(action.action, data)" v-if="!data[action.field]">{{ action.text1 }}</mdl-button>
+                                        <mdl-button raised @click.native="callback(action.action, data)" v-if="data[action.field]">{{ action.text2 }}</mdl-button>
+                                    </span>
+                                </span>
+                                <span v-else>
+                                    <mdl-button
+                                        :raised="action.raised"
+                                        :colored="action.colored"
+                                        @click.native="callback(action.action, data)">
+                                        {{ action.text }}
+                                    </mdl-button>
+                                </span>
                             </span>
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-            <tfoot v-if="pagesNumber > 1">
-                <tr>
-                    <td :colspan="columnsNumber">
-                        <div class="b--center b--fullwidth b-table__pages">
-                            <span>
-                                Affichage de {{ displayedData.length }} éléments sur {{ filteredData.length }}
-                            </span>
-                            <span>
-                                <a href="#" @click.prevent="previous()" :class="{ 'b-table__visible': isPrevious }">Précedent</a>
-                                Page {{ adjustedPage }}/{{ pagesNumber }}
-                                <a href="#" @click.prevent="next()" :class="{ 'b-table__visible': isNext }">Suivant</a>
-                            </span>
-                        </div>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot v-if="pagesNumber > 1">
+                    <tr>
+                        <td :colspan="columnsNumber">
+                            <div class="b--center b--fullwidth b-table__pages">
+                                <span>
+                                    Affichage de {{ displayedData.length }} éléments sur {{ filteredData.length }}
+                                </span>
+                                <span>
+                                    <a href="#" @click.prevent="previous()" :class="{ 'b-table__visible': isPrevious }">Précedent</a>
+                                    Page {{ adjustedPage }}/{{ pagesNumber }}
+                                    <a href="#" @click.prevent="next()" :class="{ 'b-table__visible': isNext }">Suivant</a>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </transition>
+        <transition name="fade">
+            <p v-if="displayedData.length === 0">Aucune donnée à afficher.</p>
+        </transition>
     </div>
 </template>
 

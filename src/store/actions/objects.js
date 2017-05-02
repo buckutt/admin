@@ -212,6 +212,15 @@ export function createMultipleRelation({ commit, dispatch, state }, relation) {
                     relation: relation.relation.route,
                     value   : firstObject
                 });
+            } else if (state.app.modObject[relation.relation.route]) {
+                const objectIds = Object.values(firstObject);
+                if (objectIds.indexOf(state.app.modObject.id) > -1) {
+                    firstObject[relation.obj.route].push(relation.obj.value);
+                    dispatch('updateModObject', {
+                        relation: relation.relation.route,
+                        value   : firstObject
+                    });
+                }
             }
 
             commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });

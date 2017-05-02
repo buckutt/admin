@@ -21,7 +21,14 @@
     },
     "groupPeriods": {
         "period": "true",
-        "group" : "true"
+        "group" : "true",
+        "users" : "true"
+    },
+    "groups" : {
+        "groupPeriods": {
+            "users" : "true",
+            "period": "true"
+        }
     },
     "periodPoints": {
         "period": "true",

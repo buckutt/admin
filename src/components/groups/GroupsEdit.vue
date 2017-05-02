@@ -8,6 +8,8 @@
                 <mdl-button colored raised>Modifier</mdl-button>
             </form>
             <br />
+            <b-members :group="modObject"></b-members>
+            <br />
             <mdl-button colored raised @click.native="$root.goBack()">Retour</mdl-button>
         </div>
     </div>
@@ -15,8 +17,13 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
+import MembersManager from './MembersManager.vue';
 
 export default {
+    components: {
+        'b-members': MembersManager
+    },
+
     methods: {
         ...mapActions([
             'updateObject',
