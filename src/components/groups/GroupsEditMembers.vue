@@ -49,10 +49,6 @@ import debounce from 'lodash.debounce';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
-    props: {
-        group: Object
-    },
-
     data() {
         return {
             userName    : '',
@@ -102,7 +98,7 @@ export default {
         },
         inputGroupPeriod() {
             const groupPeriod    = Object.assign({}, this.groupPeriod);
-            groupPeriod.Group_id = this.group.id;
+            groupPeriod.Group_id = this.modObject.id;
             if (groupPeriod.period) {
                 groupPeriod.Period_id = groupPeriod.period.id;
                 delete groupPeriod.period;
@@ -116,6 +112,7 @@ export default {
     computed: {
         ...mapState({
             users       : state => state.objects.users,
+            modObject   : state => state.app.modObject,
             currentEvent: state => state.app.currentEvent
         }),
         ...mapGetters([
@@ -123,7 +120,7 @@ export default {
         ]),
         groupUsers() {
             const users = [];
-            this.group.groupPeriods.forEach((groupPeriod) => {
+            this.modObject.groupPeriods.forEach((groupPeriod) => {
                 if (groupPeriod.period.Event_id === this.currentEvent.id) {
                     groupPeriod.users.forEach((user) => {
                         user.fullname = `${user.firstname} ${user.lastname}`;

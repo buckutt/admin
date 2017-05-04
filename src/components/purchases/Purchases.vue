@@ -1,7 +1,7 @@
 <template>
     <div class="b-purchases b-page">
         <div class="mdl-card mdl-shadow--2dp">
-            <h3 v-if="currentEvent">Achats de "{{ currentEvent.name }}"</h3>
+            <b-navbar :title="`Achats de ${currentEvent.name}`" :inCard="true"></b-navbar>
             <h4>Recherche</h4>
             <form @submit.prevent="filter()">
                 <div>

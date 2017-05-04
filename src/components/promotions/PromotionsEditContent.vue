@@ -1,7 +1,7 @@
 <template>
     <div class="b-promotions__contentManager">
         <div>
-            <h5>Contenu de la promotion :</h5>
+            <h5>Contenu de la promotion:</h5>
             <transition name="fade">
                 <div class="b-responsive-table">
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="displayedPromotion.length > 0">
@@ -24,12 +24,12 @@
                                 </td>
                                 <transition name="fade">
                                     <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayChoose">
-                                        <mdl-button raised colored @click.native="addChosenArticleToStep(promotion, index)"><i class="material-icons">add</i></mdl-button>
+                                        <mdl-button raised colored @click.native="addChosenArticleToStep(modObject, index)"><i class="material-icons">add</i></mdl-button>
                                     </td>
                                 </transition>
                                 <transition name="fade">
                                     <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayRemove === index">
-                                        <mdl-button raised accent @click.native="removeChosenArticleFromStep(promotion, index)"><i class="material-icons">remove</i></mdl-button>
+                                        <mdl-button raised accent @click.native="removeChosenArticleFromStep(modObject, index)"><i class="material-icons">remove</i></mdl-button>
                                     </td>
                                 </transition>
                                 <td v-show="typeof displayRemove === 'number' && displayRemove !== index"></td>
@@ -69,10 +69,6 @@ import { mapState, mapActions } from 'vuex';
 import { promotionDisplayer }   from './promotionDisplayer';
 
 export default {
-    props: {
-        promotion: Object
-    },
-
     data() {
         return {
             articleName  : '',
@@ -90,7 +86,7 @@ export default {
             'removeArticleFromStep'
         ]),
         addArticleToCurrentPromotion(article) {
-            this.addArticleToPromotion({ promotion: this.promotion, article });
+            this.addArticleToPromotion({ promotion: this.modObject, article });
             this.displayChoose = false;
             this.chosenArticle = {};
         },
@@ -126,10 +122,11 @@ export default {
 
     computed: {
         ...mapState({
-            articles: state => state.objects.articles
+            articles : state => state.objects.articles,
+            modObject: state => state.app.modObject
         }),
         displayedPromotion() {
-            return promotionDisplayer(this.promotion);
+            return promotionDisplayer(this.modObject);
         }
     }
 };

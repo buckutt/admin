@@ -14,37 +14,13 @@ import 'jquery-datetimepicker/build/jquery.datetimepicker.full.min.js';
 import 'jquery-datetimepicker/jquery.datetimepicker.css';
 import './assets/font.css';
 
+import store  from './store/index';
+import routes from './routes';
+
 import App            from './App.vue';
 import Confirm        from './components/Confirm.vue';
+import Navbar         from './components/Navbar.vue';
 import PaginatedTable from './components/PaginatedTable.vue';
-
-import Articles       from './components/articles/Articles.vue';
-import ArticlesEdit   from './components/articles/ArticlesEdit.vue';
-import Categories     from './components/categories/Categories.vue';
-import CategoriesEdit from './components/categories/CategoriesEdit.vue';
-import Dashboard      from './components/dashboard/Dashboard.vue';
-import Devices        from './components/devices/Devices.vue';
-import DevicesEdit    from './components/devices/DevicesEdit.vue';
-import Events         from './components/events/Events.vue';
-import EventsEdit     from './components/events/EventsEdit.vue';
-import Fundations     from './components/fundations/Fundations.vue';
-import FundationsEdit from './components/fundations/FundationsEdit.vue';
-import Groups         from './components/groups/Groups.vue';
-import GroupsEdit     from './components/groups/GroupsEdit.vue';
-import Home           from './components/home/Home.vue';
-import Logout         from './components/logout/Logout.vue';
-import Periods        from './components/periods/Periods.vue';
-import PeriodsEdit    from './components/periods/PeriodsEdit.vue';
-import Points         from './components/points/Points.vue';
-import PointsEdit     from './components/points/PointsEdit.vue';
-import Promotions     from './components/promotions/Promotions.vue';
-import PromotionsEdit from './components/promotions/PromotionsEdit.vue';
-import Purchases      from './components/purchases/Purchases.vue';
-import Treasury       from './components/treasury/Treasury.vue';
-import Users          from './components/users/Users.vue';
-import UsersEdit      from './components/users/UsersEdit.vue';
-
-import store from './store/index';
 
 import '../src/lib/textfield.js';
 
@@ -53,37 +29,10 @@ Vue.use(Vuex);
 Vue.use(VueMdl);
 
 Vue.component('b-confirm', Confirm);
+Vue.component('b-navbar', Navbar);
 Vue.component('b-table', PaginatedTable);
 
 window.jQuery = jQuery;
-
-const routes = [
-    { path: '/', component: Home },
-    { path: '/stats', component: Dashboard },
-    { path: '/devices', component: Devices },
-    { path: '/devices/edit/:id', component: DevicesEdit },
-    { path: '/articles', component: Articles },
-    { path: '/articles/edit/:id', component: ArticlesEdit },
-    { path: '/treasury', component: Treasury },
-    { path: '/purchases', component: Purchases },
-    { path: '/users', component: Users },
-    { path: '/users/edit/:id', component: UsersEdit },
-    { path: '/groups', component: Groups },
-    { path: '/groups/edit/:id', component: GroupsEdit },
-    { path: '/categories', component: Categories },
-    { path: '/categories/edit/:id', component: CategoriesEdit },
-    { path: '/periods', component: Periods },
-    { path: '/periods/edit/:id', component: PeriodsEdit },
-    { path: '/fundations', component: Fundations },
-    { path: '/fundations/edit/:id', component: FundationsEdit },
-    { path: '/points', component: Points },
-    { path: '/points/edit/:id', component: PointsEdit },
-    { path: '/promotions', component: Promotions },
-    { path: '/promotions/edit/:id', component: PromotionsEdit },
-    { path: '/events', component: Events },
-    { path: '/events/edit/:id', component: EventsEdit },
-    { path: '/logout', component: Logout }
-];
 
 const withoutEventRoutes = ['', 'logout', 'events', 'treasury'];
 

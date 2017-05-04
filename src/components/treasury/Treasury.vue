@@ -1,7 +1,7 @@
 <template>
     <div class="b-treasury b-page">
         <div class="mdl-card mdl-shadow--2dp">
-            <h3>Trésorerie</h3>
+            <b-navbar title="Trésorerie" :inCard="true"></b-navbar>
             <h4>Recherche</h4>
             <form @submit.prevent="filter()">
                 <div>
