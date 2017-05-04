@@ -150,19 +150,14 @@ export default {
             'pointOptions'
         ]),
         displayedPeriodPoints() {
-            if (!this.modObject) {
-                return [];
-            }
-
-            return this.modObject.periodPoints.map((periodPoint) => {
-                if (periodPoint.period.Event_id === this.currentEvent.id) {
+            return (!this.modObject) ? [] : this.modObject.periodPoints
+                .filter(periodPoint => (periodPoint.period.Event_id === this.currentEvent.id))
+                .map((periodPoint) => {
                     if (!periodPoint.point) {
                         periodPoint.point = { name: 'Aucun' };
                     }
                     return periodPoint;
-                }
-                return null;
-            }).filter(a => a);
+                });
         }
     }
 };

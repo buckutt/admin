@@ -131,16 +131,8 @@ export default {
             'fundationOptions'
         ]),
         displayedPrices() {
-            if (!this.modObject) {
-                return [];
-            }
-
-            return this.modObject.prices.map((price) => {
-                if (price.period.Event_id === this.currentEvent.id) {
-                    return price;
-                }
-                return null;
-            }).filter(a => a);
+            return (!this.modObject) ? [] : this.modObject.prices
+                .filter(price => (price.period.Event_id === this.currentEvent.id));
         }
     }
 };

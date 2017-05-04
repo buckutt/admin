@@ -273,31 +273,18 @@ export default {
             'pointOptions'
         ]),
         displayedRights() {
-            if (!this.modObject) {
-                return [];
-            }
-
-            return this.modObject.rights.map((right) => {
-                if (right.period.Event_id === this.currentEvent.id) {
+            return (!this.modObject) ? [] : this.modObject.rights
+                .filter(right => (right.period.Event_id === this.currentEvent.id))
+                .map((right) => {
                     if (!right.point) {
                         right.point = { name: 'Aucun' };
                     }
                     return right;
-                }
-                return null;
-            }).filter(a => a);
+                });
         },
         displayedGroupPeriods() {
-            if (!this.modObject) {
-                return [];
-            }
-
-            return this.modObject.groupPeriods.map((groupPeriod) => {
-                if (groupPeriod.period.Event_id === this.currentEvent.id) {
-                    return groupPeriod;
-                }
-                return null;
-            }).filter(a => a);
+            return (!this.modObject) ? [] : this.modObject.groupPeriods
+                .filter(groupPeriod => (groupPeriod.period.Event_id === this.currentEvent.id));
         }
     }
 };

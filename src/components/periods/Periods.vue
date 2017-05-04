@@ -106,12 +106,7 @@ export default {
             periods     : state => state.objects.periods
         }),
         displayedPeriods() {
-            return this.periods.map((period) => {
-                if (period.Event_id === this.currentEvent.id) {
-                    return period;
-                }
-                return null;
-            }).filter(a => a);
+            return this.periods.filter(period => (period.Event_id === this.currentEvent.id));
         }
     },
 

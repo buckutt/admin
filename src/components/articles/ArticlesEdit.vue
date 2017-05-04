@@ -143,21 +143,16 @@ export default {
             'fundationOptions'
         ]),
         displayedPrices() {
-            if (!this.modObject) {
-                return [];
-            }
-
-            return this.modObject.prices.map((price) => {
-                if (price.period.Event_id === this.currentEvent.id) {
+            return (!this.modObject) ? [] : this.modObject.prices
+                .filter(price => (price.period.Event_id === this.currentEvent.id))
+                .map((price) => {
                     price.wt             = price.amount / (1 + (this.modObject.vat / 100));
                     price.displayedPrice = `${parsePrice(price.amount, true)} TTC`;
                     if (price.amount !== price.wt) {
                         price.displayedPrice += ` (${parsePrice(price.wt, true)} HT)`;
                     }
                     return price;
-                }
-                return null;
-            }).filter(a => a);
+                });
         }
     }
 };

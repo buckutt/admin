@@ -40,12 +40,8 @@ export function expandObject({ commit, dispatch }, object) {
 
 export function checkAndAddObjects({ commit, state }, data) {
     if (state.objects[data.route]) {
-        const objectsToAdd = data.objects.map((object) => {
-            if (state.objects[data.route].findIndex(o => (o.id === object.id)) === -1) {
-                return object;
-            }
-            return null;
-        }).filter(a => a);
+        const objectsToAdd = data.objects
+            .filter(object => (state.objects[data.route].findIndex(o => (o.id === object.id)) === -1));
 
         commit('ADDOBJECTS', { route: data.route, objects: objectsToAdd });
     }
