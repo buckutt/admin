@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Créer une catégorie</h5>
-        <form @submit.prevent="createObject({ route: 'categories', value: inputCategory() })">
+        <form @submit.prevent="createCategory(newCategory)">
             <mdl-textfield floating-label="Nom" v-model="newCategory.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
             <mdl-button colored raised>Créer</mdl-button>
@@ -27,11 +27,9 @@ export default {
         ...mapActions([
             'createObject'
         ]),
-        inputCategory() {
-            const inputCategory = Object.assign({}, this.newCategory);
-            this.newCategory    = Object.assign({}, categoryPattern);
-
-            return inputCategory;
+        createCategory(category) {
+            this.createObject({ route: 'categories', value: category });
+            this.newCategory = Object.assign({}, categoryPattern);
         }
     }
 };

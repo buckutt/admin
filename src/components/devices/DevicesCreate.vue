@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Créer un équipement</h5>
-        <form v-on:submit.prevent="createObject({ route: 'devices', value: inputDevice() })">
+        <form @submit.prevent="createObject({ route: 'devices', value: newDevice })">
             <mdl-textfield floating-label="Nom" v-model="newDevice.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
             <mdl-button colored raised>Créer</mdl-button>
         </form>
@@ -33,11 +33,9 @@ export default {
         ...mapActions([
             'createObject'
         ]),
-        inputDevice() {
-            const inputDevice = Object.assign({}, this.newDevice);
-            this.newDevice    = Object.assign({}, devicePattern);
-
-            return inputDevice;
+        createDevice(device) {
+            this.createObject({ route: 'devices', value: device });
+            this.newDevice = Object.assign({}, devicePattern);
         }
     }
 };

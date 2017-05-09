@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Ajouter un article</h5>
-        <form @submit.prevent="createObject({ route: 'articles', value: inputArticle() })">
+        <form @submit.prevent="createArticle(newArticle)">
             <mdl-textfield floating-label="Nom" v-model="newArticle.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <mdl-button colored raised>Créer</mdl-button>
         </form>
@@ -29,12 +29,9 @@ export default {
         ...mapActions([
             'createObject'
         ]),
-        inputArticle() {
-            const inputArticle = Object.assign({}, this.newArticle);
-            this.newArticle    = Object.assign({}, articlePattern);
-            this.name          = inputArticle.name;
-
-            return inputArticle;
+        createArticle(article) {
+            this.createObject({ route: 'articles', value: article });
+            this.newArticle = Object.assign({}, articlePattern);
         }
     }
 };

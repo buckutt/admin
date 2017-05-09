@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Créer un groupe </h5>
-        <form @submit.prevent="createObject({ route: 'groups', value: inputGroup() })">
+        <form @submit.prevent="createGroup(newGroup)">
             <mdl-textfield floating-label="Nom" v-model="newGroup.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
             <mdl-button colored raised>Créer</mdl-button>
         </form>
@@ -26,11 +26,9 @@ export default {
         ...mapActions([
             'createObject'
         ]),
-        inputGroup() {
-            const inputGroup = Object.assign({}, this.newGroup);
-            this.newGroup    = Object.assign({}, groupPattern);
-
-            return inputGroup;
+        createGroup(group) {
+            this.createObject({ route: 'groups', value: group });
+            this.newGroup = Object.assign({}, groupPattern);
         }
     }
 };

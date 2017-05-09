@@ -1,11 +1,11 @@
 <template>
     <div>
         <h5>Assigner l'équipement</h5>
-        <form @submit.prevent="createPeriodPoint(modObject, inputPeriodPoint())">
+        <form @submit.prevent="createPeriodPoint(modObject, periodPoint)">
             <mdl-select label="Point" id="point-select" v-model="periodPoint.point" :options="pointOptions"></mdl-select>
             <mdl-select label="Période" id="period-select" v-model="periodPoint.period" :options="periodOptions"></mdl-select>
 
-            <mdl-button colored raised>Ajouter</mdl-button>
+            <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <b-table
             :headers="[
@@ -25,14 +25,17 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
+import { isPointUsedByEvent } from './isPointUsedByEvent';
+
+const periodPointPattern = {
+    point : null,
+    period: null
+};
 
 export default {
     data() {
         return {
-            periodPoint: {
-                point : null,
-                period: null
-            }
+            periodPoint: Object.assign({}, periodPointPattern)
         };
     },
 
@@ -43,30 +46,18 @@ export default {
             'showClientError'
         ]),
         createPeriodPoint(device, periodPoint) {
-            if (periodPoint.Point_id) {
-                const filteredEvents = this.modObject.periodPoints
-                    .filter((pP) => {
-                        if (!pP.point) {
-                            return false;
-                        }
-
-                        const samePoint = (periodPoint.Point_id === pP.point.id);
-                        const overlap   = ((periodPoint.period.start <= pP.period.end)
-                            && (periodPoint.period.end >= pP.period.start));
-
-                        return samePoint && overlap;
-                    })
-                    .map(pP => pP.period.Event_id);
-
-                if (filteredEvents.length > 0) {
-                    if (periodPoint.period.Event_id !== filteredEvents[0]) {
-                        return this.showClientError({
-                            message: 'Le point est déjà utilisé par un autre événement sur cette période'
-                        });
-                    }
+            if (periodPoint.point) {
+                if (isPointUsedByEvent(this.modObject.periodPoints, periodPoint)) {
+                    return this.showClientError({
+                        message: 'Le point est déjà utilisé par un autre événement pendant cette période'
+                    });
                 }
+
+                periodPoint.Point_id = periodPoint.point.id;
+                delete periodPoint.point;
             }
 
+            periodPoint.Period_id = periodPoint.period.id;
             delete periodPoint.period;
 
             this.createMultipleRelation({
@@ -79,24 +70,8 @@ export default {
                     fields: periodPoint
                 }
             });
-        },
-        inputPeriodPoint() {
-            const periodPoint = Object.assign({}, this.periodPoint);
 
-            Object.keys(this.periodPoint).map((key) => {
-                this.periodPoint[key] = null;
-            });
-
-            if (periodPoint.point) {
-                periodPoint.Point_id = periodPoint.point.id;
-                delete periodPoint.point;
-            }
-
-            if (periodPoint.period) {
-                periodPoint.Period_id = periodPoint.period.id;
-            }
-
-            return periodPoint;
+            this.periodPoint = Object.assign({}, periodPointPattern);
         }
     },
 
@@ -118,6 +93,9 @@ export default {
                     }
                     return periodPoint;
                 });
+        },
+        disabledAdd() {
+            return !this.periodPoint.period;
         }
     }
 };

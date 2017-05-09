@@ -19,10 +19,10 @@
         <div>
             <h5>Ajouter un membre</h5>
             <div v-if="selectedUser">
-                <form @submit.prevent="createGroupPeriod(selectedUser, inputGroupPeriod())">
+                <form @submit.prevent="createGroupPeriod(selectedUser, groupPeriod)">
                     <mdl-textfield floating-label="Nom" :value="selectedUser.fullname" disabled></mdl-textfield><br />
                     <mdl-select label="Periode" id="select-periods" v-model="groupPeriod.period" :options="periodOptions"></mdl-select><br />
-                    <mdl-button colored raised >Ajouter</mdl-button>
+                    <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
                 </form>
                 <br />
                 <mdl-button colored raised accent @click.native="clearUser">Retour</mdl-button>
@@ -48,14 +48,16 @@
 import debounce from 'lodash.debounce';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
+const groupPeriodPattern = {
+    period: null
+};
+
 export default {
     data() {
         return {
             userName    : '',
             selectedUser: null,
-            groupPeriod : {
-                period: null
-            }
+            groupPeriod : Object.assign({}, groupPeriodPattern)
         };
     },
 
@@ -73,17 +75,17 @@ export default {
             this.selectedUser = null;
         },
         createGroupPeriod(user, groupPeriod) {
-            if (!groupPeriod.Period_id) {
-                return this.showClientError({ message: 'La période doit être sélectionnée' });
-            }
-
             const index = this.groupUsers.findIndex(o => (
-                o.user.id === user.id && o.period.id === groupPeriod.Period_id
+                o.user.id === user.id && o.period.id === groupPeriod.period.id
             ));
 
             if (index > -1) {
                 return this.showClientError({ message: 'L\'utilisateur est déjà membre du groupe sur cette période.' });
             }
+
+            groupPeriod.Group_id  = this.modObject.id;
+            groupPeriod.Period_id = groupPeriod.period.id;
+            delete groupPeriod.period;
 
             this.createMultipleRelation({
                 obj: {
@@ -95,17 +97,8 @@ export default {
                     fields: groupPeriod
                 }
             });
-        },
-        inputGroupPeriod() {
-            const groupPeriod    = Object.assign({}, this.groupPeriod);
-            groupPeriod.Group_id = this.modObject.id;
-            if (groupPeriod.period) {
-                groupPeriod.Period_id = groupPeriod.period.id;
-                delete groupPeriod.period;
-            }
-            this.groupPeriod.period = null;
 
-            return groupPeriod;
+            this.groupPeriod = Object.assign({}, groupPeriodPattern);
         }
     },
 
@@ -135,6 +128,9 @@ export default {
                 user.fullname = `${user.firstname} ${user.lastname}`;
                 return user;
             });
+        },
+        disabledAdd() {
+            return !this.groupPeriod.period;
         }
     },
 

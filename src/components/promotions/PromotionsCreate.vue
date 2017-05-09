@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Créer une promotion</h5>
-        <form @submit.prevent="createObject({ route: 'promotions', value: inputPromotion() })">
+        <form @submit.prevent="createPromotion(newPromotion)">
             <mdl-textfield floating-label="Nom" v-model="newPromotion.name"></mdl-textfield><br />
             <mdl-button colored raised>Créer</mdl-button>
         </form>
@@ -26,11 +26,9 @@ export default {
         ...mapActions([
             'createObject'
         ]),
-        inputPromotion() {
-            const inputPromotion = Object.assign({}, this.newPromotion);
-            this.newPromotion    = Object.assign({}, promotionPattern);
-
-            return inputPromotion;
+        createPromotion(promotion) {
+            this.createObject({ route: 'promotions', value: promotion });
+            this.newPromotion = Object.assign({}, promotionPattern);
         }
     }
 };

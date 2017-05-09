@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Créer un point</h5>
-        <form @submit.prevent="createObject({ route: 'points', value: inputPoint() })">
+        <form @submit.prevent="createPoint(newPoint)">
             <mdl-textfield floating-label="Nom" v-model="newPoint.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
             <mdl-button colored raised>Créer</mdl-button>
@@ -27,11 +27,9 @@ export default {
         ...mapActions([
             'createObject'
         ]),
-        inputPoint() {
-            const inputPoint = Object.assign({}, this.newPoint);
-            this.newPoint    = Object.assign({}, pointPattern);
-
-            return inputPoint;
+        createPoint(point) {
+            this.createObject({ route: 'points', value: point });
+            this.newPoint = Object.assign({}, pointPattern);
         }
     }
 };

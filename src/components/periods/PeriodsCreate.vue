@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Créer une période</h5>
-        <form @submit.prevent="createObject({ route: 'periods', value: inputPeriod() })">
+        <form @submit.prevent="createPeriod(newPeriod)">
             <mdl-textfield floating-label="Nom" v-model="newPeriod.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
             <mdl-textfield floating-label="Début" :value="newPeriod.start | date" @input="updatePeriod('start', convertDate($event))" required="required" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" ref="dateStart"></mdl-textfield>
@@ -65,12 +65,10 @@ export default {
         convertDate(date) {
             return convertDate(date);
         },
-        inputPeriod() {
-            const inputPeriod    = Object.assign({}, this.newPeriod);
-            this.newPeriod       = Object.assign({}, periodPattern);
-            inputPeriod.Event_id = this.currentEvent.id;
-
-            return inputPeriod;
+        createPeriod(period) {
+            period.Event_id = this.currentEvent.id;
+            this.createObject({ route: 'periods', value: period });
+            this.newPeriod = Object.assign({}, periodPattern);
         }
     },
 

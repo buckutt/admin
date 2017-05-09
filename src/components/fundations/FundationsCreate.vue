@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Créer une fondation</h5>
-        <form @submit.prevent="createObject({ route: 'fundations', value: inputFundation() })">
+        <form @submit.prevent="createFundation(newFundation)">
             <mdl-textfield floating-label="Nom" v-model="newFundation.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
             <mdl-button colored raised>Créer</mdl-button>
@@ -27,11 +27,9 @@ export default {
         ...mapActions([
             'createObject'
         ]),
-        inputFundation() {
-            const inputFundation = Object.assign({}, this.newFundation);
-            this.newFundation    = Object.assign({}, fundationPattern);
-
-            return inputFundation;
+        createFundation(fundation) {
+            this.createObject({ route: 'fundations', value: fundation });
+            this.newFundation = Object.assign({}, fundationPattern);
         }
     }
 };

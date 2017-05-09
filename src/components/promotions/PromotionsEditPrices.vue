@@ -1,13 +1,13 @@
 <template>
     <div>
         <h5>Prix de la promotion</h5>
-        <form v-on:submit.prevent="createPromotionPrice(modObject, inputPrice())">
+        <form @submit.prevent="createPromotionPrice(modObject, newPrice)">
             <mdl-textfield floating-label="Montant TTC (centimes)" v-model="newPrice.amount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield>
             <mdl-select label="Point" id="point-select" v-model="newPrice.point" :options="pointOptions"></mdl-select>
             <mdl-select label="Fondation" id="fundation-select" v-model="newPrice.fundation" :options="fundationOptions"></mdl-select><br />
             <mdl-select label="Groupe" id="group-select" v-model="newPrice.group" :options="groupOptions"></mdl-select>
             <mdl-select label="Période" id="period-select" v-model="newPrice.period" :options="periodOptions"></mdl-select><br />
-            <mdl-button colored raised>Ajouter</mdl-button>
+            <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
         <b-table
@@ -50,13 +50,17 @@ export default {
     methods: {
         ...mapActions([
             'removeObject',
-            'createMultipleRelation',
-            'showClientError'
+            'createMultipleRelation'
         ]),
         createPromotionPrice(promotion, price) {
-            if (!price.Fundation_id || !price.Period_id || !price.Group_id || !price.Point_id) {
-                return this.showClientError({ message: 'Un des champs a mal été renseigné.' });
-            }
+            price.Fundation_id = price.fundation.id;
+            price.Group_id     = price.group.id;
+            price.Period_id    = price.period.id;
+            price.Point_id     = price.point.id;
+            delete price.fundation;
+            delete price.group;
+            delete price.period;
+            delete price.point;
 
             this.createMultipleRelation({
                 obj: {
@@ -68,32 +72,8 @@ export default {
                     fields: price
                 }
             });
-        },
-        inputPrice() {
-            const price   = Object.assign({}, this.newPrice);
+
             this.newPrice = Object.assign({}, pricePattern);
-
-            if (price.fundation) {
-                price.Fundation_id = price.fundation.id;
-                delete price.fundation;
-            }
-
-            if (price.group) {
-                price.Group_id = price.group.id;
-                delete price.group;
-            }
-
-            if (price.period) {
-                price.Period_id = price.period.id;
-                delete price.period;
-            }
-
-            if (price.point) {
-                price.Point_id = price.point.id;
-                delete price.point;
-            }
-
-            return price;
         }
     },
 
@@ -111,6 +91,9 @@ export default {
         displayedPrices() {
             return (!this.modObject) ? [] : this.modObject.prices
                 .filter(price => (price.period.Event_id === this.currentEvent.id));
+        },
+        disabledAdd() {
+            return (!this.newPrice.fundation || !this.newPrice.period || !this.newPrice.group || !this.newPrice.point);
         }
     }
 };

@@ -4,9 +4,7 @@
             <h1>Buckless</h1>
             <ul class="eventSelector">
                 <li>
-                    <form v-on:submit.prevent>
-                        <mdl-select label="Évenement" id="event-select" :value="displayEvent" :options="eventOptions" @input="changeEvent($event)"></mdl-select>
-                    </form>
+                    <mdl-select label="Évenement" id="event-select" :value="displayEvent" :options="eventOptions" @input="changeEvent($event)"></mdl-select>
                 </li>
                 <li>
                     <router-link to="/" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">

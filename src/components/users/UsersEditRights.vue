@@ -1,11 +1,11 @@
 <template>
     <div>
         <h5>Droits</h5>
-        <form @submit.prevent="createUserRight(modObject, inputRight())">
+        <form @submit.prevent="createUserRight(modObject, userRight)">
             <mdl-select label="Droit" id="right-select" v-model="userRight.name" :options="rightsList"></mdl-select>
             <mdl-select label="Point" id="point-select" v-model="userRight.point" :options="pointOptions"></mdl-select>
             <mdl-select label="Période" id="period-select" v-model="userRight.period" :options="periodOptions"></mdl-select><br />
-            <mdl-button colored raised>Ajouter</mdl-button>
+            <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
         <b-table
@@ -28,15 +28,17 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 
+const userRightPattern = {
+    name  : null,
+    point : null,
+    period: null
+};
+
 export default {
     data() {
         return {
             rightsList: ['admin', 'seller', 'reloader'],
-            userRight : {
-                name  : null,
-                point : null,
-                period: null
-            }
+            userRight : Object.assign({}, userRightPattern)
         };
     },
 
@@ -47,8 +49,12 @@ export default {
             'showClientError'
         ]),
         createUserRight(user, right) {
-            if (!right.name || !right.Period_id) {
-                return this.showClientError({ message: 'Tous les champs doivent être remplis.' });
+            right.Period_id = right.period.id;
+            delete right.period;
+
+            if (right.point) {
+                right.Point_id  = right.point.id;
+                delete right.point;
             }
 
             this.createMultipleRelation({
@@ -61,25 +67,8 @@ export default {
                     fields: right
                 }
             });
-        },
-        inputRight() {
-            const userRight = Object.assign({}, this.userRight);
 
-            Object.keys(this.userRight).map((key) => {
-                this.userRight[key] = null;
-            });
-
-            if (userRight.point) {
-                userRight.Point_id = userRight.point.id;
-                delete userRight.point;
-            }
-
-            if (userRight.period) {
-                userRight.Period_id = userRight.period.id;
-                delete userRight.period;
-            }
-
-            return userRight;
+            this.userRight = Object.assign({}, userRightPattern);
         }
     },
 
@@ -101,6 +90,9 @@ export default {
                     }
                     return right;
                 });
+        },
+        disabledAdd() {
+            return (!this.userRight.name || !this.userRight.period);
         }
     }
 };

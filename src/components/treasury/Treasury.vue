@@ -82,7 +82,7 @@ export default {
             return sum;
         },
         pointOptionsAll() {
-            const points = this.pointOptions;
+            const points = Object.assign([], this.pointOptions);
             points.unshift({ name: 'Tous', value: null });
             return points;
         },

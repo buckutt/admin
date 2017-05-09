@@ -7,7 +7,7 @@
         <transition name="fade">
             <p v-show="newPassword">Le mot de passe de l'utilisateur est <strong>{{ newPassword }}</strong></p>
         </transition>
-        <form @submit.prevent="createUserWithMol(inputUser())">
+        <form @submit.prevent="createUser(newUser)">
             <mdl-textfield floating-label="Nom" v-model="newUser.lastname" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <mdl-textfield floating-label="Prénom" v-model="newUser.firstname" required="required" error="Le prénom doit contenir au moins un caractère"></mdl-textfield><br />
             <mdl-textfield floating-label="Surnom" v-model="newUser.nickname" required="required" error="Le surnom doit contenir au moins un caractère"></mdl-textfield><br />
@@ -41,21 +41,19 @@ export default {
 
     methods: {
         ...mapActions([
-            'createUserWithMol',
-            'removeObject'
+            'createUserWithMol'
         ]),
-        inputUser() {
-            const inputUser = Object.assign({}, this.newUser);
-            this.newUser    = Object.assign({}, userPattern);
-
+        createUser(user) {
             const randTen    = () => Math.floor(Math.random() * 10);
             this.newPin      = `${randTen()}${randTen()}${randTen()}${randTen()}`;
             this.newPassword = randString(8);
 
-            inputUser.pin      = bcrypt.hashSync(this.newPin, 10);
-            inputUser.password = bcrypt.hashSync(this.newPassword);
+            user.pin      = bcrypt.hashSync(this.newPin, 10);
+            user.password = bcrypt.hashSync(this.newPassword);
 
-            return inputUser;
+            this.createUserWithMol(user);
+
+            this.newUser = Object.assign({}, userPattern);
         }
     }
 };

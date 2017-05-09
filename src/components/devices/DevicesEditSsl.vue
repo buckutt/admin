@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Génération du certificat SSL</h5>
-        <form v-on:submit.prevent="generateCert(modObject, password)">
+        <form @submit.prevent="generateCert(modObject, password)">
             <mdl-textfield type="password" floating-label="Mot de passe souhaité" v-model="password"></mdl-textfield>
             <mdl-button colored raised>Générer</mdl-button>
         </form>
