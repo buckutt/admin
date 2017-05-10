@@ -1,24 +1,22 @@
 <template>
     <div>
         <h5>Assigner l'équipement</h5>
-        <form @submit.prevent="createPeriodPoint(modObject, periodPoint)">
-            <mdl-select label="Point" id="point-select" v-model="periodPoint.point" :options="pointOptions"></mdl-select>
-            <mdl-select label="Période" id="period-select" v-model="periodPoint.period" :options="periodOptions"></mdl-select>
-
+        <form @submit.prevent="addPointToDevice(modObject, devicePoint)">
+            <mdl-select label="Point" id="point-select" v-model="devicePoint.point" :options="pointOptions"></mdl-select>
+            <mdl-select label="Période" id="period-select" v-model="devicePoint.period" :options="periodOptions"></mdl-select>
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <b-table
             :headers="[
-                { title: 'Point', field: 'point.name' },
-                { title: 'Période', field: 'period.name' }
+                { title: 'Point', field: 'name' },
+                { title: 'Période', field: '_through.period.name' }
             ]"
-            :data="displayedPeriodPoints"
+            :data="displayedPoints"
             :actions="[
-                { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                { action: 'unlink', text: 'Supprimer', type: 'confirm' }
             ]"
-            route="periodPoints"
             :paging="5"
-            @remove="removeObject">
+            @unlink="removePointFromCurrentDevice">
         </b-table>
     </div>
 </template>
@@ -27,7 +25,7 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { isPointUsedByEvent } from './isPointUsedByEvent';
 
-const periodPointPattern = {
+const devicePointPattern = {
     point : null,
     period: null
 };
@@ -35,43 +33,55 @@ const periodPointPattern = {
 export default {
     data() {
         return {
-            periodPoint: Object.assign({}, periodPointPattern)
+            devicePoint: Object.assign({}, devicePointPattern)
         };
     },
 
     methods: {
         ...mapActions([
-            'removeObject',
-            'createMultipleRelation',
+            'createSimpleRelation',
+            'removeSimpleRelation',
             'showClientError'
         ]),
-        createPeriodPoint(device, periodPoint) {
-            if (periodPoint.point) {
-                if (isPointUsedByEvent(this.modObject.periodPoints, periodPoint)) {
-                    return this.showClientError({
-                        message: 'Le point est déjà utilisé par un autre événement pendant cette période'
-                    });
-                }
-
-                periodPoint.Point_id = periodPoint.point.id;
-                delete periodPoint.point;
+        addPointToDevice(device, devicePoint) {
+            if (isPointUsedByEvent(this.modObject.points, devicePoint)) {
+                return this.showClientError({
+                    message: 'Le point est déjà utilisé par un autre événement pendant cette période'
+                });
             }
 
-            periodPoint.Period_id = periodPoint.period.id;
-            delete periodPoint.period;
-
-            this.createMultipleRelation({
-                obj: {
+            this.createSimpleRelation({
+                obj1: {
                     route: 'devices',
                     value: device
                 },
-                relation: {
-                    route : 'periodPoints',
-                    fields: periodPoint
+                obj2: {
+                    route: 'points',
+                    value: devicePoint.point
+                },
+                through: {
+                    obj  : 'period',
+                    field: 'Period_id',
+                    value: devicePoint.period
                 }
             });
 
-            this.periodPoint = Object.assign({}, periodPointPattern);
+            this.devicePoint = Object.assign({}, devicePointPattern);
+        },
+        removePointFromCurrentDevice(point) {
+            this.removePointFromDevice(this.modObject, point);
+        },
+        removePointFromDevice(device, point) {
+            this.removeSimpleRelation({
+                obj1: {
+                    route: 'devices',
+                    value: device
+                },
+                obj2: {
+                    route: 'points',
+                    value: point
+                }
+            });
         }
     },
 
@@ -84,18 +94,12 @@ export default {
             'periodOptions',
             'pointOptions'
         ]),
-        displayedPeriodPoints() {
-            return (!this.modObject) ? [] : this.modObject.periodPoints
-                .filter(periodPoint => (periodPoint.period.Event_id === this.currentEvent.id))
-                .map((periodPoint) => {
-                    if (!periodPoint.point) {
-                        periodPoint.point = { name: 'Aucun' };
-                    }
-                    return periodPoint;
-                });
+        displayedPoints() {
+            return (!this.modObject) ? [] : this.modObject.points
+                .filter(point => (point._through.period.Event_id === this.currentEvent.id));
         },
         disabledAdd() {
-            return !this.periodPoint.period;
+            return !this.devicePoint.period || !this.devicePoint.point;
         }
     }
 };

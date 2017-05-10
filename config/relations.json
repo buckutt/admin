@@ -11,28 +11,21 @@
         "articles": "true"
     },
     "devices": {
-        "periodPoints": {
-            "period": "true",
-            "point" : "true"
+        "points": {
+            "_through": {
+                "period": "true"
+            }
         }
     },
     "events": {
         "periods": "true"
     },
-    "groupPeriods": {
-        "period": "true",
-        "group" : "true",
-        "users" : "true"
-    },
     "groups" : {
-        "groupPeriods": {
-            "users" : "true",
-            "period": "true"
+        "users": {
+            "_through": {
+                "period": "true"
+            }
         }
-    },
-    "periodPoints": {
-        "period": "true",
-        "point" : "true"
     },
     "points": {
         "categories": "true"
@@ -69,9 +62,10 @@
             "period": "true",
             "point" : "true"
         },
-        "groupPeriods": {
-            "period": "true",
-            "group" : "true"
+        "groups": {
+            "_through": {
+                "period": "true"
+            }
         }
     }
 }

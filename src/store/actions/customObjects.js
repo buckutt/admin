@@ -13,13 +13,13 @@ export function createSetWithArticles({ commit, dispatch, state }, payload) {
     post('sets', set).then((result) => {
         dispatch('checkAndAddObjects', { route: 'sets', objects: [result] });
 
-        post(`sets/${result.id}/promotions`, { id: promotion.id })
+        post(`sets/${result.id}/promotions/${promotion.id}`)
             .catch((err) => {
                 commit('UPDATEAPIERROR', err);
             });
 
         articles.forEach((article) => {
-            post(`sets/${result.id}/articles`, { id: article.id });
+            post(`sets/${result.id}/articles/${article.id}`);
         });
 
         dispatch('updateModObject', {

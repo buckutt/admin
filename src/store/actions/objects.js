@@ -143,9 +143,19 @@ export function removeObject({ commit, dispatch, state }, object) {
 }
 
 export function createSimpleRelation({ commit, dispatch, state }, relation) {
-    post(`${relation.obj1.route}/${relation.obj1.value.id}/${relation.obj2.route}`, { id: relation.obj2.value.id })
+    const body = {};
+    if (relation.through) {
+        body[relation.through.field] = relation.through.value.id;
+    }
+
+    post(`${relation.obj1.route}/${relation.obj1.value.id}/${relation.obj2.route}/${relation.obj2.value.id}`, body)
         .then(() => {
             if (relation.obj1.value.id === state.app.modObject.id) {
+                if (relation.through) {
+                    relation.obj2.value._through                       = {};
+                    relation.obj2.value._through[relation.through.obj] = relation.through.value;
+                }
+
                 dispatch('updateModObject', {
                     newRelation: relation.obj2.route,
                     value      : relation.obj2.value
@@ -153,6 +163,11 @@ export function createSimpleRelation({ commit, dispatch, state }, relation) {
             }
 
             if (relation.obj2.value.id === state.app.modObject.id) {
+                if (relation.through) {
+                    relation.obj1.value._through                       = {};
+                    relation.obj1.value._through[relation.through.obj] = relation.through.value;
+                }
+
                 dispatch('updateModObject', {
                     newRelation: relation.obj1.route,
                     value      : relation.obj1.value
@@ -200,7 +215,7 @@ export function createMultipleRelation({ commit, dispatch, state }, relation) {
     post(`${relation.relation.route.toLowerCase()}${embed}`, relation.relation.fields)
         .then((result) => {
             firstObject = result;
-            return post(`${relation.obj.route}/${relation.obj.value.id}/${relation.relation.route}`, { id: result.id });
+            return post(`${relation.obj.route}/${relation.obj.value.id}/${relation.relation.route}/${result.id}`);
         })
         .then(() => {
             if (relation.obj.value.id === state.app.modObject.id) {

@@ -4,30 +4,29 @@
             <h5>Membres actuels</h5>
             <b-table
                 :headers="[
-                    { title: 'Utilisateur', field: 'user.fullname', class: 'b--capitalized' },
-                    { title: 'Période', field: 'period.name' }
+                    { title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' },
+                    { title: 'Période', field: '_through.period.name' }
                 ]"
                 :data="groupUsers"
                 :actions="[
-                    { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                    { action: 'unlink', text: 'Supprimer', type: 'confirm' }
                 ]"
-                route="groupPeriods"
                 :paging="5"
-                @remove="removeObject">
+                @unlink="removeUserFromCurrentGroup">
             </b-table>
         </div>
         <div>
             <h5>Ajouter un membre</h5>
-            <div v-if="selectedUser">
-                <form @submit.prevent="createGroupPeriod(selectedUser, groupPeriod)">
-                    <mdl-textfield floating-label="Nom" :value="selectedUser.fullname" disabled></mdl-textfield><br />
-                    <mdl-select label="Periode" id="select-periods" v-model="groupPeriod.period" :options="periodOptions"></mdl-select><br />
+            <div v-if="groupUser.user">
+                <form @submit.prevent="addUserToGroup(modObject, groupUser)">
+                    <mdl-textfield floating-label="Nom" :value="groupUser.user.fullname" disabled></mdl-textfield><br />
+                    <mdl-select label="Periode" id="select-periods" v-model="groupUser.period" :options="periodOptions"></mdl-select><br />
                     <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
                 </form>
                 <br />
                 <mdl-button colored raised accent @click.native="clearUser">Retour</mdl-button>
             </div>
-            <div v-if="!selectedUser">
+            <div v-if="!groupUser.user">
                 <mdl-textfield floating-label="Prénom" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
                 <b-table
                     :headers="[{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' }]"
@@ -48,57 +47,73 @@
 import debounce from 'lodash.debounce';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
-const groupPeriodPattern = {
-    period: null
+const groupUserPattern = {
+    period: null,
+    user  : null
 };
 
 export default {
     data() {
         return {
-            userName    : '',
-            selectedUser: null,
-            groupPeriod : Object.assign({}, groupPeriodPattern)
+            userName : '',
+            groupUser: Object.assign({}, groupUserPattern)
         };
     },
 
     methods: {
         ...mapActions([
             'searchUsers',
-            'removeObject',
-            'createMultipleRelation',
+            'createSimpleRelation',
+            'removeSimpleRelation',
             'showClientError'
         ]),
         selectUser(user) {
-            this.selectedUser = user;
+            this.groupUser.user = user;
         },
         clearUser() {
-            this.selectedUser = null;
+            this.groupUser.user = null;
         },
-        createGroupPeriod(user, groupPeriod) {
-            const index = this.groupUsers.findIndex(o => (
-                o.user.id === user.id && o.period.id === groupPeriod.period.id
+        addUserToGroup(group, groupUser) {
+            const index = groupUser.user.groups.findIndex(g => (
+                g.id === group.id && g._through.period.id === groupUser.period.id
             ));
 
             if (index > -1) {
                 return this.showClientError({ message: 'L\'utilisateur est déjà membre du groupe sur cette période.' });
             }
 
-            groupPeriod.Group_id  = this.modObject.id;
-            groupPeriod.Period_id = groupPeriod.period.id;
-            delete groupPeriod.period;
-
-            this.createMultipleRelation({
-                obj: {
+            this.createSimpleRelation({
+                obj1: {
                     route: 'users',
-                    value: user
+                    value: groupUser.user
                 },
-                relation: {
-                    route : 'groupPeriods',
-                    fields: groupPeriod
+                obj2: {
+                    route: 'groups',
+                    value: group
+                },
+                through: {
+                    obj  : 'period',
+                    field: 'Period_id',
+                    value: groupUser.period
                 }
             });
 
-            this.groupPeriod = Object.assign({}, groupPeriodPattern);
+            this.groupUser = Object.assign({}, groupUserPattern);
+        },
+        removeUserFromCurrentGroup(user) {
+            this.removeUserFromGroup(this.modObject, user);
+        },
+        removeUserFromGroup(group, user) {
+            this.removeSimpleRelation({
+                obj1: {
+                    route: 'users',
+                    value: user
+                },
+                obj2: {
+                    route: 'groups',
+                    value: group
+                }
+            });
         }
     },
 
@@ -112,16 +127,12 @@ export default {
             'periodOptions'
         ]),
         groupUsers() {
-            const users = [];
-            this.modObject.groupPeriods.forEach((groupPeriod) => {
-                if (groupPeriod.period.Event_id === this.currentEvent.id) {
-                    groupPeriod.users.forEach((user) => {
-                        user.fullname = `${user.firstname} ${user.lastname}`;
-                        users.push({ id: groupPeriod.id, period: groupPeriod.period, user });
-                    });
-                }
-            });
-            return users;
+            return (!this.modObject) ? [] : this.modObject.users
+                .filter(user => (user._through.period.Event_id === this.currentEvent.id))
+                .map((user) => {
+                    user.fullname = `${user.firstname} ${user.lastname}`;
+                    return user;
+                });
         },
         displayedUsers() {
             return this.users.map((user) => {
@@ -130,7 +141,7 @@ export default {
             });
         },
         disabledAdd() {
-            return !this.groupPeriod.period;
+            return !this.groupUser.period;
         }
     },
 

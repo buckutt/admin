@@ -1,20 +1,16 @@
-export function isPointUsedByEvent(periodPoints, periodPoint) {
-    const filteredEvents = periodPoints
-        .filter((pP) => {
-            if (!pP.point) {
-                return false;
-            }
-
-            const samePoint = (periodPoint.point.id === pP.point.id);
-            const overlap   = ((periodPoint.period.start <= pP.period.end)
-                && (periodPoint.period.end >= pP.period.start));
+export function isPointUsedByEvent(points, devicePoint) {
+    const filteredEvents = points
+        .filter((point) => {
+            const samePoint = (devicePoint.point.id === point.id);
+            const overlap   = ((devicePoint.period.start <= point._through.period.end)
+                && (devicePoint.period.end >= point._through.period.start));
 
             return samePoint && overlap;
         })
-        .map(pP => pP.period.Event_id);
+        .map(point => point._through.period.Event_id);
 
     if (filteredEvents.length > 0) {
-        if (periodPoint.period.Event_id !== filteredEvents[0]) {
+        if (devicePoint.period.Event_id !== filteredEvents[0]) {
             return true;
         }
     }

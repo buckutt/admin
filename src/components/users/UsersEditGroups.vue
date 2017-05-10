@@ -1,24 +1,23 @@
 <template>
     <div>
         <h5>Groupes</h5>
-        <form @submit.prevent="createGroupPeriod(modObject, groupPeriod)">
-            <mdl-select label="Groupe" id="group-select" v-model="groupPeriod.group" :options="groupOptions"></mdl-select>
-            <mdl-select label="Période" id="period-select" v-model="groupPeriod.period" :options="periodOptions"></mdl-select><br />
+        <form @submit.prevent="addGroupToUser(modObject, groupUser)">
+            <mdl-select label="Groupe" id="group-select" v-model="groupUser.group" :options="groupOptions"></mdl-select>
+            <mdl-select label="Période" id="period-select" v-model="groupUser.period" :options="periodOptions"></mdl-select><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
         <b-table
             :headers="[
-                { title: 'Groupe', field: 'group.name' },
-                { title: 'Période', field: 'period.name' }
+                { title: 'Groupe', field: 'name' },
+                { title: 'Période', field: '_through.period.name' }
             ]"
-            :data="displayedGroupPeriods"
+            :data="displayedGroups"
             :actions="[
-                { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                { action: 'unlink', text: 'Supprimer', type: 'confirm' }
             ]"
-            route="groupPeriods"
             :paging="10"
-            @remove="removeObject">
+            @unlink="removeGroupFromCurrentUser">
         </b-table>
     </div>
 </template>
@@ -26,7 +25,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 
-const groupPeriodPattern = {
+const groupUserPattern = {
     group : null,
     period: null
 };
@@ -34,42 +33,57 @@ const groupPeriodPattern = {
 export default {
     data() {
         return {
-            groupPeriod: Object.assign({}, groupPeriodPattern)
+            groupUser: Object.assign({}, groupUserPattern)
         };
     },
 
     methods: {
         ...mapActions([
-            'removeObject',
-            'createMultipleRelation',
+            'createSimpleRelation',
+            'removeSimpleRelation',
             'showClientError'
         ]),
-        createGroupPeriod(user, groupPeriod) {
-            const index = user.groupPeriods.findIndex(o => (
-                o.group.id === groupPeriod.group.id && o.period.id === groupPeriod.period.id
+        addGroupToUser(user, groupUser) {
+            const index = user.groups.findIndex(g => (
+                g.id === groupUser.group.id && g._through.period.id === groupUser.period.id
             ));
 
             if (index > -1) {
                 return this.showClientError({ message: 'L\'utilisateur est déjà membre du groupe sur cette période.' });
             }
 
-            groupPeriod.Group_id  = groupPeriod.group.id;
-            groupPeriod.Period_id = groupPeriod.period.id;
-            delete groupPeriod.group;
-            delete groupPeriod.period;
-
-            this.createMultipleRelation({
-                obj: {
+            this.createSimpleRelation({
+                obj1: {
                     route: 'users',
                     value: user
                 },
-                relation: {
-                    route : 'groupPeriods',
-                    fields: groupPeriod
+                obj2: {
+                    route: 'groups',
+                    value: groupUser.group
+                },
+                through: {
+                    obj  : 'period',
+                    field: 'Period_id',
+                    value: groupUser.period
                 }
             });
 
-            this.groupPeriod = Object.assign({}, groupPeriodPattern);
+            this.groupUser = Object.assign({}, groupUserPattern);
+        },
+        removeGroupFromCurrentUser(group) {
+            this.removeGroupFromUser(this.modObject, group);
+        },
+        removeGroupFromUser(user, group) {
+            this.removeSimpleRelation({
+                obj1: {
+                    route: 'users',
+                    value: user
+                },
+                obj2: {
+                    route: 'groups',
+                    value: group
+                }
+            });
         }
     },
 
@@ -82,12 +96,12 @@ export default {
             'groupOptions',
             'periodOptions'
         ]),
-        displayedGroupPeriods() {
-            return (!this.modObject) ? [] : this.modObject.groupPeriods
-                .filter(groupPeriod => (groupPeriod.period.Event_id === this.currentEvent.id));
+        displayedGroups() {
+            return (!this.modObject) ? [] : this.modObject.groups
+                .filter(group => (group._through.period.Event_id === this.currentEvent.id));
         },
         disabledAdd() {
-            return (!this.groupPeriod.group || !this.groupPeriod.period);
+            return (!this.groupUser.group || !this.groupUser.period);
         }
     }
 };
