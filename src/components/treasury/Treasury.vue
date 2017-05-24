@@ -8,8 +8,28 @@
                     <mdl-select label="Point" id="point-select" v-model="fields.point" :options="pointOptionsAll"></mdl-select>
                 </div>
                 <div>
-                    <mdl-textfield floating-label="Début" :value="fields.dateIn | date" @input="updateField('dateIn', convertDate($event))" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" id="datein" ref="datein"></mdl-textfield>
-                    <mdl-textfield floating-label="Fin" :value="fields.dateOut | date" @input="updateField('dateOut', convertDate($event))" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" id="dateout" ref="dateout"></mdl-textfield>
+                    <b-datetime-picker
+                        v-model="fields.dateIn"
+                        locale="fr"
+                        header-format="DD MMM"
+                        cancel="Annuler"
+                        next="Suivant"
+                        back="Retour"
+                        pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
+                        error="Le début n'est pas une date"
+                        label="Début"
+                        class="b--limitsize"></b-datetime-picker>
+                    <b-datetime-picker
+                        v-model="fields.dateOut"
+                        locale="fr"
+                        header-format="DD MMM"
+                        cancel="Annuler"
+                        next="Suivant"
+                        back="Retour"
+                        pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
+                        error="La fin n'est pas une date"
+                        label="Fin"
+                        class="b--limitsize"></b-datetime-picker>
                 </div>
                 <mdl-button colored raised>Rechercher</mdl-button>
             </form>
@@ -39,12 +59,11 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import '../../lib/price';
-import { convertDate } from '../../lib/date';
 
 const fieldsPattern = {
     point  : null,
-    dateIn : '',
-    dateOut: ''
+    dateIn : null,
+    dateOut: null
 };
 
 export default {
@@ -106,9 +125,6 @@ export default {
             'getTreasury',
             'showClientError'
         ]),
-        updateField(field, value) {
-            this.fields[field] = value;
-        },
         filter() {
             const inputFields = JSON.parse(JSON.stringify(this.fields));
             let isFilled      = false;
@@ -129,30 +145,10 @@ export default {
 
             this.getTreasury(inputFields);
         },
-        convertDate(date) {
-            return convertDate(date);
-        },
         slugToName(slug) {
             const index = this.meansofpayment.findIndex(mop => (mop.slug === slug));
             return (index !== -1) ? this.meansofpayment[index].name : slug;
         }
-    },
-
-    mounted() {
-        this.$nextTick(() => {
-            const $dateIn  = this.$refs.datein.$el;
-            const $dateOut = this.$refs.dateout.$el;
-            window.jQuery($dateIn).datetimepicker({
-                onChangeDateTime: (ct) => {
-                    this.fields.dateIn = new Date(ct);
-                }
-            });
-            window.jQuery($dateOut).datetimepicker({
-                onChangeDateTime: (ct) => {
-                    this.fields.dateOut = new Date(ct);
-                }
-            });
-        });
     }
 };
 </script>

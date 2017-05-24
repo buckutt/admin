@@ -86,7 +86,7 @@ html, body, main {
 }
 
 .b--clear {
-    clear:both;
+    clear: both;
 }
 
 .b--center {
@@ -99,6 +99,10 @@ html, body, main {
 
 .b--inline {
     display: inline-block;
+}
+
+.b--limitsize {
+    max-width: 300px;
 }
 
 // Transitions

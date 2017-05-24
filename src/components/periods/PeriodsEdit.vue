@@ -11,9 +11,31 @@
             <form @submit.prevent="updateObject({ route: 'periods', value: modObject })">
                 <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                 <br />
-                <mdl-textfield floating-label="Début" :value="modObject.start | date" @input="updateModObject({ field:'start', value: convertDate($event) })" required="required" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="Le début n'est pas une date" ref="dateStart"></mdl-textfield>
-
-                <mdl-textfield floating-label="Fin" :value="modObject.end | date" @input="updateModObject({ field:'end', value: convertDate($event) })" required="required" pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}" error="La fin n'est pas une date" ref="dateEnd"></mdl-textfield>
+                <b-datetime-picker
+                    :value="new Date(modObject.start)"
+                    @input="updateModObject({ field: 'start', value: $event })"
+                    locale="fr"
+                    header-format="DD MMM"
+                    cancel="Annuler"
+                    next="Suivant"
+                    back="Retour"
+                    pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
+                    error="Le début n'est pas une date"
+                    label="Début"
+                    class="b--limitsize"></b-datetime-picker>
+                <br />
+                <b-datetime-picker
+                    :value="new Date(modObject.end)"
+                    @input="updateModObject({ field: 'end', value: $event })"
+                    locale="fr"
+                    header-format="DD MMM"
+                    cancel="Annuler"
+                    next="Suivant"
+                    back="Retour"
+                    pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
+                    error="La fin n'est pas une date"
+                    label="Fin"
+                    class="b--limitsize"></b-datetime-picker>
                 <br />
                 <mdl-button colored raised>Modifier</mdl-button>
             </form>
@@ -23,43 +45,13 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import { convertDate } from '../../lib/date';
 
 export default {
     methods: {
         ...mapActions([
             'updateObject',
             'updateModObject'
-        ]),
-        picker() {
-            this.$nextTick(() => {
-                const $dateStart = this.$refs.dateStart.$el;
-                const $dateEnd   = this.$refs.dateEnd.$el;
-
-                window.jQuery($dateStart).datetimepicker({
-                    onChangeDateTime: (ct) => {
-                        if (this.modObject) {
-                            this.updateModObject({ field: 'start', value: new Date(ct) });
-                        } else {
-                            this.newPeriod.start = new Date(ct);
-                        }
-                    }
-                });
-
-                window.jQuery($dateEnd).datetimepicker({
-                    onChangeDateTime: (ct) => {
-                        if (this.modObject) {
-                            this.updateModObject({ field: 'end', value: new Date(ct) });
-                        } else {
-                            this.newPeriod.end = new Date(ct);
-                        }
-                    }
-                });
-            });
-        },
-        convertDate(date) {
-            return convertDate(date);
-        }
+        ])
     },
 
     computed: {
@@ -67,10 +59,6 @@ export default {
             currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject
         })
-    },
-
-    mounted() {
-        this.picker();
     }
 };
 </script>

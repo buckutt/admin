@@ -1,17 +1,16 @@
 import 'promise-polyfill';
 import 'whatwg-fetch';
 
-import jQuery    from 'jquery';
-import Vue       from 'vue';
-import VueRouter from 'vue-router';
-import Vuex      from 'vuex';
-import VueMdl    from 'vue-mdl';
-import { sync }  from 'vuex-router-sync';
+import DateTimePicker from '@buckless/datetime-picker';
+import Vue            from 'vue';
+import VueRouter      from 'vue-router';
+import Vuex           from 'vuex';
+import VueMdl         from 'vue-mdl';
+import { sync }       from 'vuex-router-sync';
 
+import '@buckless/datetime-picker/dist/datetime-picker.min.css';
 import 'material-design-lite/material.min.js';
 import 'material-design-lite/material.min.css';
-import 'jquery-datetimepicker/build/jquery.datetimepicker.full.min.js';
-import 'jquery-datetimepicker/jquery.datetimepicker.css';
 import './assets/font.css';
 
 import store  from './store/index';
@@ -24,15 +23,16 @@ import PaginatedTable from './components/PaginatedTable.vue';
 
 import '../src/lib/textfield.js';
 
+moment.locale('fr');
+
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(VueMdl);
 
 Vue.component('b-confirm', Confirm);
+Vue.component('b-datetime-picker', DateTimePicker);
 Vue.component('b-navbar', Navbar);
 Vue.component('b-table', PaginatedTable);
-
-window.jQuery = jQuery;
 
 const withoutEventRoutes = ['', 'logout', 'events', 'treasury'];
 

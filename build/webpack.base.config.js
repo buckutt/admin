@@ -53,10 +53,16 @@ module.exports = {
         hints: false
     },
     devServer: {
+        disableHostCheck: true,
         historyApiFallback: true,
         hot: true,
         port: 8082,
         publicPath: '/'
     },
-    devtool: '#eval-source-map'
+    devtool: '#eval-source-map',
+    plugins: [
+        new webpack.ProvidePlugin({
+            moment: 'moment'
+        })
+    ]
 }
