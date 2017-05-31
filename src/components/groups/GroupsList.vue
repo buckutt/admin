@@ -6,7 +6,7 @@
             :data="groups"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
-                { action: 'edit', text: 'Modifier', raised: true, colored: true, condition: { field: 'id', statement: 'isNotIn', value: protectedGroupsIds } },
+                { action: 'edit', text: 'Modifier', raised: true, colored: true },
                 { action: 'remove', text: 'Supprimer', type: 'confirm', condition: { field: 'id', statement: 'isNotIn', value: protectedGroupsIds } }
             ]"
             route="groups"

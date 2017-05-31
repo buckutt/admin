@@ -82,6 +82,11 @@ export default {
                 obj2: {
                     route: 'groups',
                     value: group
+                },
+                through: {
+                    obj  : 'period',
+                    field: 'Period_id',
+                    value: group._through.period
                 }
             });
         }

@@ -1,3 +1,4 @@
+import cloneDeep               from 'lodash.clonedeep';
 import { get, post, put, del } from '../../lib/fetch';
 
 /**
@@ -180,28 +181,30 @@ export function createSimpleRelation({ commit, dispatch, state }, relation) {
         .then(() => {
             if (state.app.modObject) {
                 if (relation.obj1.value.id === state.app.modObject.id) {
+                    const obj2 = cloneDeep(relation.obj2.value);
                     if (relation.through) {
-                        relation.obj2.value._through                         = {};
-                        relation.obj2.value._through[relation.through.field] = relation.through.value.id;
-                        relation.obj2.value._through[relation.through.obj]   = relation.through.value;
+                        obj2._through                         = {};
+                        obj2._through[relation.through.field] = relation.through.value.id;
+                        obj2._through[relation.through.obj]   = relation.through.value;
                     }
 
                     dispatch('updateModObject', {
                         newRelation: relation.obj2.route,
-                        value      : relation.obj2.value
+                        value      : obj2
                     });
                 }
 
                 if (relation.obj2.value.id === state.app.modObject.id) {
+                    const obj1 = cloneDeep(relation.obj1.value);
                     if (relation.through) {
-                        relation.obj1.value._through                         = {};
-                        relation.obj1.value._through[relation.through.field] = relation.through.value.id;
-                        relation.obj1.value._through[relation.through.obj]   = relation.through.value;
+                        obj1._through                         = {};
+                        obj1._through[relation.through.field] = relation.through.value.id;
+                        obj1._through[relation.through.obj]   = relation.through.value;
                     }
 
                     dispatch('updateModObject', {
                         newRelation: relation.obj1.route,
-                        value      : relation.obj1.value
+                        value      : obj1
                     });
                 }
             }
@@ -214,19 +217,28 @@ export function createSimpleRelation({ commit, dispatch, state }, relation) {
 }
 
 export function removeSimpleRelation({ commit, dispatch, state }, relation) {
-    del(`${relation.obj1.route}/${relation.obj1.value.id}/${relation.obj2.route}/${relation.obj2.value.id}`)
+    let filter = '';
+    if (relation.through) {
+        const jsonFilter                   = {};
+        jsonFilter[relation.through.field] = relation.through.value.id;
+        filter                             = `?filter=${encodeURIComponent(JSON.stringify(jsonFilter))}`;
+    }
+
+    del(`${relation.obj1.route}/${relation.obj1.value.id}/${relation.obj2.route}/${relation.obj2.value.id}${filter}`)
         .then(() => {
             if (relation.obj1.value.id === state.app.modObject.id) {
                 dispatch('removeModObjectRelation', {
                     relation: relation.obj2.route,
-                    value   : relation.obj2.value
+                    value   : relation.obj2.value,
+                    through : relation.through
                 });
             }
 
             if (relation.obj2.value.id === state.app.modObject.id) {
                 dispatch('removeModObjectRelation', {
                     relation: relation.obj1.route,
-                    value   : relation.obj1.value
+                    value   : relation.obj1.value,
+                    through : relation.through
                 });
             }
 

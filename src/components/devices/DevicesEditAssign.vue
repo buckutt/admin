@@ -80,6 +80,11 @@ export default {
                 obj2: {
                     route: 'points',
                     value: point
+                },
+                through: {
+                    obj  : 'period',
+                    field: 'Period_id',
+                    value: point._through.period
                 }
             });
         }

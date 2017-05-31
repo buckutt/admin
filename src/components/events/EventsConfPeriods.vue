@@ -12,7 +12,7 @@
 
             <div v-if="hasPeriods === 'true' && !modObject.DefaultPeriod_id">
                 <br />
-                Une période par défaut (non éditable, non modifiable), d'une durée de 100 ans et du nom de l'événement, va être automatiquement créée pour cet événement. Vous pourrez l'utiliser lorsque vous souhaitez assigner des éléments qui devront durer toute la durée de l'événement.
+                Une période par défaut (non éditable, non supprimable), d'une durée de 100 ans et du nom de l'événement, va être automatiquement créée pour cet événement. Vous pourrez l'utiliser lorsque vous souhaitez assigner des éléments qui devront durer toute la durée de l'événement.
             </div>
 
             <br /><br />

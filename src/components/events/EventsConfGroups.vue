@@ -12,7 +12,7 @@
 
             <div v-if="hasGroups === 'true' && !modObject.DefaultGroup_id">
                 <br />
-                Un groupe par défaut (non éditable, non modifiable) du nom de l'événement va être automatiquement créé. Ce groupe contiendra tous les utilisateurs créés au sein de l'événement. Il sera réutilisable via d'autres événements.
+                Un groupe par défaut (non supprimable) du nom de l'événement va être automatiquement créé. Ce groupe contiendra tous les utilisateurs créés au sein de l'événement. Il sera réutilisable via d'autres événements.
             </div>
 
             <br /><br />
