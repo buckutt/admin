@@ -1,7 +1,7 @@
 <template>
     <div class="b--inline">
         <transition name="fade">
-            <mdl-button raised accent :disabled="confirm" @click.native="switchConfirm()">
+            <mdl-button raised accent :disabled="confirm || disabled" @click.native="switchConfirm()">
                 <slot></slot>
             </mdl-button>
         </transition>
@@ -20,6 +20,13 @@
 
 <script>
 export default {
+    props: {
+        disabled: {
+            type    : Boolean,
+            required: false
+        }
+    },
+
     data() {
         return {
             confirm: false

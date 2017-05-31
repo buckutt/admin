@@ -4,20 +4,14 @@
         <form @submit.prevent="createPromotionPrice(modObject, newPrice)">
             <mdl-textfield floating-label="Montant TTC (centimes)" v-model="newPrice.amount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield>
             <mdl-select label="Point" id="point-select" v-model="newPrice.point" :options="pointOptions"></mdl-select>
-            <mdl-select label="Fondation" id="fundation-select" v-model="newPrice.fundation" :options="fundationOptions"></mdl-select><br />
-            <mdl-select label="Groupe" id="group-select" v-model="newPrice.group" :options="groupOptions"></mdl-select>
-            <mdl-select label="Période" id="period-select" v-model="newPrice.period" :options="periodOptions"></mdl-select><br />
+            <mdl-select label="Fondation" id="fundation-select" v-model="newPrice.fundation" :options="fundationOptions" v-if="currentEvent.config.hasFundations"></mdl-select><br />
+            <mdl-select label="Groupe" id="group-select" v-model="newPrice.group" :options="groupOptions" v-if="currentEvent.config.hasGroups"></mdl-select>
+            <mdl-select label="Période" id="period-select" v-model="newPrice.period" :options="periodOptions" v-if="currentEvent.config.hasPeriods"></mdl-select><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
         <b-table
-            :headers="[
-                { title: 'Montant TTC', field: 'amount', type: 'price' },
-                { title: 'Point', field: 'point.name' },
-                { title: 'Fondation', field: 'fundation.name' },
-                { title: 'Groupe', field: 'group.name' },
-                { title: 'Période', field: 'period.name' }
-            ]"
+            :headers="displayedColumns"
             :data="displayedPrices"
             :actions="[
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
@@ -53,6 +47,11 @@ export default {
             'createMultipleRelation'
         ]),
         createPromotionPrice(promotion, price) {
+            price.fundation = (this.currentEvent.config.hasFundations) ?
+                price.fundation : this.currentEvent.defaultFundation;
+            price.group     = (this.currentEvent.config.hasGroups) ? price.group : this.currentEvent.defaultGroup;
+            price.period    = (this.currentEvent.config.hasPeriods) ? price.period : this.currentEvent.defaultPeriod;
+
             price.Fundation_id = price.fundation.id;
             price.Group_id     = price.group.id;
             price.Period_id    = price.period.id;
@@ -88,12 +87,33 @@ export default {
             'pointOptions',
             'fundationOptions'
         ]),
+        displayedColumns() {
+            const columns = [
+                { title: 'Montant TTC', field: 'amount', type: 'price' },
+                { title: 'Point', field: 'point.name' }
+            ];
+
+            if (this.currentEvent.config.hasFundations) {
+                columns.push({ title: 'Fondation', field: 'fundation.name' });
+            }
+            if (this.currentEvent.config.hasGroups) {
+                columns.push({ title: 'Groupe', field: 'group.name' });
+            }
+            if (this.currentEvent.config.hasPeriods) {
+                columns.push({ title: 'Période', field: 'period.name' });
+            }
+
+            return columns;
+        },
         displayedPrices() {
             return (!this.modObject) ? [] : this.modObject.prices
                 .filter(price => (price.period.Event_id === this.currentEvent.id));
         },
         disabledAdd() {
-            return (!this.newPrice.fundation || !this.newPrice.period || !this.newPrice.group || !this.newPrice.point);
+            return ((!this.newPrice.fundation && this.currentEvent.config.hasFundations)
+                || (!this.newPrice.period && this.currentEvent.config.hasPeriods)
+                || (!this.newPrice.group && this.currentEvent.config.hasGroups)
+                || !this.newPrice.point);
         }
     }
 };

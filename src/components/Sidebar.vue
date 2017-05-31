@@ -32,7 +32,7 @@
                 </li>
             </ul>
             <transition name="fade">
-                <ul v-show="currentEvent">
+                <ul v-if="isConfigured">
                     <li>
                         <router-link to="/stats" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                             <i class="material-icons">insert_chart</i>
@@ -51,7 +51,7 @@
                             Équipements
                         </router-link>
                     </li>
-                    <li>
+                    <li v-if="currentEvent.config.hasFundations">
                         <router-link to="/fundations" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                             <i class="material-icons">local_atm</i>
                             Fondations
@@ -63,7 +63,7 @@
                             Points
                         </router-link>
                     </li>
-                    <li>
+                    <li v-if="currentEvent.config.hasPeriods">
                         <router-link to="/periods" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                             <i class="material-icons">alarm</i>
                             Périodes
@@ -93,7 +93,7 @@
                             Utilisateurs
                         </router-link>
                     </li>
-                    <li>
+                    <li v-if="currentEvent.config.hasGroups">
                         <router-link to="/groups" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                             <i class="material-icons">group</i>
                             Groupes
@@ -107,6 +107,7 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
+import { isEventConfigured } from '../lib/isEventConfigured';
 
 export default {
     methods: {
@@ -124,8 +125,14 @@ export default {
                 }
             }
 
-            this.updateCurrentEvent(event);
-            this.$router.push('/stats');
+            this.updateCurrentEvent(event)
+                .then(() => {
+                    if (this.isConfigured) {
+                        this.$router.push('/stats');
+                    } else {
+                        this.$router.push(`/events/config/${event.id}`);
+                    }
+                });
         }
     },
 
@@ -142,6 +149,12 @@ export default {
                 return '';
             }
             return this.currentEvent.name;
+        },
+        isConfigured() {
+            if (this.currentEvent) {
+                return isEventConfigured(this.currentEvent);
+            }
+            return false;
         }
     }
 };

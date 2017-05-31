@@ -10,8 +10,8 @@
             :data="displayedPeriods"
             :sort="{ field: 'start', order: 'ASC' }"
             :actions="[
-                { action: 'edit', text: 'Modifier', raised: true, colored: true },
-                { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                { action: 'edit', text: 'Modifier', raised: true, colored: true, condition: { field: 'id', statement: 'isNotIn', value: protectedPeriodsIds } },
+                { action: 'remove', text: 'Supprimer', type: 'confirm', condition: { field: 'id', statement: 'isNotIn', value: protectedPeriodsIds } }
             ]"
             route="periods"
             :paging="10"
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
     methods: {
@@ -39,6 +39,9 @@ export default {
             currentEvent: state => state.app.currentEvent,
             periods     : state => state.objects.periods
         }),
+        ...mapGetters([
+            'protectedPeriodsIds'
+        ]),
         displayedPeriods() {
             return this.periods.filter(period => (period.Event_id === this.currentEvent.id));
         }

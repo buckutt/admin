@@ -2,7 +2,8 @@
 # yarn lockfile v1
 
 
-"@buckless/datetime-picker@^0.1.4":
+
+"@buckless/datetime-picker@^0.1.5":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@buckless/datetime-picker/-/datetime-picker-0.1.5.tgz#5b06ea8d7543e142bc11f05d065e1f64873f7383"
   dependencies:

@@ -101,6 +101,11 @@ html, body, main {
     display: inline-block;
 }
 
+
+.b--unclickable {
+    pointer-events: none;
+}
+
 .b--limitsize {
     max-width: 300px;
 }

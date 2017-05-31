@@ -3,14 +3,11 @@
         <h5>Assigner l'équipement</h5>
         <form @submit.prevent="addPointToDevice(modObject, devicePoint)">
             <mdl-select label="Point" id="point-select" v-model="devicePoint.point" :options="pointOptions"></mdl-select>
-            <mdl-select label="Période" id="period-select" v-model="devicePoint.period" :options="periodOptions"></mdl-select>
+            <mdl-select label="Période" id="period-select" v-model="devicePoint.period" :options="periodOptions" v-if="currentEvent.config.hasPeriods"></mdl-select>
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <b-table
-            :headers="[
-                { title: 'Point', field: 'name' },
-                { title: 'Période', field: '_through.period.name' }
-            ]"
+            :headers="displayedColumns"
             :data="displayedPoints"
             :actions="[
                 { action: 'unlink', text: 'Supprimer', type: 'confirm' }
@@ -44,6 +41,9 @@ export default {
             'showClientError'
         ]),
         addPointToDevice(device, devicePoint) {
+            devicePoint.period = (this.currentEvent.config.hasPeriods) ?
+                devicePoint.period : this.currentEvent.defaultPeriod;
+
             if (isPointUsedByEvent(this.modObject.points, devicePoint)) {
                 return this.showClientError({
                     message: 'Le point est déjà utilisé par un autre événement pendant cette période'
@@ -94,12 +94,20 @@ export default {
             'periodOptions',
             'pointOptions'
         ]),
+        displayedColumns() {
+            const columns = [{ title: 'Point', field: 'name' }];
+            if (this.currentEvent.config.hasPeriods) {
+                columns.push({ title: 'Période', field: '_through.period.name' });
+            }
+
+            return columns;
+        },
         displayedPoints() {
             return (!this.modObject) ? [] : this.modObject.points
                 .filter(point => (point._through.period.Event_id === this.currentEvent.id));
         },
         disabledAdd() {
-            return !this.devicePoint.period || !this.devicePoint.point;
+            return (!this.devicePoint.period && this.currentEvent.config.hasPeriods) || !this.devicePoint.point;
         }
     }
 };

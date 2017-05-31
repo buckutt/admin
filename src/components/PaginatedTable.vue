@@ -25,18 +25,19 @@
                         <td class="mdl-data-table__cell--non-numeric b-actions-cell">
                             <span v-for="action in actions">
                                 <span v-if="action.type">
-                                    <b-confirm @confirm="callback(action.action, data)" v-if="action.type === 'confirm'">
+                                    <b-confirm :disabled="!displayAction(action, data)" @confirm="callback(action.action, data)" v-if="action.type === 'confirm'">
                                         {{ action.text }}
                                     </b-confirm>
                                     <span v-if="action.type === 'reversible'">
-                                        <mdl-button raised accent @click.native="callback(action.action, data)" v-if="!data[action.field]">{{ action.text1 }}</mdl-button>
-                                        <mdl-button raised @click.native="callback(action.action, data)" v-if="data[action.field]">{{ action.text2 }}</mdl-button>
+                                        <mdl-button raised accent :disabled="!displayAction(action, data)" @click.native="callback(action.action, data)" v-if="!data[action.field]">{{ action.text1 }}</mdl-button>
+                                        <mdl-button raised :disabled="!displayAction(action, data)" @click.native="callback(action.action, data)" v-if="data[action.field]">{{ action.text2 }}</mdl-button>
                                     </span>
                                 </span>
                                 <span v-else>
                                     <mdl-button
                                         :raised="action.raised"
                                         :colored="action.colored"
+                                        :disabled="!displayAction(action, data)"
                                         @click.native="callback(action.action, data)">
                                         {{ action.text }}
                                     </mdl-button>
@@ -129,6 +130,20 @@ export default {
         },
         lodget(object, path) {
             return lodget(object, path);
+        },
+        displayAction(action, object) {
+            const condition = action.condition;
+            if (condition) {
+                switch (condition.statement) {
+                    case 'isIn':
+                        return (condition.value.indexOf(object[condition.field]) > -1);
+                    case 'isNotIn':
+                        return (condition.value.indexOf(object[condition.field]) === -1);
+                    default:
+                        break;
+                }
+            }
+            return true;
         }
     },
 

@@ -6,8 +6,8 @@
             :data="groups"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
-                { action: 'edit', text: 'Modifier', raised: true, colored: true },
-                { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                { action: 'edit', text: 'Modifier', raised: true, colored: true, condition: { field: 'id', statement: 'isNotIn', value: protectedGroupsIds } },
+                { action: 'remove', text: 'Supprimer', type: 'confirm', condition: { field: 'id', statement: 'isNotIn', value: protectedGroupsIds } }
             ]"
             route="groups"
             :paging="10"
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
     methods: {
@@ -33,7 +33,10 @@ export default {
     computed: {
         ...mapState({
             groups: state => state.objects.groups
-        })
+        }),
+        ...mapGetters([
+            'protectedGroupsIds'
+        ])
     }
 };
 </script>

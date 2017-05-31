@@ -4,16 +4,12 @@
         <form @submit.prevent="createUserRight(modObject, userRight)">
             <mdl-select label="Droit" id="right-select" v-model="userRight.name" :options="rightsList"></mdl-select>
             <mdl-select label="Point" id="point-select" v-model="userRight.point" :options="pointOptions"></mdl-select>
-            <mdl-select label="Période" id="period-select" v-model="userRight.period" :options="periodOptions"></mdl-select><br />
+            <mdl-select label="Période" id="period-select" v-model="userRight.period" :options="periodOptions" v-if="currentEvent.config.hasPeriods"></mdl-select><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
         <b-table
-            :headers="[
-                { title: 'Droit', field: 'name' },
-                { title: 'Point', field: 'point.name'},
-                { title: 'Période', field: 'period.name' }
-            ]"
+            :headers="displayedColumns"
             :data="displayedRights"
             :actions="[
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
@@ -49,6 +45,8 @@ export default {
             'showClientError'
         ]),
         createUserRight(user, right) {
+            right.period = (this.currentEvent.config.hasPeriods) ? right.period : this.currentEvent.defaultPeriod;
+
             right.Period_id = right.period.id;
             delete right.period;
 
@@ -81,6 +79,18 @@ export default {
             'periodOptions',
             'pointOptions'
         ]),
+        displayedColumns() {
+            const columns = [
+                { title: 'Droit', field: 'name' },
+                { title: 'Point', field: 'point.name' }
+            ];
+
+            if (this.currentEvent.config.hasPeriods) {
+                columns.push({ title: 'Période', field: 'period.name' });
+            }
+
+            return columns;
+        },
         displayedRights() {
             return (!this.modObject) ? [] : this.modObject.rights
                 .filter(right => (right.period.Event_id === this.currentEvent.id))
@@ -92,7 +102,7 @@ export default {
                 });
         },
         disabledAdd() {
-            return (!this.userRight.name || !this.userRight.period);
+            return (!this.userRight.name || (!this.userRight.period && this.currentEvent.config.hasPeriods));
         }
     }
 };

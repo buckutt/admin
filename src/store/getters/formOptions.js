@@ -14,7 +14,6 @@ export const eventOptions = state => (
     state.objects.events.map(event => ({ name: event.name, value: event }))
 );
 
-
 export const periodOptions = state => (
     (!state.app.currentEvent) ? [] : state.objects.periods
         .filter(period => (period.Event_id === state.app.currentEvent.id))

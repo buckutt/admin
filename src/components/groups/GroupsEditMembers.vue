@@ -3,10 +3,7 @@
         <div>
             <h5>Membres actuels</h5>
             <b-table
-                :headers="[
-                    { title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' },
-                    { title: 'Période', field: '_through.period.name' }
-                ]"
+                :headers="displayedColumns"
                 :data="groupUsers"
                 :actions="[
                     { action: 'unlink', text: 'Supprimer', type: 'confirm' }
@@ -32,12 +29,11 @@
                     :headers="[{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' }]"
                     :data="displayedUsers"
                     :sort="{ field: 'firstname', order: 'ASC' }"
-                    :actions="[
-                        { action: 'select', text: 'Sélectionner', raised: true, colored: true }
-                    ]"
+                    :actions="displayedActions"
                     route="users"
                     :paging="5"
-                    @select="selectUser">
+                    @select="selectUser"
+                    @add="addUserToCurrentGroup">
                 </b-table>
             </div>
         </div>
@@ -74,8 +70,8 @@ export default {
             this.groupUser.user = null;
         },
         addUserToGroup(group, groupUser) {
-            const index = groupUser.user.groups.findIndex(g => (
-                g.id === group.id && g._through.period.id === groupUser.period.id
+            const index = group.users.findIndex(u => (
+                u.id === groupUser.user.id && u._through.period.id === groupUser.period.id
             ));
 
             if (index > -1) {
@@ -99,6 +95,12 @@ export default {
             });
 
             this.groupUser = Object.assign({}, groupUserPattern);
+        },
+        addUserToCurrentGroup(user) {
+            this.addUserToGroup(this.modObject, {
+                period: this.currentEvent.defaultPeriod,
+                user
+            });
         },
         removeUserFromCurrentGroup(user) {
             this.removeUserFromGroup(this.modObject, user);
@@ -133,6 +135,19 @@ export default {
                     user.fullname = `${user.firstname} ${user.lastname}`;
                     return user;
                 });
+        },
+        displayedColumns() {
+            const columns = [{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' }];
+            if (this.currentEvent.config.hasPeriods) {
+                columns.push({ title: 'Période', field: '_through.period.name' });
+            }
+
+            return columns;
+        },
+        displayedActions() {
+            return (this.currentEvent.config.hasPeriods) ?
+            [{ action: 'select', text: 'Sélectionner', raised: true, colored: true }] :
+            [{ action: 'add', text: 'Ajouter', raised: true, colored: true }];
         },
         displayedUsers() {
             return this.users.map((user) => {

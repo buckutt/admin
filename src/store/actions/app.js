@@ -28,13 +28,25 @@ export function removeModObjectRelation({ commit }, payload) {
 }
 
 /**
+ * Event configurator actions
+ */
+
+export function resetLastValidatedStep({ commit }) {
+    commit('UPDATELASTVALIDATEDSTEP', 0);
+}
+
+export function updateLastValidatedStep({ commit, state }, lastValidatedStep) {
+    if (state.app.lastValidatedStep < lastValidatedStep) {
+        commit('UPDATELASTVALIDATEDSTEP', lastValidatedStep);
+    }
+}
+
+/**
  * Global actions
  */
 
-export function updateCurrentEvent({ commit }, currentEvent) {
-    const embedEvents = encodeURIComponent(JSON.stringify({
-        periods: true
-    }));
+export function updateCurrentEvent({ dispatch }, currentEvent) {
+    const embedEvents = encodeURIComponent(JSON.stringify(config.relations.events));
 
     return new Promise((resolve, reject) => {
         get(`events/${currentEvent.id}?embed=${embedEvents}`)
@@ -42,12 +54,25 @@ export function updateCurrentEvent({ commit }, currentEvent) {
                 if (result.periods) {
                     result.periods = result.periods.filter(period => !period.isRemoved);
                 }
-                sessionStorage.setItem('event', JSON.stringify(result));
-                commit('UPDATECURRENTEVENT', result);
-                resolve();
+
+                return dispatch('changeCurrentEvent', result);
             })
+            .then(() => resolve())
             .catch(() => reject());
     });
+}
+
+export function changeCurrentEvent({ commit }, currentEvent) {
+    return new Promise((resolve) => {
+        sessionStorage.setItem('event', JSON.stringify(currentEvent));
+        commit('UPDATECURRENTEVENT', currentEvent);
+        resolve();
+    });
+}
+
+export function unselectCurrentEvent({ commit }) {
+    sessionStorage.removeItem('event');
+    commit('UPDATECURRENTEVENT', null);
 }
 
 export function updateLogged({ commit }, logged) {

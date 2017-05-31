@@ -2,10 +2,11 @@ import lodset from 'lodash.set';
 import lodget from 'lodash.get';
 
 const state = {
-    modObject   : null,
-    currentEvent: null,
-    loggedUser  : null,
-    firstLoad   : false
+    modObject        : null,
+    currentEvent     : null,
+    loggedUser       : null,
+    firstLoad        : false,
+    lastValidatedStep: 0
 };
 
 // mutations
@@ -44,6 +45,9 @@ const mutations = {
     },
     UPDATEFIRSTLOAD(state_, firstLoad) {
         state_.firstLoad = firstLoad;
+    },
+    UPDATELASTVALIDATEDSTEP(state_, lastValidatedStep) {
+        state_.lastValidatedStep = lastValidatedStep;
     }
 };
 

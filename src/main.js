@@ -21,7 +21,8 @@ import Confirm        from './components/Confirm.vue';
 import Navbar         from './components/Navbar.vue';
 import PaginatedTable from './components/PaginatedTable.vue';
 
-import '../src/lib/textfield.js';
+import './lib/textfield.js';
+import { isEventConfigured } from './lib/isEventConfigured';
 
 moment.locale('fr');
 
@@ -41,12 +42,16 @@ const router = new VueRouter({ routes });
 router.beforeEach((route, from, next) => {
     store.dispatch('checkAndCreateNeededRouterData')
         .then(() => {
-            const path = route.path.split('/')[1];
-
+            const routePath = route.path.split('/');
+            const path      = routePath[1];
             if ((path !== '' && !store.getters.logged)
                 || (withoutEventRoutes.indexOf(path) === -1 && !store.state.app.currentEvent)) {
                 store.dispatch('clearModObject');
                 next('/');
+            } else if (!isEventConfigured(store.state.app.currentEvent)
+                && path !== 'events'
+                && routePath[2] !== 'config') {
+                next(`/events/config/${store.state.app.currentEvent.id}`);
             } else if (route.params.id) {
                 store.dispatch('expandObject', {
                     route: path,
@@ -59,9 +64,11 @@ router.beforeEach((route, from, next) => {
                 next();
             }
         })
-        .catch(() =>
-            store.dipatch('showClientError', 'Impossible de récupérer l\'événement, veuillez actualiser la page')
-        );
+        .catch(() => {
+            store.dispatch('showClientError', {
+                message: 'Impossible de récupérer l\'événement, veuillez actualiser la page'
+            });
+        });
 });
 
 const Admin = Vue.extend({

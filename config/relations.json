@@ -18,7 +18,10 @@
         }
     },
     "events": {
-        "periods": "true"
+        "defaultFundation": "true",
+        "defaultGroup"    : "true",
+        "defaultPeriod"   : "true",
+        "periods"         : "true"
     },
     "groups" : {
         "users": {

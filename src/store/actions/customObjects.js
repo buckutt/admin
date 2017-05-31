@@ -82,7 +82,7 @@ export function removeArticleFromSet({ commit, dispatch, state }, payload) {
  * Users actions
  */
 
-export function createUserWithMol({ commit, dispatch }, user) {
+export function createUserWithMol({ commit, dispatch, state }, user) {
     post('users', user)
         .then((result) => {
             if (result.mail) {
@@ -90,7 +90,27 @@ export function createUserWithMol({ commit, dispatch }, user) {
             }
 
             dispatch('checkAndAddObjects', { route: 'users', objects: [result] });
+
             commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
+
+            return result;
+        })
+        .then((newUser) => {
+            dispatch('createSimpleRelation', {
+                obj1: {
+                    route: 'users',
+                    value: newUser
+                },
+                obj2: {
+                    route: 'groups',
+                    value: state.app.currentEvent.defaultGroup
+                },
+                through: {
+                    obj  : 'period',
+                    field: 'Period_id',
+                    value: state.app.currentEvent.defaultPeriod
+                }
+            });
         })
         .catch((err) => {
             commit('UPDATEAPIERROR', err);

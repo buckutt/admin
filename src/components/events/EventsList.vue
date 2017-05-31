@@ -12,11 +12,13 @@
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
                 { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                { action: 'config', text: 'Configurer', raised: true, colored: true },
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
             ]"
             route="events"
             :paging="10"
             @edit="editEvent"
+            @config="configEvent"
             @remove="removeObject">
         </b-table>
     </div>
@@ -32,6 +34,9 @@ export default {
         ]),
         editEvent(event) {
             this.$router.push(`/events/edit/${event.id}`);
+        },
+        configEvent(event) {
+            this.$router.push(`/events/config/${event.id}`);
         }
     },
 

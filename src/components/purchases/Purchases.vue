@@ -6,15 +6,16 @@
             <form @submit.prevent="filter()">
                 <div>
                     <mdl-select label="Point" id="point-select" v-model="fields.point" :options="pointOptionsAll"></mdl-select>
-                    <mdl-select label="Fondation" id="select-fundations" v-model="fields.fundation" :options="fundationOptionsAll"></mdl-select>
+                    <mdl-select label="Fondation" id="select-fundations" v-model="fields.fundation" :options="fundationOptionsAll" v-if="currentEvent.config.hasFundations"></mdl-select>
                 </div>
                 <div>
-                    Recherche par:<br />
-                    <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="0">Achats liés à une période en particulier</mdl-radio><br />
-                    <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="1">Achats compris entre deux dates</mdl-radio>
-
+                    <div v-if="currentEvent.config.hasPeriods">
+                        Recherche par:<br />
+                        <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="0">Achats liés à une période en particulier</mdl-radio><br />
+                        <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="1">Achats compris entre deux dates</mdl-radio>
+                    </div>
                     <transition name="fade">
-                        <div v-show="dateChoice == 1">
+                        <div v-show="dateChoice == 1 || !currentEvent.config.hasPeriods">
                             <b-datetime-picker
                                 v-model="fields.dateIn"
                                 locale="fr"
@@ -40,7 +41,7 @@
                         </div>
                     </transition>
                     <transition name="fade">
-                        <div v-show="dateChoice == 0">
+                        <div v-show="dateChoice == 0 && currentEvent.config.hasPeriods">
                             <mdl-select label="Periode" id="select-periods" v-model="fields.period" :options="periodOptionsAll"></mdl-select>
                         </div>
                     </transition>
