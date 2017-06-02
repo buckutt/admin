@@ -53,7 +53,7 @@
                 :sort="{ field: 'name', order: 'ASC' }"
                 :actions="[
                     { action: 'addTo', text: 'Nouvel ensemble', raised: true },
-                    { action: 'choose', text: 'Ajouter à un ensemble', raised: true },
+                    { action: 'choose', text: 'Ajouter à l\'ensemble', raised: true },
                 ]"
                 route="articles"
                 :paging="5"

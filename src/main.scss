@@ -37,6 +37,10 @@ html, body, main {
     font-feature-settings: 'liga';
 }
 
+.mdl-card {
+    overflow: visible !important;
+}
+
 // AnyTime Picker
 .anytime-picker { display: none; position: absolute; top: 0; left: 0; }
 .anytime-picker--is-visible { display: block; }
@@ -67,6 +71,8 @@ html, body, main {
 
 .b-responsive-table {
     overflow-x: auto;
+    padding-bottom: 100px;
+    margin-bottom: -100px;
 
     > table {
         width: 100%;
@@ -74,11 +80,7 @@ html, body, main {
 }
 
 .b-actions-cell {
-    min-width: 250px;
-
-    > * {
-        margin-right: 5px;
-    }
+    min-width: 10px;
 }
 
 .b--capitalized {

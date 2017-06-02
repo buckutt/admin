@@ -1,8 +1,8 @@
 <template>
-    <div class="b--inline">
-        <mdl-button raised accent :disabled="disabled" @click.native="$refs.confirm.open">
+    <div>
+        <span @click.capture="interceptEvent">
             <slot></slot>
-        </mdl-button>
+        </span>
 
         <mdl-dialog ref="confirm" title="Suppression">
             <p>Êtes-vous sûr de vouloir effectuer cette action ?</p>
@@ -16,18 +16,28 @@
 
 <script>
 export default {
-    props: {
-        disabled: {
-            type    : Boolean,
-            required: false
-        }
-    },
-
     methods: {
+        interceptEvent(e) {
+            this.$refs.confirm.open();
+
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        },
+
         validate() {
             this.$emit('confirm');
             this.$refs.confirm.close();
         }
+    },
+
+    beforeDestroy() {
+        [].slice.call(document.getElementsByClassName('mdl-dialog-container'))
+            .forEach(dialog => dialog.parentNode.removeChild(dialog));
+    },
+
+    mounted() {
+        document.body.appendChild(this.$refs.confirm.$el);
     }
 };
 </script>
