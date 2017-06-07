@@ -1,9 +1,11 @@
-import Points               from './Points.vue';
-import PointsCreate         from './PointsCreate.vue';
-import PointsList           from './PointsList.vue';
-import PointsEdit           from './PointsEdit.vue';
-import PointsEditCategories from './PointsEditCategories.vue';
-import PointsEditObject     from './PointsEditObject.vue';
+import Points              from './Points.vue';
+import PointsCreate        from './PointsCreate.vue';
+import PointsList          from './PointsList.vue';
+
+import PointShow           from './point/PointShow.vue';
+import PointShowDetails    from './point/PointShowDetails.vue';
+import PointEditObject     from './point/PointEditObject.vue';
+import PointEditCategories from './point/PointEditCategories.vue';
 
 export default [
     {
@@ -15,11 +17,12 @@ export default [
         ]
     },
     {
-        path     : '/points/edit/:id',
-        component: PointsEdit,
+        path     : '/points/:id',
+        component: PointShow,
         children : [
-            { path: '', component: PointsEditObject },
-            { path: 'categories', component: PointsEditCategories }
+            { path: '', component: PointShowDetails },
+            { path: 'edit', component: PointEditObject },
+            { path: 'categories', component: PointEditCategories }
         ]
     }
 ];

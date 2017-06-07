@@ -1,9 +1,11 @@
 import Articles           from './Articles.vue';
 import ArticlesCreate     from './ArticlesCreate.vue';
-import ArticlesEdit       from './ArticlesEdit.vue';
-import ArticlesEditObject from './ArticlesEditObject.vue';
-import ArticlesEditPrices from './ArticlesEditPrices.vue';
 import ArticlesList       from './ArticlesList.vue';
+
+import ArticleShow        from './article/ArticleShow.vue';
+import ArticleShowDetails from './article/ArticleShowDetails.vue';
+import ArticleEditObject  from './article/ArticleEditObject.vue';
+import ArticleEditPrices  from './article/ArticleEditPrices.vue';
 
 export default [
     {
@@ -15,11 +17,12 @@ export default [
         ]
     },
     {
-        path     : '/articles/edit/:id',
-        component: ArticlesEdit,
+        path     : '/articles/:id',
+        component: ArticleShow,
         children : [
-            { path: '', component: ArticlesEditObject },
-            { path: 'prices', component: ArticlesEditPrices }
+            { path: '', component: ArticleShowDetails },
+            { path: 'edit', component: ArticleEditObject },
+            { path: 'prices', component: ArticleEditPrices }
         ]
     }
 ];

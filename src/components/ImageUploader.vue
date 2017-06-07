@@ -46,8 +46,6 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../main.scss';
-
     .b-imageUploader {
         background-image: url('../assets/placeholder.jpg');
         background-repeat: no-repeat;

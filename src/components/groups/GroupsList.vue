@@ -2,7 +2,7 @@
     <div>
         <h5>Liste des groupes</h5>
         <b-table
-            :headers="[{ title: 'Groupe', field: 'name' }]"
+            :headers="[{ title: 'Groupe', field: 'name', object: true }]"
             :data="groups"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
@@ -26,7 +26,7 @@ export default {
             'removeObject'
         ]),
         editGroup(group) {
-            this.$router.push(`/groups/edit/${group.id}`);
+            this.$router.push(`/groups/${group.id}/edit`);
         }
     },
 
@@ -40,7 +40,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss">
-    @import '../../main.scss';
-</style>

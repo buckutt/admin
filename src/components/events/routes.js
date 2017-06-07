@@ -1,13 +1,17 @@
 import Events               from './Events.vue';
-import EventsConf           from './EventsConf.vue';
-import EventsConfStart      from './EventsConfStart.vue';
-import EventsConfGroups     from './EventsConfGroups.vue';
-import EventsConfFundations from './EventsConfFundations.vue';
-import EventsConfPeriods    from './EventsConfPeriods.vue';
-import EventsConfEnd        from './EventsConfEnd.vue';
 import EventsCreate         from './EventsCreate.vue';
 import EventsList           from './EventsList.vue';
-import EventsEdit           from './EventsEdit.vue';
+
+import EventConf           from './config/EventConf.vue';
+import EventConfStart      from './config/EventConfStart.vue';
+import EventConfGroups     from './config/EventConfGroups.vue';
+import EventConfFundations from './config/EventConfFundations.vue';
+import EventConfPeriods    from './config/EventConfPeriods.vue';
+import EventConfEnd        from './config/EventConfEnd.vue';
+
+import EventShow           from './event/EventShow.vue';
+import EventShowDetails    from './event/EventShowDetails.vue';
+import EventEditObject     from './event/EventEditObject.vue';
 
 export default [
     {
@@ -18,16 +22,23 @@ export default [
             { path: 'create', component: EventsCreate }
         ]
     },
-    { path: '/events/edit/:id', component: EventsEdit },
     {
-        path     : '/events/config/:id',
-        component: EventsConf,
+        path     : '/events/:id',
+        component: EventShow,
         children : [
-            { path: '', component: EventsConfStart },
-            { path: 'groups', component: EventsConfGroups },
-            { path: 'fundations', component: EventsConfFundations },
-            { path: 'periods', component: EventsConfPeriods },
-            { path: 'end', component: EventsConfEnd }
+            { path: '', component: EventShowDetails },
+            { path: 'edit', component: EventEditObject }
+        ]
+    },
+    {
+        path     : '/events/:id/config',
+        component: EventConf,
+        children : [
+            { path: '', component: EventConfStart },
+            { path: 'groups', component: EventConfGroups },
+            { path: 'fundations', component: EventConfFundations },
+            { path: 'periods', component: EventConfPeriods },
+            { path: 'end', component: EventConfEnd }
         ]
     }
 ];

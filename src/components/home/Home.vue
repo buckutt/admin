@@ -60,7 +60,7 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../../main.scss';
+    @import '../../variables.scss';
 
     .b-container {
         &.b-container__display {

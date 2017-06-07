@@ -1,10 +1,12 @@
-import Promotions            from './Promotions.vue';
-import PromotionsCreate      from './PromotionsCreate.vue';
-import PromotionsList        from './PromotionsList.vue';
-import PromotionsEdit        from './PromotionsEdit.vue';
-import PromotionsEditObject  from './PromotionsEditObject.vue';
-import PromotionsEditPrices  from './PromotionsEditPrices.vue';
-import PromotionsEditContent from './PromotionsEditContent.vue';
+import Promotions           from './Promotions.vue';
+import PromotionsCreate     from './PromotionsCreate.vue';
+import PromotionsList       from './PromotionsList.vue';
+
+import PromotionShow        from './promotion/PromotionShow.vue';
+import PromotionShowDetails from './promotion/PromotionShowDetails.vue';
+import PromotionEditObject  from './promotion/PromotionEditObject.vue';
+import PromotionEditPrices  from './promotion/PromotionEditPrices.vue';
+import PromotionEditContent from './promotion/PromotionEditContent.vue';
 
 export default [
     {
@@ -16,12 +18,13 @@ export default [
         ]
     },
     {
-        path     : '/promotions/edit/:id',
-        component: PromotionsEdit,
+        path     : '/promotions/:id',
+        component: PromotionShow,
         children : [
-            { path: '', component: PromotionsEditObject },
-            { path: 'prices', component: PromotionsEditPrices },
-            { path: 'content', component: PromotionsEditContent }
+            { path: '', component: PromotionShowDetails },
+            { path: 'edit', component: PromotionEditObject },
+            { path: 'prices', component: PromotionEditPrices },
+            { path: 'content', component: PromotionEditContent }
         ]
     }
 ];

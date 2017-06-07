@@ -2,11 +2,11 @@
     <div>
         <h5>Liste des points</h5>
         <b-table
-            :headers="[{ title: 'Point', field: 'name' }]"
+            :headers="[{ title: 'Point', field: 'name', object: true }]"
             :data="points"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
-                { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                { action: 'edit', text: 'Modifier' },
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
             ]"
             route="points"
@@ -26,7 +26,7 @@ export default {
             'removeObject'
         ]),
         editPoint(point) {
-            this.$router.push(`/points/edit/${point.id}`);
+            this.$router.push(`/points/${point.id}/edit`);
         }
     },
 
@@ -37,7 +37,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss">
-    @import '../../main.scss';
-</style>

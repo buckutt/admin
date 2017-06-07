@@ -3,18 +3,18 @@
         <h5>Liste des équipements</h5>
         <b-table
             :headers="[
-                { title: 'Équipement', field: 'name' },
-                { title: 'Temps réel', field: 'realtime', type: 'checkbox'},
-                { title: 'Intervalle', field: 'refreshInterval'},
-                { title: 'Revalidation', field: 'doubleValidation', type: 'checkbox'},
-                { title: 'Alcool', field: 'alcohol', type: 'checkbox'},
-                { title: 'Catégories', field: 'showCategories', type: 'checkbox'},
-                { title: 'Images', field: 'showPicture', type: 'checkbox'}
+                { title: 'Équipement', field: 'name', object: true },
+                { title: 'Temps réel', field: 'realtime', type: 'checkbox' },
+                { title: 'Intervalle', field: 'refreshInterval' },
+                { title: 'Revalidation', field: 'doubleValidation', type: 'checkbox' },
+                { title: 'Alcool', field: 'alcohol', type: 'checkbox' },
+                { title: 'Catégories', field: 'showCategories', type: 'checkbox' },
+                { title: 'Images', field: 'showPicture', type: 'checkbox' }
             ]"
             :data="devices"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
-                { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                { action: 'edit', text: 'Modifier' },
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
             ]"
             route="devices"
@@ -34,7 +34,7 @@ export default {
             'removeObject'
         ]),
         editDevice(device) {
-            this.$router.push(`/devices/edit/${device.id}`);
+            this.$router.push(`/devices/${device.id}/edit`);
         }
     },
 
@@ -45,7 +45,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss">
-    @import '../../main.scss';
-</style>

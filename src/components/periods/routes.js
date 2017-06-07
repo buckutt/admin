@@ -1,7 +1,10 @@
-import Periods       from './Periods.vue';
-import PeriodsCreate from './PeriodsCreate.vue';
-import PeriodsList   from './PeriodsList.vue';
-import PeriodsEdit   from './PeriodsEdit.vue';
+import Periods           from './Periods.vue';
+import PeriodsCreate     from './PeriodsCreate.vue';
+import PeriodsList       from './PeriodsList.vue';
+
+import PeriodShow        from './period/PeriodShow.vue';
+import PeriodShowDetails from './period/PeriodShowDetails.vue';
+import PeriodEditObject  from './period/PeriodEditObject.vue';
 
 export default [
     {
@@ -12,5 +15,12 @@ export default [
             { path: 'create', component: PeriodsCreate }
         ]
     },
-    { path: '/periods/edit/:id', component: PeriodsEdit }
+    {
+        path     : '/periods/:id',
+        component: PeriodShow,
+        children : [
+            { path: '', component: PeriodShowDetails },
+            { path: 'edit', component: PeriodEditObject }
+        ]
+    }
 ];

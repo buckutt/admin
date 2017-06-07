@@ -1,7 +1,10 @@
-import Fundations       from './Fundations.vue';
-import FundationsCreate from './FundationsCreate.vue';
-import FundationsList   from './FundationsList.vue';
-import FundationsEdit   from './FundationsEdit.vue';
+import Fundations           from './Fundations.vue';
+import FundationsCreate     from './FundationsCreate.vue';
+import FundationsList       from './FundationsList.vue';
+
+import FundationShow        from './fundation/FundationShow.vue';
+import FundationShowDetails from './fundation/FundationShowDetails.vue';
+import FundationEditObject  from './fundation/FundationEditObject.vue';
 
 export default [
     {
@@ -12,5 +15,12 @@ export default [
             { path: 'create', component: FundationsCreate }
         ]
     },
-    { path: '/fundations/edit/:id', component: FundationsEdit }
+    {
+        path     : '/fundations/:id',
+        component: FundationShow,
+        children : [
+            { path: '', component: FundationShowDetails },
+            { path: 'edit', component: FundationEditObject }
+        ]
+    }
 ];

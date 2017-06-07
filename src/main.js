@@ -18,6 +18,7 @@ import routes from './routes';
 
 import App            from './App.vue';
 import Confirm        from './components/Confirm.vue';
+import List           from './components/List.vue';
 import Navbar         from './components/Navbar.vue';
 import PaginatedTable from './components/PaginatedTable.vue';
 
@@ -32,6 +33,7 @@ Vue.use(VueMdl);
 
 Vue.component('b-confirm', Confirm);
 Vue.component('b-datetime-picker', DateTimePicker);
+Vue.component('b-list', List);
 Vue.component('b-navbar', Navbar);
 Vue.component('b-table', PaginatedTable);
 
@@ -51,7 +53,7 @@ router.beforeEach((route, from, next) => {
             } else if (!isEventConfigured(store.state.app.currentEvent)
                 && path !== 'events'
                 && routePath[2] !== 'config') {
-                next(`/events/config/${store.state.app.currentEvent.id}`);
+                next(`/events/${store.state.app.currentEvent.id}/config`);
             } else if (route.params.id) {
                 store.dispatch('expandObject', {
                     route: path,

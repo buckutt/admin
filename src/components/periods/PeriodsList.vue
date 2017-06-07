@@ -3,7 +3,7 @@
         <h3>Listes des périodes de "{{ currentEvent.name }}"</h3>
         <b-table
             :headers="[
-                { title: 'Période', field: 'name' },
+                { title: 'Période', field: 'name', object: true },
                 { title: 'Début', field: 'start', type: 'date' },
                 { title: 'Fin', field: 'end', type: 'date'}
             ]"
@@ -30,7 +30,7 @@ export default {
             'removeObject'
         ]),
         editPeriod(period) {
-            this.$router.push(`/periods/edit/${period.id}`);
+            this.$router.push(`/periods/${period.id}/edit`);
         }
     },
 
@@ -48,7 +48,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss">
-    @import '../../main.scss';
-</style>

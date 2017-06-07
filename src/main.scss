@@ -71,11 +71,19 @@ html, body, main {
 
 .b-responsive-table {
     overflow-x: auto;
-    padding-bottom: 100px;
-    margin-bottom: -100px;
+    padding-bottom: 150px;
+    margin-bottom: -150px;
 
     > table {
         width: 100%;
+    }
+}
+
+.b-responsive-table--nofullwidth {
+    overflow-x: auto;
+
+    > table {
+        max-width: 100%;
     }
 }
 

@@ -66,8 +66,6 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../main.scss';
-
     .b-navbar {
         > .mdl-tabs {
             > .mdl-tabs__tab-bar  {

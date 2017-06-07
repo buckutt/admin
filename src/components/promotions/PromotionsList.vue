@@ -2,11 +2,11 @@
     <div>
         <h5>Liste des promotions</h5>
         <b-table
-            :headers="[{ title: 'Promotion', field: 'name' }]"
+            :headers="[{ title: 'Promotion', field: 'name', object: true }]"
             :data="promotions"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
-                { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                { action: 'edit', text: 'Modifier' },
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
             ]"
             route="promotions"
@@ -26,7 +26,7 @@ export default {
             'removeObject'
         ]),
         editPromotion(promotion) {
-            this.$router.push(`/promotions/edit/${promotion.id}`);
+            this.$router.push(`/promotions/${promotion.id}/edit`);
         }
     },
 
@@ -37,7 +37,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss">
-    @import '../../main.scss';
-</style>

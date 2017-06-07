@@ -1,9 +1,11 @@
-import Groups            from './Groups.vue';
-import GroupsCreate      from './GroupsCreate.vue';
-import GroupsList        from './GroupsList.vue';
-import GroupsEdit        from './GroupsEdit.vue';
-import GroupsEditObject  from './GroupsEditObject.vue';
-import GroupsEditMembers from './GroupsEditMembers.vue';
+import Groups           from './Groups.vue';
+import GroupsCreate     from './GroupsCreate.vue';
+import GroupsList       from './GroupsList.vue';
+
+import GroupShow        from './group/GroupShow.vue';
+import GroupShowDetails from './group/GroupShowDetails.vue';
+import GroupEditObject  from './group/GroupEditObject.vue';
+import GroupEditMembers from './group/GroupEditMembers.vue';
 
 export default [
     {
@@ -15,11 +17,12 @@ export default [
         ]
     },
     {
-        path     : '/groups/edit/:id',
-        component: GroupsEdit,
+        path     : '/groups/:id',
+        component: GroupShow,
         children : [
-            { path: '', component: GroupsEditObject },
-            { path: 'members', component: GroupsEditMembers }
+            { path: '', component: GroupShowDetails },
+            { path: 'edit', component: GroupEditObject },
+            { path: 'members', component: GroupEditMembers }
         ]
     }
 ];

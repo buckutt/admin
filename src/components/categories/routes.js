@@ -1,9 +1,11 @@
-import Categories             from './Categories.vue';
-import CategoriesCreate       from './CategoriesCreate.vue';
-import CategoriesList         from './CategoriesList.vue';
-import CategoriesEdit         from './CategoriesEdit.vue';
-import CategoriesEditObject   from './CategoriesEditObject.vue';
-import CategoriesEditArticles from './CategoriesEditArticles.vue';
+import Categories           from './Categories.vue';
+import CategoriesCreate     from './CategoriesCreate.vue';
+import CategoriesList       from './CategoriesList.vue';
+
+import CategoryShow         from './category/CategoryShow.vue';
+import CategoryShowDetails  from './category/CategoryShowDetails.vue';
+import CategoryEditObject   from './category/CategoryEditObject.vue';
+import CategoryEditArticles from './category/CategoryEditArticles.vue';
 
 export default [
     {
@@ -15,11 +17,12 @@ export default [
         ]
     },
     {
-        path     : '/categories/edit/:id',
-        component: CategoriesEdit,
+        path     : '/categories/:id',
+        component: CategoryShow,
         children : [
-            { path: '', component: CategoriesEditObject },
-            { path: 'articles', component: CategoriesEditArticles }
+            { path: '', component: CategoryShowDetails },
+            { path: 'edit', component: CategoryEditObject },
+            { path: 'articles', component: CategoryEditArticles }
         ]
     }
 ];

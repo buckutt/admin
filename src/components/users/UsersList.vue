@@ -4,7 +4,7 @@
         <mdl-textfield floating-label="Prénom" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
 
         <b-table
-            :headers="[{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' }]"
+            :headers="[{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized', object: true }]"
             :data="displayedUsers"
             :sort="{ field: 'firstname', order: 'ASC' }"
             :actions="[
@@ -36,7 +36,7 @@ export default {
             'removeObject'
         ]),
         editUser(user) {
-            this.$router.push(`/users/edit/${user.id}`);
+            this.$router.push(`/users/${user.id}/edit`);
         }
     },
 
@@ -58,7 +58,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss">
-    @import '../../main.scss';
-</style>

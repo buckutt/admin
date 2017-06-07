@@ -2,11 +2,11 @@
     <div>
         <h5>Liste des catégories</h5>
         <b-table
-            :headers="[{ title: 'Catégorie', field: 'name' }]"
+            :headers="[{ title: 'Catégorie', field: 'name', object: true }]"
             :data="categories"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
-                { action: 'edit', text: 'Modifier', raised: true, colored: true },
+                { action: 'edit', text: 'Modifier' },
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
             ]"
             route="categories"
@@ -37,7 +37,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss">
-    @import '../../main.scss';
-</style>

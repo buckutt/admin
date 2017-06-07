@@ -1,0 +1,110 @@
+<template>
+    <div>
+        <h5>Détails de la promotion</h5>
+        <b-list :elements="elements"></b-list>
+
+        <template v-if="displayedPromotion.length > 0">
+            <h5>Contenu de la promotion</h5>
+            <div class="b-responsive-table--nofullwidth">
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <tbody>
+                        <tr v-for="(step, index) in displayedPromotion">
+                            <td class="mdl-data-table__cell--non-numeric b-table__little">
+                                1 article parmi :
+                                <span class="mdl-chip b-chip--margin b-table-inter"
+                                    v-if="displayedPromotion.length > (index + 1)">
+                                    <span class="mdl-chip__text">
+                                        +
+                                    </span>
+                                </span>
+                            </td>
+                            <td class="mdl-data-table__cell--non-numeric">
+                                <template v-for="article in step.articles">
+                                    <span class="mdl-chip b-chip--margin">
+                                        <span class="mdl-chip__text">
+                                            {{ article.name }}
+                                        </span>
+                                    </span>
+                                </template>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        <template v-for="pricePerPoint in prices">
+            <h5>Prix de la promotion sur le point {{ pricePerPoint.point }}</h5>
+            <b-list :elements="pricePerPoint.prices" :columns="3"></b-list>
+        </template>
+    </div>
+</template>
+
+<script>
+import groupBy                from 'lodash.groupby';
+import { mapState }           from 'vuex';
+import { promotionDisplayer } from './promotionDisplayer';
+
+export default {
+    computed: {
+        ...mapState({
+            modObject   : state => state.app.modObject,
+            currentEvent: state => state.app.currentEvent
+        }),
+        elements() {
+            return [
+                {
+                    icon   : 'keyboard_arrow_right',
+                    title  : 'Nom',
+                    content: this.modObject.name
+                }
+            ];
+        },
+        displayedPromotion() {
+            return promotionDisplayer(this.modObject);
+        },
+        filteredPrices() {
+            return (!this.modObject) ? [] : this.modObject.prices
+                .filter(price => (price.period.Event_id === this.currentEvent.id));
+        },
+        prices() {
+            const prices        = [];
+            const groupedPrices = groupBy(this.filteredPrices, 'point.id');
+
+            Object.keys(groupedPrices).forEach((key) => {
+                const pricePerPoint = { point: groupedPrices[key][0].point.name, prices: [] };
+
+                groupedPrices[key].forEach(price => pricePerPoint.prices.push({
+                    icon : 'attach_money',
+                    type : 'price',
+                    title: (this.currentEvent.config.hasPeriods) ?
+                       `Période ${price.period.name}` :
+                       undefined,
+                    content: price.amount
+                }));
+
+                prices.push(pricePerPoint);
+            });
+
+            return prices;
+        }
+    }
+};
+</script>
+
+<style lang="scss">
+    .b-chip--margin {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .b-table__little {
+        max-width: 140px;
+    }
+
+    .b-table-inter {
+        position: relative;
+        top: 30px;
+        left: -72px;
+    }
+</style>

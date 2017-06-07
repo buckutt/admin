@@ -3,7 +3,7 @@
         <h5>Liste des événements</h5>
         <b-table
             :headers="[
-                { title: 'Évenement', field: 'name' },
+                { title: 'Évenement', field: 'name', object: true },
                 { title: 'Rechargement minimal', field: 'config.minReload', type: 'price' },
                 { title: 'Solde maximal', field: 'config.maxPerAccount', type: 'price' },
                 { title: 'Alcool maximal', field: 'config.maxAlcohol' }
@@ -11,8 +11,8 @@
             :data="events"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
-                { action: 'edit', text: 'Modifier', raised: true, colored: true },
-                { action: 'config', text: 'Configurer', raised: true, colored: true },
+                { action: 'edit', text: 'Modifier' },
+                { action: 'config', text: 'Configurer' },
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
             ]"
             route="events"
@@ -33,10 +33,10 @@ export default {
             'removeObject'
         ]),
         editEvent(event) {
-            this.$router.push(`/events/edit/${event.id}`);
+            this.$router.push(`/events/${event.id}/edit`);
         },
         configEvent(event) {
-            this.$router.push(`/events/config/${event.id}`);
+            this.$router.push(`/events/${event.id}/config`);
         }
     },
 
@@ -47,7 +47,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss">
-    @import '../../main.scss';
-</style>

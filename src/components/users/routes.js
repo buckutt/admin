@@ -1,11 +1,13 @@
 import Users           from './Users.vue';
 import UsersCreate     from './UsersCreate.vue';
 import UsersList       from './UsersList.vue';
-import UsersEdit       from './UsersEdit.vue';
-import UsersEditObject from './UsersEditObject.vue';
-import UsersEditMol    from './UsersEditMol.vue';
-import UsersEditRights from './UsersEditRights.vue';
-import UsersEditGroups from './UsersEditGroups.vue';
+
+import UserShow        from './user/UserShow.vue';
+import UserShowDetails from './user/UserShowDetails.vue';
+import UserEditObject  from './user/UserEditObject.vue';
+import UserEditMol     from './user/UserEditMol.vue';
+import UserEditRights  from './user/UserEditRights.vue';
+import UserEditGroups  from './user/UserEditGroups.vue';
 
 export default [
     {
@@ -17,13 +19,14 @@ export default [
         ]
     },
     {
-        path     : '/users/edit/:id',
-        component: UsersEdit,
+        path     : '/users/:id',
+        component: UserShow,
         children : [
-            { path: '', component: UsersEditObject },
-            { path: 'mol', component: UsersEditMol },
-            { path: 'rights', component: UsersEditRights },
-            { path: 'groups', component: UsersEditGroups }
+            { path: '', component: UserShowDetails },
+            { path: 'edit', component: UserEditObject },
+            { path: 'mol', component: UserEditMol },
+            { path: 'rights', component: UserEditRights },
+            { path: 'groups', component: UserEditGroups }
         ]
     }
 ];

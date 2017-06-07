@@ -22,9 +22,12 @@
                                             <mdl-checkbox :value="lodget(data, header.field)" disabled></mdl-checkbox>
                                         </span>
                                     </span>
+                                    <router-link v-else-if="header.object" append :to="data.id">
+                                        {{ lodget(data, header.field) }}
+                                    </router-link>
                                     <span v-else>{{ lodget(data, header.field) }}</span>
                                 </td>
-                                <td class="mdl-data-table__cell--non-numeric b-actions-cell">
+                                <td class="mdl-data-table__cell--non-numeric b-actions-cell" v-if="actions">
                                     <mdl-button :id="data.id" icon>
                                         <i class="material-icons">more_vert</i>
                                     </mdl-button>
@@ -248,8 +251,6 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '../main.scss';
-
     .b-actions-cell {
         width: 175px;
     }

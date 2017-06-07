@@ -1,10 +1,12 @@
-import Devices                from './Devices.vue';
-import DevicesCreate          from './DevicesCreate.vue';
-import DevicesList            from './DevicesList.vue';
-import DevicesEdit            from './DevicesEdit.vue';
-import DevicesEditAssign      from './DevicesEditAssign.vue';
-import DevicesEditObject      from './DevicesEditObject.vue';
-import DevicesEditSsl         from './DevicesEditSsl.vue';
+import Devices           from './Devices.vue';
+import DevicesCreate     from './DevicesCreate.vue';
+import DevicesList       from './DevicesList.vue';
+
+import DeviceShow        from './device/DeviceShow.vue';
+import DeviceShowDetails from './device/DeviceShowDetails.vue';
+import DeviceEditAssign  from './device/DeviceEditAssign.vue';
+import DeviceEditObject  from './device/DeviceEditObject.vue';
+import DeviceEditSsl     from './device/DeviceEditSsl.vue';
 
 export default [
     {
@@ -16,12 +18,13 @@ export default [
         ]
     },
     {
-        path     : '/devices/edit/:id',
-        component: DevicesEdit,
+        path     : '/devices/:id',
+        component: DeviceShow,
         children : [
-            { path: '', component: DevicesEditObject },
-            { path: 'assign', component: DevicesEditAssign },
-            { path: 'ssl', component: DevicesEditSsl }
+            { path: '', component: DeviceShowDetails },
+            { path: 'edit', component: DeviceEditObject },
+            { path: 'assign', component: DeviceEditAssign },
+            { path: 'ssl', component: DeviceEditSsl }
         ]
     }
 ];

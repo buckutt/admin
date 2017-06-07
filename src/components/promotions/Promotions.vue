@@ -10,7 +10,3 @@
         </div>
     </div>
 </template>
-
-<style lang="scss">
-    @import '../../main.scss';
-</style>
