@@ -71,6 +71,11 @@ html, body, main {
     }
 }
 
+.b--spaces {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
 .b-responsive-table {
     overflow-x: auto;
     padding-bottom: 150px;

@@ -2,7 +2,12 @@
     <div>
         <div v-if="modObject.categories.length > 0">
             <h5>Catégories du point:</h5>
-            <mdl-button v-for="category in modObject.categories" :key="category.id" @click.native="search(category)">{{ category.name }}</mdl-button>
+            <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="category in modObject.categories" :key="category.id">
+                <span class="mdl-chip__text">{{ category.name }}</span>
+                <b-confirm @confirm="removeFromPoint(modObject, category)" class="b--inline">
+                    <button class="mdl-chip__action"><i class="material-icons">cancel</i></button>
+                </b-confirm>
+            </span>
             <br />
         </div>
 
@@ -41,9 +46,6 @@ export default {
             'notify',
             'notifyError'
         ]),
-        search(category) {
-            this.categoryName = category.name;
-        },
         isInCurrentPoint(category) {
             const index = this.modObject.categories.findIndex(c => (c.id === category.id));
             return (index !== -1);
