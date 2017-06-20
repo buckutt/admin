@@ -7,8 +7,8 @@
                 </div>
                 <form @submit.prevent="log(mail, password)">
                     <div class="mdl-card__supporting-text">
-                        <mdl-textfield floating-label="Mail" v-model="mail"></mdl-textfield><br />
-                        <mdl-textfield type="password" floating-label="Mot de passe" v-model="password"></mdl-textfield>
+                        <mdl-textfield floating-label="Mail" v-model="mail" required></mdl-textfield><br />
+                        <mdl-textfield type="password" floating-label="Mot de passe" v-model="password" required></mdl-textfield>
                     </div>
                     <div class="mdl-card__actions mdl-card--border">
                         <mdl-button colored>Connexion</mdl-button>
@@ -41,10 +41,29 @@ export default {
 
     methods: {
         ...mapActions([
-            'login'
+            'login',
+            'notifyError'
         ]),
         log(mail, password) {
-            this.login({ meanOfLogin: 'etuMail', data: mail, password });
+            this.login({ meanOfLogin: 'etuMail', data: mail, password })
+                .catch((err) => {
+                    let message;
+                    switch (err.statusText) {
+                        case 'You are not administrator':
+                            message = 'Vous n\'êtes pas administrateur';
+                            break;
+                        case 'Not Found':
+                            message = 'Utilisateur introuvable';
+                            break;
+                        case 'Unauthorized':
+                            message = 'Vous n\'êtes pas autorisé à vous connecter';
+                            break;
+                        default:
+                            message = 'Erreur inconnue';
+                    }
+
+                    this.notifyError({ message, full: err });
+                });
         }
     },
 

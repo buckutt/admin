@@ -38,14 +38,15 @@ export default {
         ...mapActions([
             'createSimpleRelation',
             'removeSimpleRelation',
-            'showClientError'
+            'notify',
+            'notifyError'
         ]),
         addPointToDevice(device, devicePoint) {
             devicePoint.period = (this.currentEvent.config.hasPeriods) ?
                 devicePoint.period : this.currentEvent.defaultPeriod;
 
             if (isPointUsedByEvent(this.modObject.points, devicePoint)) {
-                return this.showClientError({
+                return this.notifyError({
                     message: 'Le point est déjà utilisé par un autre événement pendant cette période'
                 });
             }
@@ -64,9 +65,15 @@ export default {
                     field: 'Period_id',
                     value: devicePoint.period
                 }
-            });
-
-            this.devicePoint = Object.assign({}, devicePointPattern);
+            })
+                .then(() => {
+                    this.devicePoint = Object.assign({}, devicePointPattern);
+                    this.notify({ message: 'Le point a bien été lié à l\'équipement' });
+                })
+                .catch(err => this.notifyError({
+                    message: 'Le point n\'a pas pu être lié à l\'équipement',
+                    full   : err
+                }));
         },
         removePointFromCurrentDevice(point) {
             this.removePointFromDevice(this.modObject, point);
@@ -86,7 +93,12 @@ export default {
                     field: 'Period_id',
                     value: point._through.period
                 }
-            });
+            })
+                .then(this.notify({ message: 'Le point a bien été supprimé de l\'équipement' }))
+                .catch(err => this.notifyError({
+                    message: 'Le point n\'a pas pu être supprimé de l\'équipement',
+                    full   : err
+                }));
         }
     },
 

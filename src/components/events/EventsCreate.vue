@@ -14,29 +14,36 @@
 <script>
 import { mapActions } from 'vuex';
 
-const eventPattern = {
-    name  : '',
-    config: {
-        minReload    : 0,
-        maxPerAccount: 10000,
-        maxAlcohol   : 0
-    }
-};
-
 export default {
     data() {
         return {
-            newEvent: Object.assign({}, eventPattern)
+            newEvent: {
+                name  : '',
+                config: {
+                    minReload    : 0,
+                    maxPerAccount: 10000,
+                    maxAlcohol   : 0
+                }
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject'
+            'createObject',
+            'notify',
+            'notifyError'
         ]),
         createEvent(event) {
-            this.createObject({ route: 'events', value: event });
-            this.newEvent = Object.assign({}, eventPattern);
+            this.createObject({ route: 'events', value: event })
+                .then((createdEvent) => {
+                    this.notify({ message: 'L\'événement a bien été créé' });
+                    this.$router.push(`/events/${createdEvent.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création de l\'événement',
+                    full   : err
+                }));
         }
     }
 };

@@ -10,56 +10,39 @@ export function createSetWithArticles({ commit, dispatch, state }, payload) {
     const articles  = payload.articles;
     const promotion = payload.promotion;
 
-    post('sets', set).then((result) => {
-        dispatch('checkAndAddObjects', { route: 'sets', objects: [result] });
+    return post('sets', set)
+        .then((result) => {
+            dispatch('checkAndAddObjects', { route: 'sets', objects: [result] });
 
-        post(`sets/${result.id}/promotions/${promotion.id}`)
-            .catch((err) => {
-                commit('UPDATEAPIERROR', err);
+            post(`sets/${result.id}/promotions/${promotion.id}`)
+                .catch((err) => {
+                    commit('UPDATEAPIERROR', err);
+                });
+
+            articles.forEach((article) => {
+                post(`sets/${result.id}/articles/${article.id}`);
             });
 
-        articles.forEach((article) => {
-            post(`sets/${result.id}/articles/${article.id}`);
+            dispatch('updateModObject', {
+                newRelation: 'sets',
+                value      : {
+                    id  : result.id,
+                    name: set.name,
+                    articles
+                }
+            });
         });
-
-        dispatch('updateModObject', {
-            newRelation: 'sets',
-            value      : {
-                id  : result.id,
-                name: set.name,
-                articles
-            }
-        });
-
-        commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
-    })
-    .catch((err) => {
-        commit('UPDATEAPIERROR', err);
-    });
 }
 
 export function addArticleToSet({ commit, dispatch, state }, payload) {
-    dispatch('createSimpleRelation', {
-        obj1: {
-            route: 'sets',
-            value: payload.set
-        },
-        obj2: {
-            route: 'articles',
-            value: payload.article
-        }
-    });
-
     const index = state.app.modObject.sets.findIndex(s => (s.id === payload.set.id));
 
     dispatch('updateModObject', {
         newRelation: `sets[${index}].articles`,
         value      : payload.article
     });
-}
 
-export function removeArticleFromSet({ commit, dispatch, state }, payload) {
-    dispatch('removeSimpleRelation', {
+    return dispatch('createSimpleRelation', {
         obj1: {
             route: 'sets',
             value: payload.set
@@ -69,12 +52,25 @@ export function removeArticleFromSet({ commit, dispatch, state }, payload) {
             value: payload.article
         }
     });
+}
 
+export function removeArticleFromSet({ commit, dispatch, state }, payload) {
     const index = state.app.modObject.sets.findIndex(s => (s.id === payload.set.id));
 
     dispatch('removeModObjectRelation', {
         relation: `sets[${index}].articles`,
         value   : payload.article
+    });
+
+    return dispatch('removeSimpleRelation', {
+        obj1: {
+            route: 'sets',
+            value: payload.set
+        },
+        obj2: {
+            route: 'articles',
+            value: payload.article
+        }
     });
 }
 
@@ -83,7 +79,9 @@ export function removeArticleFromSet({ commit, dispatch, state }, payload) {
  */
 
 export function createUserWithMol({ commit, dispatch, state }, user) {
-    post('users', user)
+    let createdUser;
+
+    return post('users', user)
         .then((result) => {
             if (result.mail) {
                 post('meansoflogin', { type: 'etuMail', data: result.mail, User_id: result.id });
@@ -91,12 +89,12 @@ export function createUserWithMol({ commit, dispatch, state }, user) {
 
             dispatch('checkAndAddObjects', { route: 'users', objects: [result] });
 
-            commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
-
             return result;
         })
         .then((newUser) => {
-            dispatch('createSimpleRelation', {
+            createdUser = newUser;
+
+            return dispatch('createSimpleRelation', {
                 obj1: {
                     route: 'users',
                     value: newUser
@@ -112,13 +110,11 @@ export function createUserWithMol({ commit, dispatch, state }, user) {
                 }
             });
         })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
-        });
+        .then(() => createdUser);
 }
 
 export function searchUsers({ commit, dispatch }, name) {
-    get(`services/manager/searchuser?name=${name}`)
+    return get(`services/manager/searchuser?name=${name}`)
         .then((results) => {
             if (results.length > 0) {
                 const q = [];
@@ -148,9 +144,6 @@ export function searchUsers({ commit, dispatch }, name) {
                 return result;
             });
             dispatch('checkAndAddObjects', { route: 'users', objects: users });
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -186,7 +179,7 @@ export function getPurchases({ commit, dispatch }, fields) {
     const qString = q
         .join('&');
 
-    get(`services/treasury/purchases?${qString}`)
+    return get(`services/treasury/purchases?${qString}`)
         .then((purchases) => {
             commit('CLEAROBJECT', 'purchases');
             const purchasesWT = purchases.map((purchase) => {
@@ -197,9 +190,6 @@ export function getPurchases({ commit, dispatch }, fields) {
                 return purchase;
             });
             dispatch('checkAndAddObjects', { route: 'purchases', objects: purchasesWT });
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -247,7 +237,7 @@ export function getTreasury({ commit, dispatch }, fields) {
         .map(o => encodeURIComponent(o))
         .join('&q[]=');
 
-    get(`services/treasury/reloads?${qString}`)
+    return get(`services/treasury/reloads?${qString}`)
         .then((reloads) => {
             commit('CLEAROBJECT', 'reloads');
             dispatch('checkAndAddObjects', { route: 'reloads', objects: reloads });
@@ -259,9 +249,6 @@ export function getTreasury({ commit, dispatch }, fields) {
         .then((transfers) => {
             commit('CLEAROBJECT', 'transfers');
             dispatch('checkAndAddObjects', { route: 'transfers', objects: transfers.filter(t => !t.isRemoved) });
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -270,23 +257,18 @@ export function getTreasury({ commit, dispatch }, fields) {
  */
 
 export function login({ commit, dispatch }, credentials) {
-    post('services/login', credentials)
+    return post('services/login', credentials)
         .then((result) => {
-            if (isAdmin(result.user)) {
-                sessionStorage.setItem('user', JSON.stringify(result.user));
-                sessionStorage.setItem('token', result.token);
-
-                commit('UPDATELOGGEDUSER', result.user);
-                updateBearer(result.token);
-
-                dispatch('load');
-            } else {
-                commit('UPDATECLIENTERROR', {
-                    message: 'Vous n\'êtes pas administrateur.'
-                });
+            if (!isAdmin(result.user)) {
+                throw new Error({ status: 401, statusText: 'You are not administrator' });
             }
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
+
+            sessionStorage.setItem('user', JSON.stringify(result.user));
+            sessionStorage.setItem('token', result.token);
+
+            commit('UPDATELOGGEDUSER', result.user);
+            updateBearer(result.token);
+
+            dispatch('load');
         });
 }

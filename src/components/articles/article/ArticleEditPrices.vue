@@ -45,7 +45,9 @@ export default {
     methods: {
         ...mapActions([
             'removeObject',
-            'createMultipleRelation'
+            'createMultipleRelation',
+            'notify',
+            'notifyError'
         ]),
         createArticlePrice(article, price) {
             price.fundation = (this.currentEvent.config.hasFundations) ?
@@ -53,7 +55,6 @@ export default {
             price.group     = (this.currentEvent.config.hasGroups) ? price.group : this.currentEvent.defaultGroup;
             price.period    = (this.currentEvent.config.hasPeriods) ? price.period : this.currentEvent.defaultPeriod;
 
-            console.log(price);
             price.Fundation_id = price.fundation.id;
             price.Group_id     = price.group.id;
             price.Period_id    = price.period.id;
@@ -72,9 +73,15 @@ export default {
                     route : 'prices',
                     fields: price
                 }
-            });
-
-            this.newPrice = Object.assign({}, pricePattern);
+            })
+                .then(() => {
+                    this.newPrice = Object.assign({}, pricePattern);
+                    this.notify({ message: 'Le prix a bien été ajouté à l\'article' });
+                })
+                .catch(err => this.notifyError({
+                    message: 'Le prix n\'a pas pu être ajouté à l\'article',
+                    full   : err
+                }));
         }
     },
 

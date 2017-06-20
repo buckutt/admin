@@ -37,7 +37,9 @@ export default {
     methods: {
         ...mapActions([
             'createSimpleRelation',
-            'removeSimpleRelation'
+            'removeSimpleRelation',
+            'notify',
+            'notifyError'
         ]),
         search(article) {
             this.articleName = article.name;
@@ -56,7 +58,12 @@ export default {
                     route: 'articles',
                     value: article
                 }
-            });
+            })
+                .then(this.notify({ message: 'L\'article a bien été lié à la catégorie' }))
+                .catch(err => this.notifyError({
+                    message: 'L\'article n\'a pas pu être lié à la catégorie',
+                    full   : err
+                }));
         },
         removeFromCategory(category, article) {
             this.removeSimpleRelation({
@@ -68,7 +75,12 @@ export default {
                     route: 'articles',
                     value: article
                 }
-            });
+            })
+                .then(this.notify({ message: 'L\'article a bien été supprimé de la catégorie' }))
+                .catch(err => this.notifyError({
+                    message: 'L\'article n\'a pas pu être supprimé de la catégorie',
+                    full   : err
+                }));
         },
         moveFromCurrentCategory(article) {
             if (this.isInCurrentCategory(article)) {

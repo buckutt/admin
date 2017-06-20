@@ -11,24 +11,31 @@
 <script>
 import { mapActions } from 'vuex';
 
-const devicePattern = {
-    name: ''
-};
-
 export default {
     data() {
         return {
-            newDevice: Object.assign({}, devicePattern)
+            newDevice: {
+                name: ''
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject'
+            'createObject',
+            'notify',
+            'notifyError'
         ]),
         createDevice(device) {
-            this.createObject({ route: 'devices', value: device });
-            this.newDevice = Object.assign({}, devicePattern);
+            this.createObject({ route: 'devices', value: device })
+                .then((createdDevice) => {
+                    this.notify({ message: 'L\'équipement a bien été créé' });
+                    this.$router.push(`/devices/${createdDevice.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création de l\'équipement',
+                    full   : err
+                }));
         }
     }
 };

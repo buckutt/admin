@@ -11,24 +11,31 @@
 <script>
 import { mapActions } from 'vuex';
 
-const groupPattern = {
-    name: ''
-};
-
 export default {
     data() {
         return {
-            newGroup: Object.assign({}, groupPattern)
+            newGroup: {
+                name: ''
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject'
+            'createObject',
+            'notify',
+            'notifyError'
         ]),
         createGroup(group) {
-            this.createObject({ route: 'groups', value: group });
-            this.newGroup = Object.assign({}, groupPattern);
+            this.createObject({ route: 'groups', value: group })
+                .then((createdGroup) => {
+                    this.notify({ message: 'Le groupe a bien été créé' });
+                    this.$router.push(`/groups/${createdGroup.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création du groupe',
+                    full   : err
+                }));
         }
     }
 };

@@ -2,7 +2,7 @@
     <div class="b-articles-container">
         <div>
             <h5>Modifier l'article {{ modObject.name }}</h5>
-            <form @submit.prevent="updateObject({ route: 'articles', value: modObject })">
+            <form @submit.prevent="updateArticle(modObject)">
                 <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })"  required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                 <mdl-textfield floating-label="Stock" :value="modObject.stock" @input="updateModObject({ field:'stock', value: $event })"></mdl-textfield><br />
                 <mdl-textfield floating-label="Alcool" :value="modObject.alcohol" @input="updateModObject({ field:'alcohol', value: $event })"></mdl-textfield>
@@ -29,11 +29,26 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject'
+            'updateModObject',
+            'notify',
+            'notifyError'
         ]),
+        updateArticle(article) {
+            this.updateObject({ route: 'articles', value: article })
+                .then(this.notify({ message: 'L\'article a bien été modifié' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification de l\'article',
+                    full   : err
+                }));
+        },
         updateImage(image) {
             this.updateModObject({ field: 'image', value: image });
-            this.updateObject({ route: 'articles', value: this.modObject });
+            this.updateObject({ route: 'articles', value: this.modObject })
+                .then(this.notify({ message: 'L\'image de l\'article a bien été modifiée' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification de l\'image',
+                    full   : err
+                }));
         }
     },
 

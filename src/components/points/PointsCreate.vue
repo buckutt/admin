@@ -12,24 +12,31 @@
 <script>
 import { mapActions } from 'vuex';
 
-const pointPattern = {
-    name: ''
-};
-
 export default {
     data() {
         return {
-            newPoint: Object.assign({}, pointPattern)
+            newPoint: {
+                name: ''
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject'
+            'createObject',
+            'notify',
+            'notifyError'
         ]),
         createPoint(point) {
-            this.createObject({ route: 'points', value: point });
-            this.newPoint = Object.assign({}, pointPattern);
+            this.createObject({ route: 'points', value: point })
+                .then((createdPoint) => {
+                    this.notify({ message: 'Le point a bien été créé' });
+                    this.$router.push(`/points/${createdPoint.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création du point',
+                    full   : err
+                }));
         }
     }
 };

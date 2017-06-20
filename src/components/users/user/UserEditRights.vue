@@ -42,7 +42,8 @@ export default {
         ...mapActions([
             'removeObject',
             'createMultipleRelation',
-            'showClientError'
+            'notify',
+            'notifyError'
         ]),
         createUserRight(user, right) {
             right.period = (this.currentEvent.config.hasPeriods) ? right.period : this.currentEvent.defaultPeriod;
@@ -64,7 +65,12 @@ export default {
                     route : 'rights',
                     fields: right
                 }
-            });
+            })
+                .then(this.notify({ message: 'Le droit a bien été créé' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création du droit',
+                    full   : err
+                }));
 
             this.userRight = Object.assign({}, userRightPattern);
         }

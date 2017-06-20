@@ -6,7 +6,8 @@ const state = {
     currentEvent     : null,
     loggedUser       : null,
     firstLoad        : false,
-    lastValidatedStep: 0
+    lastValidatedStep: 0,
+    creationData     : {}
 };
 
 // mutations
@@ -54,6 +55,9 @@ const mutations = {
     },
     UPDATELASTVALIDATEDSTEP(state_, lastValidatedStep) {
         state_.lastValidatedStep = lastValidatedStep;
+    },
+    UPDATECREATIONDATA(state_, creationData) {
+        state_.creationData = creationData;
     }
 };
 

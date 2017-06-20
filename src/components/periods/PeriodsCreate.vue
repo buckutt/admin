@@ -36,27 +36,34 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 
-const periodPattern = {
-    name : '',
-    start: null,
-    end  : null
-};
-
 export default {
     data() {
         return {
-            newPeriod: Object.assign({}, periodPattern)
+            newPeriod: {
+                name : '',
+                start: null,
+                end  : null
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject'
+            'createObject',
+            'notify',
+            'notifyError'
         ]),
         createPeriod(period) {
             period.Event_id = this.currentEvent.id;
-            this.createObject({ route: 'periods', value: period });
-            this.newPeriod = Object.assign({}, periodPattern);
+            this.createObject({ route: 'periods', value: period })
+                .then((createdPeriod) => {
+                    this.notify({ message: 'La période a bien été créée' });
+                    this.$router.push(`/periods/${createdPeriod.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création de la période',
+                    full   : err
+                }));
         }
     },
 

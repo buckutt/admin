@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Modifier la période</h5>
-        <form @submit.prevent="updateObject({ route: 'periods', value: modObject })">
+        <form @submit.prevent="updatePeriod(modObject)">
             <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
             <b-datetime-picker
@@ -42,8 +42,18 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject'
-        ])
+            'updateModObject',
+            'notify',
+            'notifyError'
+        ]),
+        updatePeriod(period) {
+            this.updateObject({ route: 'periods', value: period })
+                .then(this.notify({ message: 'La période a bien été modifiée' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification de la période',
+                    full   : err
+                }));
+        }
     },
 
     computed: {

@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Modifier le point {{ modObject.name }}:</h5>
-        <form @submit.prevent="updateObject({ route: 'points', value: modObject })">
+        <form @submit.prevent="updatePoint(modObject)">
             <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
             <mdl-button colored raised>Modifier</mdl-button>
         </form>
@@ -15,14 +15,24 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject'
+            'updateModObject',
+            'notify',
+            'notifyError'
         ])
     },
 
     computed: {
         ...mapState({
             modObject: state => state.app.modObject
-        })
+        }),
+        updatePoint(point) {
+            this.updateObject({ route: 'points', value: point })
+                .then(this.notify({ message: 'Le point a bien été modifié' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification du point',
+                    full   : err
+                }));
+        }
     }
 };
 </script>

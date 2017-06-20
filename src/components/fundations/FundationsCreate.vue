@@ -12,24 +12,31 @@
 <script>
 import { mapActions } from 'vuex';
 
-const fundationPattern = {
-    name: ''
-};
-
 export default {
     data() {
         return {
-            newFundation: Object.assign({}, fundationPattern)
+            newFundation: {
+                name: ''
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject'
+            'createObject',
+            'notify',
+            'notifyError'
         ]),
         createFundation(fundation) {
-            this.createObject({ route: 'fundations', value: fundation });
-            this.newFundation = Object.assign({}, fundationPattern);
+            this.createObject({ route: 'fundations', value: fundation })
+                .then((createdFundation) => {
+                    this.notify({ message: 'La fondation a bien été créée' });
+                    this.$router.push(`/fundations/${createdFundation.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création de la fondation',
+                    full   : err
+                }));
         }
     }
 };

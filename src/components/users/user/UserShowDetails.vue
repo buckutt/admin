@@ -1,6 +1,9 @@
 <template>
     <div>
         <h5>Détails de l'utilisateur</h5>
+        <p v-if="creationData.pin">Le code PIN de l'utilisateur est <strong>{{ creationData.pin }}</strong></p>
+        <p v-if="creationData.password">Le mot de passe de l'utilisateur est <strong>{{ creationData.password }}</strong></p>
+
         <b-list :elements="elements" :columns="2"></b-list>
 
         <template v-for="rightPerPoint in rights">
@@ -17,15 +20,22 @@
 </template>
 
 <script>
-import groupBy           from 'lodash.groupby';
-import { mapState }      from 'vuex';
-import { isUserInGroup } from './isUserInGroup';
+import groupBy                  from 'lodash.groupby';
+import { mapActions, mapState } from 'vuex';
+import { isUserInGroup }        from './isUserInGroup';
 
 export default {
+    methods: {
+        ...mapActions([
+            'updateCreationData'
+        ])
+    },
+
     computed: {
         ...mapState({
             modObject   : state => state.app.modObject,
-            currentEvent: state => state.app.currentEvent
+            currentEvent: state => state.app.currentEvent,
+            creationData: state => state.app.creationData
         }),
         elements() {
             const baseElements = [
@@ -107,6 +117,10 @@ export default {
                     content: group.name
                 }));
         }
+    },
+
+    beforeDestroy() {
+        this.updateCreationData({});
     }
 };
 </script>

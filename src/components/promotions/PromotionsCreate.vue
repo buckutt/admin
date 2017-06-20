@@ -11,24 +11,31 @@
 <script>
 import { mapActions } from 'vuex';
 
-const promotionPattern = {
-    name: ''
-};
-
 export default {
     data() {
         return {
-            newPromotion: Object.assign({}, promotionPattern)
+            newPromotion: {
+                name: ''
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject'
+            'createObject',
+            'notify',
+            'notifyError'
         ]),
         createPromotion(promotion) {
-            this.createObject({ route: 'promotions', value: promotion });
-            this.newPromotion = Object.assign({}, promotionPattern);
+            this.createObject({ route: 'promotions', value: promotion })
+                .then((createdPromotion) => {
+                    this.notify({ message: 'La promotion a bien été créé' });
+                    this.$router.push(`/promotions/${createdPromotion.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création de la promotion',
+                    full   : err
+                }));
         }
     }
 };

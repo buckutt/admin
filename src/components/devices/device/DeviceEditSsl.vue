@@ -22,16 +22,19 @@ export default {
 
     methods: {
         ...mapActions([
-            'showClientError'
+            'notify',
+            'notifyError'
         ]),
         generateCert(device, password) {
             download(`services/certificate?deviceId=${device.id}&password=${password}`)
                 .then((result) => {
+                    this.notify({ message: 'Le téléchargement du certificat va démarrer...' });
                     saveAs(result, `${device.name}.p12`);
                 })
-                .catch(() => {
-                    this.showClientError({ message: 'Le téléchargement du certificat a échoué' });
-                });
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la génération du certificat',
+                    full   : err
+                }));
         }
     },
 

@@ -13,7 +13,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="data in displayedData">
+                            <tr v-for="(data, index) in displayedData">
                                 <td v-for="header in headers" class="mdl-data-table__cell--non-numeric" :class="header.class">
                                     <span v-if="header.type">
                                         <span v-if="header.type === 'price'">{{ lodget(data, header.field) | price(true) }}</span>
@@ -28,10 +28,10 @@
                                     <span v-else>{{ lodget(data, header.field) }}</span>
                                 </td>
                                 <td class="mdl-data-table__cell--non-numeric b-actions-cell" v-if="actions">
-                                    <mdl-button :id="data.id" icon>
+                                    <mdl-button :id="`b-table-${index}`" icon>
                                         <i class="material-icons">more_vert</i>
                                     </mdl-button>
-                                    <mdl-menu :for="data.id">
+                                    <mdl-menu :for="`b-table-${index}`">
                                         <template v-for="action in actions">
                                             <template v-if="action.type">
                                                 <b-confirm

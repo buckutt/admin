@@ -1,16 +1,12 @@
 const state = {
-    apiError   : null,
-    clientError: null,
-    notify     : null
+    error : null,
+    notify: null
 };
 
 // mutations
 const mutations = {
-    UPDATEAPIERROR(state_, apiError) {
-        state_.apiError = apiError;
-    },
-    UPDATECLIENTERROR(state_, clientError) {
-        state_.clientError = clientError;
+    UPDATEERROR(state_, error) {
+        state_.error = error;
     },
     UPDATENOTIFY(state_, notify) {
         state_.notify = notify;

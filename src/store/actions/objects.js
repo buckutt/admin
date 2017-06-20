@@ -19,8 +19,8 @@ export function expandObject({ commit, dispatch, state }, object) {
         embed = `?embed=${encodeURIComponent(JSON.stringify(config.relations[object.route]))}`;
     }
 
-    return new Promise((resolve, reject) => {
-        get(`${object.route}/${object.value.id}${embed}`).then((result) => {
+    return get(`${object.route}/${object.value.id}${embed}`)
+        .then((result) => {
             if (config.relations[object.route]) {
                 Object.keys(config.relations[object.route]).forEach((key) => {
                     if (Array.isArray(result[key])) {
@@ -41,13 +41,8 @@ export function expandObject({ commit, dispatch, state }, object) {
             }
             commit('UPDATEMODOBJECT', result);
 
-            resolve(result);
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
-            reject(err);
+            return result;
         });
-    });
 }
 
 export function checkAndAddObjects({ commit, state }, data) {
@@ -84,90 +79,67 @@ export function checkAndDeleteObject({ commit, dispatch, state }, data) {
 }
 
 export function fetchObjects({ commit, dispatch }, route) {
-    get(route.toLowerCase()).then((results) => {
-        dispatch('checkAndAddObjects', { route, objects: results });
-    })
-    .catch((err) => {
-        commit('UPDATEAPIERROR', err);
-    });
+    return get(route.toLowerCase())
+        .then((results) => {
+            dispatch('checkAndAddObjects', { route, objects: results });
+        });
 }
 
 export function createObject({ commit, dispatch, state }, object) {
-    return new Promise((resolve, reject) => {
-        post(object.route.toLowerCase(), object.value).then((result) => {
-            if (state.objects[object.route]) {
-                dispatch('checkAndAddObjects', { route: object.route, objects: [result] });
-            }
+    return post(object.route.toLowerCase(), object.value).then((result) => {
+        if (state.objects[object.route]) {
+            dispatch('checkAndAddObjects', { route: object.route, objects: [result] });
+        }
 
-            if (state.app.modObject) {
-                if (state.app.modObject[object.route]) {
-                    dispatch('updateModObject', {
-                        newRelation: object.route,
-                        value      : result
-                    });
-                }
+        if (state.app.modObject) {
+            if (state.app.modObject[object.route]) {
+                dispatch('updateModObject', {
+                    newRelation: object.route,
+                    value      : result
+                });
             }
+        }
 
-            commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
-            resolve(result);
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
-            reject(err);
-        });
+        return result;
     });
 }
 
 export function updateObject({ commit, dispatch, state }, object) {
-    return new Promise((resolve, reject) => {
-        put(`${object.route.toLowerCase()}/${object.value.id}`, object.value).then((result) => {
-            if (result.isRemoved) {
-                dispatch('checkAndDeleteObject', { route: object.route, object: result });
-            } else {
-                dispatch('checkAndUpdateObject', { route: object.route, object: result });
+    return put(`${object.route.toLowerCase()}/${object.value.id}`, object.value).then((result) => {
+        if (result.isRemoved) {
+            dispatch('checkAndDeleteObject', { route: object.route, object: result });
+        } else {
+            dispatch('checkAndUpdateObject', { route: object.route, object: result });
+        }
+
+
+        if (state.app.modObject) {
+            if (state.app.modObject[object.route]) {
+                dispatch('updateModObject', {
+                    relation: object.route,
+                    value   : result
+                });
             }
+        }
 
-
-            if (state.app.modObject) {
-                if (state.app.modObject[object.route]) {
-                    dispatch('updateModObject', {
-                        relation: object.route,
-                        value   : result
-                    });
-                }
-            }
-
-            commit('UPDATENOTIFY', { message: 'L\'objet a bien été modifié.' });
-            resolve(result);
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
-            reject(err);
-        });
+        return result;
     });
 }
 
 export function removeObject({ commit, dispatch, state }, object) {
-    return new Promise((resolve, reject) => {
-        put(`${object.route.toLowerCase()}/${object.value.id}`, { isRemoved: true }).then((result) => {
-            dispatch('checkAndDeleteObject', { route: object.route, object: result });
+    return put(`${object.route.toLowerCase()}/${object.value.id}`, { isRemoved: true }).then((result) => {
+        dispatch('checkAndDeleteObject', { route: object.route, object: result });
 
-            if (state.app.modObject) {
-                if (state.app.modObject[object.route]) {
-                    dispatch('removeModObjectRelation', {
-                        relation: object.route,
-                        value   : object.value
-                    });
-                }
+        if (state.app.modObject) {
+            if (state.app.modObject[object.route]) {
+                dispatch('removeModObjectRelation', {
+                    relation: object.route,
+                    value   : object.value
+                });
             }
+        }
 
-            commit('UPDATENOTIFY', { message: 'L\'objet a bien été supprimé.' });
-            resolve(result);
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
-            reject(err);
-        });
+        return result;
     });
 }
 
@@ -177,42 +149,40 @@ export function createSimpleRelation({ commit, dispatch, state }, relation) {
         body[relation.through.field] = relation.through.value.id;
     }
 
-    post(`${relation.obj1.route}/${relation.obj1.value.id}/${relation.obj2.route}/${relation.obj2.value.id}`, body)
+    const obj1 = relation.obj1;
+    const obj2 = relation.obj2;
+
+    return post(`${obj1.route}/${obj1.value.id}/${obj2.route}/${obj2.value.id}`, body)
         .then(() => {
             if (state.app.modObject) {
-                if (relation.obj1.value.id === state.app.modObject.id) {
-                    const obj2 = cloneDeep(relation.obj2.value);
+                if (obj1.value.id === state.app.modObject.id) {
+                    const obj2Clone = cloneDeep(obj2.value);
                     if (relation.through) {
-                        obj2._through                         = {};
-                        obj2._through[relation.through.field] = relation.through.value.id;
-                        obj2._through[relation.through.obj]   = relation.through.value;
+                        obj2Clone._through                         = {};
+                        obj2Clone._through[relation.through.field] = relation.through.value.id;
+                        obj2Clone._through[relation.through.obj]   = relation.through.value;
                     }
 
                     dispatch('updateModObject', {
-                        newRelation: relation.obj2.route,
-                        value      : obj2
+                        newRelation: obj2.route,
+                        value      : obj2Clone
                     });
                 }
 
-                if (relation.obj2.value.id === state.app.modObject.id) {
-                    const obj1 = cloneDeep(relation.obj1.value);
+                if (obj2.value.id === state.app.modObject.id) {
+                    const obj1Clone = cloneDeep(obj1.value);
                     if (relation.through) {
-                        obj1._through                         = {};
-                        obj1._through[relation.through.field] = relation.through.value.id;
-                        obj1._through[relation.through.obj]   = relation.through.value;
+                        obj1Clone._through                         = {};
+                        obj1Clone._through[relation.through.field] = relation.through.value.id;
+                        obj1Clone._through[relation.through.obj]   = relation.through.value;
                     }
 
                     dispatch('updateModObject', {
-                        newRelation: relation.obj1.route,
-                        value      : obj1
+                        newRelation: obj1.route,
+                        value      : obj1Clone
                     });
                 }
             }
-
-            commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -224,28 +194,26 @@ export function removeSimpleRelation({ commit, dispatch, state }, relation) {
         filter                             = `?filter=${encodeURIComponent(JSON.stringify(jsonFilter))}`;
     }
 
-    del(`${relation.obj1.route}/${relation.obj1.value.id}/${relation.obj2.route}/${relation.obj2.value.id}${filter}`)
+    const obj1 = relation.obj1;
+    const obj2 = relation.obj2;
+
+    return del(`${obj1.route}/${obj1.value.id}/${obj2.route}/${obj2.value.id}${filter}`)
         .then(() => {
-            if (relation.obj1.value.id === state.app.modObject.id) {
+            if (obj1.value.id === state.app.modObject.id) {
                 dispatch('removeModObjectRelation', {
-                    relation: relation.obj2.route,
-                    value   : relation.obj2.value,
+                    relation: obj2.route,
+                    value   : obj2.value,
                     through : relation.through
                 });
             }
 
-            if (relation.obj2.value.id === state.app.modObject.id) {
+            if (obj2.value.id === state.app.modObject.id) {
                 dispatch('removeModObjectRelation', {
-                    relation: relation.obj1.route,
-                    value   : relation.obj1.value,
+                    relation: obj1.route,
+                    value   : obj1.value,
                     through : relation.through
                 });
             }
-
-            commit('UPDATENOTIFY', { message: 'L\'objet a bien été supprimé.' });
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
         });
 }
 
@@ -256,7 +224,8 @@ export function createMultipleRelation({ commit, dispatch, state }, relation) {
     }
 
     let firstObject  = {};
-    post(`${relation.relation.route.toLowerCase()}${embed}`, relation.relation.fields)
+
+    return post(`${relation.relation.route.toLowerCase()}${embed}`, relation.relation.fields)
         .then((result) => {
             firstObject = result;
             return post(`${relation.obj.route}/${relation.obj.value.id}/${relation.relation.route}/${result.id}`);
@@ -277,10 +246,5 @@ export function createMultipleRelation({ commit, dispatch, state }, relation) {
                     });
                 }
             }
-
-            commit('UPDATENOTIFY', { message: 'L\'objet a bien été créé.' });
-        })
-        .catch((err) => {
-            commit('UPDATEAPIERROR', err);
         });
 }

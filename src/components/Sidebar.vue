@@ -130,7 +130,7 @@ export default {
                     if (this.isConfigured) {
                         this.$router.push('/stats');
                     } else {
-                        this.$router.push(`/events/config/${event.id}`);
+                        this.$router.push(`/events/${event.id}/config`);
                     }
                 });
         }

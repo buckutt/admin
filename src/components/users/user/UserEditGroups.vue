@@ -38,7 +38,8 @@ export default {
         ...mapActions([
             'createSimpleRelation',
             'removeSimpleRelation',
-            'showClientError'
+            'notify',
+            'notifyError'
         ]),
         addGroupToUser(user, groupUser) {
             groupUser.period = (this.currentEvent.config.hasPeriods) ?
@@ -49,7 +50,7 @@ export default {
             ));
 
             if (index > -1) {
-                return this.showClientError({ message: 'L\'utilisateur est déjà membre du groupe sur cette période.' });
+                return this.notifyError({ message: 'L\'utilisateur est déjà membre du groupe sur cette période.' });
             }
 
             this.createSimpleRelation({
@@ -66,7 +67,12 @@ export default {
                     field: 'Period_id',
                     value: groupUser.period
                 }
-            });
+            })
+                .then(this.notify({ message: 'L\'utilisateur a bien été ajouté au groupe' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
+                    full   : err
+                }));
 
             this.groupUser = Object.assign({}, groupUserPattern);
         },
@@ -88,7 +94,12 @@ export default {
                     field: 'Period_id',
                     value: group._through.period
                 }
-            });
+            })
+                .then(this.notify({ message: 'L\'utilisateur a bien été supprimé du groupe' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
+                    full   : err
+                }));
         }
     },
 

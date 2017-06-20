@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Modifier l'équipement {{ modObject.name }}</h5>
-        <form @submit.prevent="updateObject({ route: 'devices', value: modObject })">
+        <form @submit.prevent="updateDevice(modObject)">
             <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <mdl-textfield floating-label="Intervalle de rafraichissement" :value="modObject.refreshInterval" @input="updateModObject({ field:'refreshInterval', value: $event })"></mdl-textfield>
             <mdl-switch :value="modObject.realtime" @input="updateModObject({ field:'realtime', value: $event })" class="mdl-js-ripple-effect">Temps réel</mdl-switch><br />
@@ -22,8 +22,18 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject'
-        ])
+            'updateModObject',
+            'notify',
+            'notifyError'
+        ]),
+        updateDevice(device) {
+            this.updateObject({ route: 'devices', value: device })
+                .then(this.notify({ message: 'L\'équipement a bien été modifié' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification de l\'équipement',
+                    full   : err
+                }));
+        }
     },
 
     computed: {

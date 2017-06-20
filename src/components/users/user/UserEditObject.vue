@@ -46,7 +46,9 @@ export default {
             'updateObject',
             'createSimpleRelation',
             'removeSimpleRelation',
-            'updateModObject'
+            'updateModObject',
+            'notify',
+            'notifyError'
         ]),
         regenPin(user) {
             const randTen = () => Math.floor(Math.random() * 10);
@@ -100,7 +102,12 @@ export default {
             this.updateObject({
                 route: 'users',
                 value: user
-            });
+            })
+                .then(this.notify({ message: 'L\'utilisateur a bien été modifié' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
+                    full   : err
+                }));
         },
         isUserInGroup(user, group, period) {
             return isUserInGroup(user, group, period);
@@ -120,7 +127,12 @@ export default {
                     field: 'Period_id',
                     value: period
                 }
-            });
+            })
+                .then(this.notify({ message: 'L\'utilisateur a bien été autorisé' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
+                    full   : err
+                }));
         },
         removeUserFromGroup(user, group, period) {
             this.removeSimpleRelation({
@@ -137,7 +149,12 @@ export default {
                     field: 'Period_id',
                     value: period
                 }
-            });
+            })
+                .then(this.notify({ message: 'L\'utilisateur a bien été interdit' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
+                    full   : err
+                }));
         }
     },
 

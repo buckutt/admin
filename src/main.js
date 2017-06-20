@@ -51,8 +51,7 @@ router.beforeEach((route, from, next) => {
                 store.dispatch('clearModObject');
                 next('/');
             } else if (!isEventConfigured(store.state.app.currentEvent)
-                && path !== 'events'
-                && routePath[2] !== 'config') {
+                && path !== 'events' && path !== 'logout' && path !== 'treasury' && path !== '') {
                 next(`/events/${store.state.app.currentEvent.id}/config`);
             } else if (route.params.id) {
                 store.dispatch('expandObject', {
@@ -66,9 +65,10 @@ router.beforeEach((route, from, next) => {
                 next();
             }
         })
-        .catch(() => {
-            store.dispatch('showClientError', {
-                message: 'Impossible de récupérer l\'événement, veuillez actualiser la page'
+        .catch((err) => {
+            store.dispatch('notifyError', {
+                message: 'Impossible de récupérer l\'événement, veuillez actualiser la page',
+                full   : err
             });
         });
 });
@@ -90,14 +90,13 @@ sync(store, router);
 
 store.subscribe((mutation) => {
     switch (mutation.type) {
-        case 'UPDATEAPIERROR':
+        case 'UPDATEERROR':
+            if (mutation.payload.full) {
+                console.error(mutation.payload.full);
+            }
+
             vueApp.$root.$emit('snackfilter', {
-                message: `[API] ${mutation.payload.statusText}`
-            });
-            break;
-        case 'UPDATECLIENTERROR':
-            vueApp.$root.$emit('snackfilter', {
-                message: `[CLIENT] ${mutation.payload.message}`
+                message: `${mutation.payload.message}`
             });
             break;
         case 'UPDATENOTIFY':

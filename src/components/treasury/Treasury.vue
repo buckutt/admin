@@ -123,7 +123,8 @@ export default {
     methods: {
         ...mapActions([
             'getTreasury',
-            'showClientError'
+            'notify',
+            'notifyError'
         ]),
         filter() {
             const inputFields = JSON.parse(JSON.stringify(this.fields));
@@ -138,12 +139,15 @@ export default {
             if (!isFilled
                 || (inputFields.dateIn && !inputFields.dateOut)
                 || (!inputFields.dateIn && inputFields.dateOut)) {
-                return this.showClientError({ message: 'You need at least one filter.' });
+                return this.notifyError({ message: 'Vous devez choisir au moins un filtre' });
             }
 
-            this.fields = Object.assign({}, fieldsPattern);
-
-            this.getTreasury(inputFields);
+            this.getTreasury(inputFields)
+                .then(this.notify({ message: 'Le calcul a été effectué avec succès' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors du calcul de la trésorerie',
+                    full   : err
+                }));
         },
         slugToName(slug) {
             const index = this.meansofpayment.findIndex(mop => (mop.slug === slug));

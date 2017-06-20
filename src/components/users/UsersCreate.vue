@@ -1,12 +1,6 @@
 <template>
     <div>
         <h5>Créer un utilisateur</h5>
-        <transition name="fade">
-            <p v-show="newPin">Le code PIN de l'utilisateur est <strong>{{ newPin }}</strong></p>
-        </transition>
-        <transition name="fade">
-            <p v-show="newPassword">Le mot de passe de l'utilisateur est <strong>{{ newPassword }}</strong></p>
-        </transition>
         <form @submit.prevent="createUser(newUser)">
             <mdl-textfield floating-label="Nom" v-model="newUser.lastname" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <mdl-textfield floating-label="Prénom" v-model="newUser.firstname" required="required" error="Le prénom doit contenir au moins un caractère"></mdl-textfield><br />
@@ -22,38 +16,48 @@ import bcrypt         from 'bcryptjs';
 import { mapActions } from 'vuex';
 import { randString } from '../../lib/randString';
 
-const userPattern = {
-    firstname: '',
-    lastname : '',
-    nickname : '',
-    mail     : '',
-    credit   : 0
-};
-
 export default {
     data() {
         return {
-            newUser    : Object.assign({}, userPattern),
-            newPin     : '',
-            newPassword: ''
+            newUser: {
+                firstname: '',
+                lastname : '',
+                nickname : '',
+                mail     : '',
+                credit   : 0
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createUserWithMol'
+            'createUserWithMol',
+            'updateCreationData',
+            'notify',
+            'notifyError'
         ]),
         createUser(user) {
-            const randTen    = () => Math.floor(Math.random() * 10);
-            this.newPin      = `${randTen()}${randTen()}${randTen()}${randTen()}`;
-            this.newPassword = randString(8);
+            const randTen     = () => Math.floor(Math.random() * 10);
+            const newPin      = `${randTen()}${randTen()}${randTen()}${randTen()}`;
+            const newPassword = randString(8);
 
-            user.pin      = bcrypt.hashSync(this.newPin, 10);
-            user.password = bcrypt.hashSync(this.newPassword);
+            user.pin      = bcrypt.hashSync(newPin, 10);
+            user.password = bcrypt.hashSync(newPassword);
 
-            this.createUserWithMol(user);
+            this.updateCreationData({
+                pin     : newPin,
+                password: newPassword
+            });
 
-            this.newUser = Object.assign({}, userPattern);
+            this.createUserWithMol(user)
+                .then((createdUser) => {
+                    this.notify({ message: 'L\'utilisateur a bien été créé' });
+                    this.$router.push(`/users/${createdUser.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création de l\'utilisateur',
+                    full   : err
+                }));
         }
     }
 };

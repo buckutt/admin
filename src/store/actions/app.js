@@ -75,16 +75,12 @@ export function unselectCurrentEvent({ commit }) {
     commit('UPDATECURRENTEVENT', null);
 }
 
-export function updateLogged({ commit }, logged) {
-    commit('UPDATELOGGED', logged);
-}
-
 export function updateLoggedUser({ commit }, loggedUser) {
     commit('UPDATELOGGEDUSER', loggedUser);
 }
 
-export function updateEditModal({ commit }, openEditModal) {
-    commit('UPDATEEDITMODAL', openEditModal);
+export function updateCreationData({ commit }, creationData) {
+    commit('UPDATECREATIONDATA', creationData);
 }
 
 export function load({ dispatch }) {

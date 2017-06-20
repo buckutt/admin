@@ -44,7 +44,9 @@ export default {
     methods: {
         ...mapActions([
             'removeObject',
-            'createMultipleRelation'
+            'createMultipleRelation',
+            'notify',
+            'notifyError'
         ]),
         createPromotionPrice(promotion, price) {
             price.fundation = (this.currentEvent.config.hasFundations) ?
@@ -70,9 +72,15 @@ export default {
                     route : 'prices',
                     fields: price
                 }
-            });
-
-            this.newPrice = Object.assign({}, pricePattern);
+            })
+                .then(() => {
+                    this.newPrice = Object.assign({}, pricePattern);
+                    this.notify({ message: 'Le prix a bien été ajouté à la promotion' });
+                })
+                .catch(err => this.notifyError({
+                    message: 'Le prix n\'a pas pu être ajouté à la promotion',
+                    full   : err
+                }));
         }
     },
 

@@ -30,7 +30,9 @@ export default {
             'createObject',
             'updateObject',
             'updateModObject',
-            'updateLastValidatedStep'
+            'updateLastValidatedStep',
+            'notify',
+            'notifyError'
         ]),
         updateEvent(event) {
             if (event.config.hasGroups === null) {
@@ -43,10 +45,24 @@ export default {
                         event.DefaultGroup_id = group.id;
                         return this.updateObject({ route: 'events', value: event });
                     })
-                    .then(() => this.$router.push(`/events/${event.id}/config/fundations`));
+                    .then(() => {
+                        this.$router.push(`/events/${event.id}/config/fundations`);
+                        this.notify({ message: 'La configuration a bien été sauvegardée' });
+                    })
+                    .catch(err => this.notifyError({
+                        message: 'Une erreur a eu lieu lors de la sauvegarde de la configuration',
+                        full   : err
+                    }));
             } else {
                 this.updateObject({ route: 'events', value: event })
-                    .then(() => this.$router.push(`/events/${event.id}/config/fundations`));
+                    .then(() => {
+                        this.$router.push(`/events/${event.id}/config/fundations`);
+                        this.notify({ message: 'La configuration a bien été sauvegardée' });
+                    })
+                    .catch(err => this.notifyError({
+                        message: 'Une erreur a eu lieu lors de la sauvegarde de la configuration',
+                        full   : err
+                    }));
             }
         }
     },

@@ -12,24 +12,31 @@
 <script>
 import { mapActions } from 'vuex';
 
-const categoryPattern = {
-    name: ''
-};
-
 export default {
     data() {
         return {
-            newCategory: Object.assign({}, categoryPattern)
+            newCategory: {
+                name: ''
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject'
+            'createObject',
+            'notify',
+            'notifyError'
         ]),
         createCategory(category) {
-            this.createObject({ route: 'categories', value: category });
-            this.newCategory = Object.assign({}, categoryPattern);
+            this.createObject({ route: 'categories', value: category })
+                .then((createdCategory) => {
+                    this.notify({ message: 'La catégorie a bien été créé' });
+                    this.$router.push(`/categories/${createdCategory.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création de la catégorie',
+                    full   : err
+                }));
         }
     }
 };

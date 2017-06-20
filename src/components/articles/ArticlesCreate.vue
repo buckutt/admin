@@ -11,27 +11,34 @@
 <script>
 import { mapActions } from 'vuex';
 
-const articlePattern = {
-    name   : '',
-    stock  : 0,
-    vat    : 0,
-    alcohol: 0
-};
-
 export default {
     data() {
         return {
-            newArticle: Object.assign({}, articlePattern)
+            newArticle: {
+                name   : '',
+                stock  : 0,
+                vat    : 0,
+                alcohol: 0
+            }
         };
     },
 
     methods: {
         ...mapActions([
-            'createObject'
+            'createObject',
+            'notify',
+            'notifyError'
         ]),
         createArticle(article) {
-            this.createObject({ route: 'articles', value: article });
-            this.newArticle = Object.assign({}, articlePattern);
+            this.createObject({ route: 'articles', value: article })
+                .then((createdArticle) => {
+                    this.notify({ message: 'L\'article a bien été créé' });
+                    this.$router.push(`/articles/${createdArticle.id}`);
+                })
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la création de l\'article',
+                    full   : err
+                }));
         }
     }
 };
