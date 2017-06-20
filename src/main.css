@@ -50,9 +50,10 @@ html, body, main {
 .b-page {
     & > div {
         min-height: calc(100% - 40px);
-        margin: 20px;
-        margin-top: calc((100% - var(--cardSize)) / 2);
-        margin-bottom: calc((100% - var(--cardSize)) / 2);
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-right: calc((100% - var(--cardSize)) / 2);
+        margin-left: calc((100% - var(--cardSize)) / 2);
         padding: 20px;
         width: var(--cardSize);
 
