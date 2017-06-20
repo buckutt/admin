@@ -1,7 +1,9 @@
-$select-color: #222;
-$select-background: #e1e1e1;
-$select-width: 220px;
-$select-height: 40px;
+:root {
+    --select-color: #222;
+    --select-background: #e1e1e1;
+    --select-width: 220px;
+    --select-height: 40px;
+}
 
 .select-hidden {
     display: none;
@@ -10,18 +12,18 @@ $select-height: 40px;
 }
 
 .select {
-    color: $select-color;
+    color: var(--select-color);
     cursor: pointer;
     display: inline-block;
     font-size: 16px;
     margin: 5px 0;
-    min-height: $select-height;
+    min-height: var(--select-height);
     position: relative;
-    width: $select-width;
+    width: var(--select-width);
 }
 
 .select-styled {
-    background-color: $select-background;
+    background-color: var(--select-background);
     bottom: 0;
     left: 0;
     padding: 8px 15px;
@@ -33,7 +35,7 @@ $select-height: 40px;
     &:after {
         content:"";
         border: 7px solid transparent;
-        border-color: $select-color transparent transparent transparent;
+        border-color: var(--select-color) transparent transparent transparent;
         height: 0;
         position: absolute;
         right: 10px;
@@ -42,15 +44,15 @@ $select-height: 40px;
     }
 
     &:hover {
-        background-color: darken($select-background, 2);
+        background-color: darken(var(--select-background), 2);
     }
 
     &:active, &.active {
-        background-color: darken($select-background, 5);
+        background-color: darken(var(--select-background), 5);
 
         &:after {
             top: 9px;
-            border-color: transparent transparent $select-color transparent;
+            border-color: transparent transparent var(--select-color) transparent;
         }
     }
 }
@@ -65,18 +67,18 @@ $select-height: 40px;
     margin: 0;
     padding: 0;
     list-style: none;
-    background-color: darken($select-background, 5);
+    background-color: darken(var(--select-background), 5);
 
     li {
         margin: 0;
         padding: 12px 0;
         text-indent: 15px;
-        border-top: 1px solid darken($select-background, 10);
+        border-top: 1px solid darken(var(--select-background), 10);
         transition: color 0.15s ease-out, background-color 0.15s ease-out;
 
         &:hover {
-            color: $select-background;
-            background: $select-color;
+            color: var(--select-background);
+            background: var(--select-color);
         }
 
         &[rel="hide"] {

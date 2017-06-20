@@ -59,8 +59,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
-    @import '../../variables.scss';
+<style>
+    @import '../../variables.css';
 
     .b-container {
         &.b-container__display {
@@ -68,17 +68,17 @@ export default {
             width: 100% !important;
         }
 
-        .mdl-snackbar {
-            margin-left: $sidebarWidth / 2;
+        & .mdl-snackbar {
+            margin-left: calc(var(--sidebarWidth) / 2);
         }
     }
 
     .b-container__login {
-        > div {
+        & > div {
             width: 500px;
             margin: 50px auto;
 
-            .mdl-textfield {
+            & .mdl-textfield {
                 width: 100%;
             }
         }

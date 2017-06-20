@@ -1,8 +1,8 @@
-@import './variables.scss';
-@import './mixins.scss';
-@import './spinner.scss';
-@import './styles/select.scss';
-@import './styles/modal.scss';
+@import './variables.css';
+@import './mixins.css';
+@import './spinner.css';
+@import './styles/select.css';
+@import './styles/modal.css';
 
 * {
     box-sizing: border-box;
@@ -48,22 +48,24 @@ html, body, main {
 .anytime-picker__dates > * { box-sizing: border-box; width: 14.28%; display: inline-block; }
 
 .b-page {
-    > div {
+    & > div {
         min-height: calc(100% - 40px);
-        margin: 20px ((100% - $cardSize) / 2);
+        margin: 20px;
+        margin-top: calc((100% - var(--cardSize)) / 2);
+        margin-bottom: calc((100% - var(--cardSize)) / 2);
         padding: 20px;
-        width: $cardSize;
+        width: var(--cardSize);
 
-        > h3 {
+        & > h3 {
             margin: 0;
         }
 
-        > select {
+        & > select {
             display: inline-block;
             max-width: 150px;
         }
 
-        button {
+        & button {
             max-width: 300px;
         }
     }
@@ -74,7 +76,7 @@ html, body, main {
     padding-bottom: 150px;
     margin-bottom: -150px;
 
-    > table {
+    & > table {
         width: 100%;
     }
 }
@@ -82,7 +84,7 @@ html, body, main {
 .b-responsive-table--nofullwidth {
     overflow-x: auto;
 
-    > table {
+    & > table {
         max-width: 100%;
     }
 }

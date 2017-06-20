@@ -160,63 +160,63 @@ export default {
 };
 </script>
 
-<style lang="scss">
-    @import '../variables.scss';
+<style>
+    @import '../variables.css';
 
     .b-sidebar {
-        background: $sidebarBackground;
+        background: var(--sidebarBackground);
         float: left;
         height: 100%;
         position: fixed;
-        width: $sidebarWidth;
+        width: var(--sidebarWidth);
         overflow-y: auto;
 
-        > h1 {
-            color: $sidebarColor;
-            font-size: $sidebarTitleSize;
-            font-weight: $sidebarTitleWeight;
-            margin: $sidebarTitleMargin;
+        & > h1 {
+            color: var(--sidebarColor);
+            font-size: var(--sidebarTitleSize);
+            font-weight: var(--sidebarTitleWeight);
+            margin: var(--sidebarTitleMargin);
             text-align: center;
         }
 
-        > ul {
+        & > ul {
             list-style: none;
             padding-left: 0;
 
-            > li {
-                > a {
+            & > li {
+                & > a {
                     box-sizing: border-box;
-                    color: $sidebarColor !important;
+                    color: var(--sidebarColor) !important;
                     display: inline-block;
-                    height: $sidebarLinkHeight;
-                    line-height: $sidebarLinkHeight;
+                    height: var(--sidebarLinkHeight);
+                    line-height: var(--sidebarLinkHeight);
                     padding-left: 10px;
                     text-align: left;
                     text-decoration: none;
                     width: 100%;
 
-                    > i {
+                    & > i {
                         margin-right: 10px;
                     }
                 }
             }
 
-            > li:hover {
-                background-color: lighten($sidebarBackground, 10%);
+            & > li:hover {
+                background-color: lighten(var(--sidebarBackground), 10%);
             }
         }
 
-        > .eventSelector {
-            > li {
+        & > .eventSelector {
+            & > li {
                 &:first-child {
                     padding-left: 10px;
                     padding-right: 10px;
                     font-family: 'Roboto', sans-serif;
-                    color: $sidebarColor;
+                    color: var(--sidebarColor);
                 }
 
-                label {
-                    color: $sidebarColor !important;
+                & label {
+                    color: var(--sidebarColor) !important;
                 }
 
                 &:nth-child(5) {
@@ -229,8 +229,8 @@ export default {
     .b-sidebar + div {
         float: left;
         height: 100%;
-        width: calc(100% - #{$sidebarWidth});
-        margin-left: $sidebarWidth;
+        width: calc(100% - var(--sidebarWidth));
+        margin-left: var(--sidebarWidth);
     }
 
     .slide-enter-active, .slide-leave-active {

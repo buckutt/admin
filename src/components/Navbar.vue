@@ -65,15 +65,15 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
     .b-navbar {
-        > .mdl-tabs {
-            > .mdl-tabs__tab-bar  {
+        & > .mdl-tabs {
+            & > .mdl-tabs__tab-bar  {
                 display: flex;
                 justify-content: flex-start;
 
-                > a {
-                    > i {
+                & > a {
+                    & > i {
                         vertical-align: middle;
                     }
                 }

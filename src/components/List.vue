@@ -55,13 +55,13 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
     .b-list {
         display: flex;
         flex-direction: line;
         flex-wrap: wrap;
 
-        > ul {
+        & > ul {
             flex-grow: 1;
             min-width: 250px;
             max-width: 600px;

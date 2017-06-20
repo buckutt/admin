@@ -172,12 +172,12 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
     .b-groups__members {
         display: flex;
         justify-content: space-between;
 
-        > div {
+        & > div {
             width: 49%;
         }
     }

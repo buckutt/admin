@@ -132,12 +132,12 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
     .b-promotions__contentManager {
         display: flex;
         justify-content: space-between;
 
-        > div {
+        & > div {
             width: 49%;
         }
     }

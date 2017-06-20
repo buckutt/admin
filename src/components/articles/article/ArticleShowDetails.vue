@@ -83,12 +83,12 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
     .b-article-top {
         display: flex;
         flex-wrap: wrap;
 
-        .b-article-top__fill {
+        & .b-article-top__fill {
             flex-grow: 1;
         }
     }
@@ -100,12 +100,12 @@ export default {
         height: 150px;
         min-width: 150px;
         min-height: 150px;
-        box-shadow: 0 0 2px rgba(#222, 0.25),
-                    0 2px 3px rgba(#222, 0.25);
+        box-shadow: 0 0 2px color(#222 a(0.25)),
+                    0 2px 3px color(#222 a(0.25));
         border-radius: 2px;
         margin-right: 20px;
 
-        > .b-article-preview__image {
+        & > .b-article-preview__image {
             position: relative;
             width: 100%;
             height: 100%;

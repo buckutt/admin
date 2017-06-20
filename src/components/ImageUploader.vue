@@ -45,28 +45,28 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
     .b-imageUploader {
         background-image: url('../assets/placeholder.jpg');
         background-repeat: no-repeat;
         width: 150px;
         height: 150px;
-        box-shadow: 0 0 2px rgba(#222, 0.25),
-                    0 2px 3px rgba(#222, 0.25);
+        box-shadow: 0 0 2px color(#222 a(0.25)),
+                    0 2px 3px color(#222 a(0.25));
         border-radius: 2px;
 
-        > .b-imageUploader__image {
+        & > .b-imageUploader__image {
             position: relative;
             width: 100%;
             height: 100%;
         }
 
-        > .b-imageUploader__add {
+        & > .b-imageUploader__add {
             position: relative;
             top: -35px;
             left: 115px;
 
-            > input[type="file"] {
+            & > input[type="file"] {
                 cursor: pointer;
                 height: 100%;
                 right: 0;

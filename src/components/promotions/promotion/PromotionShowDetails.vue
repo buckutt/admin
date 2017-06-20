@@ -92,7 +92,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
     .b-chip--margin {
         margin-left: 5px;
         margin-right: 5px;

@@ -45,12 +45,12 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
     .b-articles-container {
         display: flex;
         flex-wrap: wrap;
 
-        > div:first-child {
+        & > div:first-child {
             margin-right: 50px;
         }
     }

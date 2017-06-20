@@ -250,7 +250,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
     .b-actions-cell {
         width: 175px;
     }
@@ -259,8 +259,8 @@ export default {
         display: flex;
         justify-content: space-between;
 
-        > span {
-            > a {
+        & > span {
+            & > a {
                 opacity: 0;
                 pointer-events: none;
                 text-decoration: none;
