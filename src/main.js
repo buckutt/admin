@@ -58,8 +58,8 @@ router.beforeEach((route, from, next) => {
                     route: path,
                     value: { id: route.params.id }
                 })
-                .then(() => next())
-                .catch(() => next(from.path));
+                    .then(() => next())
+                    .catch(() => next(from.path));
             } else {
                 store.dispatch('clearModObject');
                 next();

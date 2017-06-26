@@ -96,8 +96,8 @@ export default {
                 groupedRights[key].forEach(right => rightPerPoint.rights.push({
                     icon : 'grade',
                     title: (this.currentEvent.config.hasPeriods) ?
-                       `Période ${right.period.name}` :
-                       undefined,
+                        `Période ${right.period.name}` :
+                        undefined,
                     content: right.name
                 }));
 

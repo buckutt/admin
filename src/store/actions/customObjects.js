@@ -5,7 +5,7 @@ import { isAdmin }                 from '../../lib/isAdmin.js';
  * Sets actions
  */
 
-export function createSetWithArticles({ commit, dispatch, state }, payload) {
+export function createSetWithArticles({ commit, dispatch }, payload) {
     const set       = payload.set;
     const articles  = payload.articles;
     const promotion = payload.promotion;
@@ -34,7 +34,7 @@ export function createSetWithArticles({ commit, dispatch, state }, payload) {
         });
 }
 
-export function addArticleToSet({ commit, dispatch, state }, payload) {
+export function addArticleToSet({ dispatch, state }, payload) {
     const index = state.app.modObject.sets.findIndex(s => (s.id === payload.set.id));
 
     dispatch('updateModObject', {
@@ -54,7 +54,7 @@ export function addArticleToSet({ commit, dispatch, state }, payload) {
     });
 }
 
-export function removeArticleFromSet({ commit, dispatch, state }, payload) {
+export function removeArticleFromSet({ dispatch, state }, payload) {
     const index = state.app.modObject.sets.findIndex(s => (s.id === payload.set.id));
 
     dispatch('removeModObjectRelation', {
@@ -78,7 +78,7 @@ export function removeArticleFromSet({ commit, dispatch, state }, payload) {
  * Users actions
  */
 
-export function createUserWithMol({ commit, dispatch, state }, user) {
+export function createUserWithMol({ dispatch, state }, user) {
     let createdUser;
 
     return post('users', user)

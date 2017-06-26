@@ -54,7 +54,7 @@ export function checkAndAddObjects({ commit, state }, data) {
     }
 }
 
-export function checkAndUpdateObject({ commit, dispatch, state }, data) {
+export function checkAndUpdateObject({ commit, state }, data) {
     if (state.objects[data.route]) {
         const index = state.objects[data.route].findIndex(o => (o.id === data.object.id));
         if (index !== -1) {
@@ -78,14 +78,14 @@ export function checkAndDeleteObject({ commit, dispatch, state }, data) {
     }
 }
 
-export function fetchObjects({ commit, dispatch }, route) {
+export function fetchObjects({ dispatch }, route) {
     return get(route.toLowerCase())
         .then((results) => {
             dispatch('checkAndAddObjects', { route, objects: results });
         });
 }
 
-export function createObject({ commit, dispatch, state }, object) {
+export function createObject({ dispatch, state }, object) {
     return post(object.route.toLowerCase(), object.value).then((result) => {
         if (state.objects[object.route]) {
             dispatch('checkAndAddObjects', { route: object.route, objects: [result] });
@@ -104,7 +104,7 @@ export function createObject({ commit, dispatch, state }, object) {
     });
 }
 
-export function updateObject({ commit, dispatch, state }, object) {
+export function updateObject({ dispatch, state }, object) {
     return put(`${object.route.toLowerCase()}/${object.value.id}`, object.value).then((result) => {
         if (result.isRemoved) {
             dispatch('checkAndDeleteObject', { route: object.route, object: result });
@@ -126,7 +126,7 @@ export function updateObject({ commit, dispatch, state }, object) {
     });
 }
 
-export function removeObject({ commit, dispatch, state }, object) {
+export function removeObject({ dispatch, state }, object) {
     return put(`${object.route.toLowerCase()}/${object.value.id}`, { isRemoved: true }).then((result) => {
         dispatch('checkAndDeleteObject', { route: object.route, object: result });
 
@@ -143,7 +143,7 @@ export function removeObject({ commit, dispatch, state }, object) {
     });
 }
 
-export function createSimpleRelation({ commit, dispatch, state }, relation) {
+export function createSimpleRelation({ dispatch, state }, relation) {
     const body = {};
     if (relation.through) {
         body[relation.through.field] = relation.through.value.id;
@@ -186,7 +186,7 @@ export function createSimpleRelation({ commit, dispatch, state }, relation) {
         });
 }
 
-export function removeSimpleRelation({ commit, dispatch, state }, relation) {
+export function removeSimpleRelation({ dispatch, state }, relation) {
     let filter = '';
     if (relation.through) {
         const jsonFilter                   = {};
@@ -217,7 +217,7 @@ export function removeSimpleRelation({ commit, dispatch, state }, relation) {
         });
 }
 
-export function createMultipleRelation({ commit, dispatch, state }, relation) {
+export function createMultipleRelation({ dispatch, state }, relation) {
     let embed = '';
     if (config.relations[relation.relation.route]) {
         embed = `?embed=${encodeURIComponent(JSON.stringify(config.relations[relation.relation.route]))}`;

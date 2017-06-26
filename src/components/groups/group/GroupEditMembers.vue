@@ -162,8 +162,8 @@ export default {
         },
         displayedActions() {
             return (this.currentEvent.config.hasPeriods) ?
-            [{ action: 'select', text: 'Sélectionner', raised: true, colored: true }] :
-            [{ action: 'add', text: 'Ajouter', raised: true, colored: true }];
+                [{ action: 'select', text: 'Sélectionner', raised: true, colored: true }] :
+                [{ action: 'add', text: 'Ajouter', raised: true, colored: true }];
         },
         displayedUsers() {
             return this.users.map((user) => {

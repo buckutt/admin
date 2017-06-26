@@ -43,7 +43,7 @@ export function removeSetFromPromotion({ dispatch }, data) {
     dispatch('removeObject', { route: 'sets', value: data.set });
 }
 
-export function addArticleToStep({ commit, dispatch, state }, data) {
+export function addArticleToStep({ dispatch }, data) {
     const article   = data.article;
     const promotion = data.promotion;
     const step      = data.step;
@@ -73,7 +73,7 @@ export function addArticleToStep({ commit, dispatch, state }, data) {
     }
 }
 
-export function removeArticleFromStep({ commit, dispatch, state }, data) {
+export function removeArticleFromStep({ dispatch }, data) {
     const article   = data.article;
     const promotion = data.promotion;
     const step      = data.step;

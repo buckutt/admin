@@ -69,8 +69,8 @@ export default {
                     icon : 'attach_money',
                     type : 'price',
                     title: (this.currentEvent.config.hasPeriods) ?
-                       `Période ${price.period.name}` :
-                       undefined,
+                        `Période ${price.period.name}` :
+                        undefined,
                     content: price.amount
                 }));
 
