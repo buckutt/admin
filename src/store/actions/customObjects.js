@@ -260,7 +260,7 @@ export function login({ commit, dispatch }, credentials) {
     return post('services/login', credentials)
         .then((result) => {
             if (!isAdmin(result.user)) {
-                throw new Error({ status: 401, statusText: 'You are not administrator' });
+                return Promise.reject({ statusText: 'You are not administrator' });
             }
 
             sessionStorage.setItem('user', JSON.stringify(result.user));
