@@ -52,9 +52,9 @@ export default {
             delete right.period;
 
             if (right.point) {
-                right.Point_id  = right.point.id;
-                delete right.point;
+                right.Point_id = right.point.id;
             }
+            delete right.point;
 
             this.createMultipleRelation({
                 obj: {
