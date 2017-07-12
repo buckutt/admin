@@ -32,8 +32,7 @@ export default {
     },
 
     beforeDestroy() {
-        [].slice.call(document.getElementsByClassName('mdl-dialog-container'))
-            .forEach(dialog => dialog.parentNode.removeChild(dialog));
+        document.body.removeChild(this.$refs.confirm.$el);
     },
 
     mounted() {
