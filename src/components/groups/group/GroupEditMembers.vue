@@ -24,7 +24,7 @@
                 <mdl-button colored raised accent @click.native="clearUser">Retour</mdl-button>
             </div>
             <div v-if="!groupUser.user">
-                <mdl-textfield floating-label="Prénom" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
+                <mdl-textfield floating-label="Nom/Prénom" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
                 <b-table
                     :headers="[{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' }]"
                     :data="displayedUsers"
