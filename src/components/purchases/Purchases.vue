@@ -56,10 +56,10 @@
                     { title: 'Quantité', field: 'count' },
                     { title: 'Article', field: 'name'},
                     { title: 'Prix unitaire TTC', field: 'price', type: 'price' },
-                    { title: 'Total TTC', field: 'totalVAT', type: 'price' },
+                    { title: 'Total TTC', field: 'totalTI', type: 'price' },
                     { title: 'Total HT', field: 'totalWT', type: 'price' }
                 ]"
-                :data="purchases">
+                :data="displayedPurchases">
             </b-table>
         </div>
     </div>
@@ -95,11 +95,17 @@ export default {
             'pointOptions',
             'fundationOptions'
         ]),
+        displayedPurchases() {
+            return this.purchases.map((purchase) => {
+                purchase.totalWT = purchase.totalTI - purchase.totalVAT;
+                return purchase;
+            });
+        },
         totalSell() {
             let sum = 0;
 
-            this.purchases.forEach((purchase) => {
-                sum += purchase.totalVAT;
+            this.displayedPurchases.forEach((purchase) => {
+                sum += purchase.totalTI;
             });
 
             return sum;
@@ -107,7 +113,7 @@ export default {
         totalSellWT() {
             let sum = 0;
 
-            this.purchases.forEach((purchase) => {
+            this.displayedPurchases.forEach((purchase) => {
                 sum += purchase.totalWT;
             });
 

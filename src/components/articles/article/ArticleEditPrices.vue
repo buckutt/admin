@@ -118,7 +118,7 @@ export default {
             return (!this.modObject) ? [] : this.modObject.prices
                 .filter(price => (price.period.Event_id === this.currentEvent.id))
                 .map((price) => {
-                    price.wt             = price.amount / (1 + (this.modObject.vat / 100));
+                    price.wt             = price.amount / (1 + this.modObject.vat);
                     price.displayedPrice = `${parsePrice(price.amount, true)} TTC`;
                     if (price.amount !== price.wt) {
                         price.displayedPrice += ` (${parsePrice(price.wt, true)} HT)`;
