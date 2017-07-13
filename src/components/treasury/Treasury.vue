@@ -143,7 +143,7 @@ export default {
             }
 
             this.getTreasury(inputFields)
-                .then(this.notify({ message: 'Le calcul a été effectué avec succès' }))
+                .then(() => this.notify({ message: 'Le calcul a été effectué avec succès' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors du calcul de la trésorerie',
                     full   : err

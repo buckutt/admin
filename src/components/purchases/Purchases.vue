@@ -155,7 +155,7 @@ export default {
             inputFields.event = this.currentEvent.id;
 
             this.getPurchases(inputFields)
-                .then(this.notify({ message: 'Le calcul a été effectué avec succès' }))
+                .then(() => this.notify({ message: 'Le calcul a été effectué avec succès' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors du calcul des achats',
                     full   : err

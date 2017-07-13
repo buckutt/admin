@@ -35,7 +35,7 @@ export default {
         ]),
         updateArticle(article) {
             this.updateObject({ route: 'articles', value: article })
-                .then(this.notify({ message: 'L\'article a bien été modifié' }))
+                .then(() => this.notify({ message: 'L\'article a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'article',
                     full   : err
@@ -44,7 +44,7 @@ export default {
         updateImage(image) {
             this.updateModObject({ field: 'image', value: image });
             this.updateObject({ route: 'articles', value: this.modObject })
-                .then(this.notify({ message: 'L\'image de l\'article a bien été modifiée' }))
+                .then(() => this.notify({ message: 'L\'image de l\'article a bien été modifiée' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'image',
                     full   : err

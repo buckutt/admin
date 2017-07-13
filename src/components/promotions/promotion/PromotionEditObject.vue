@@ -21,7 +21,7 @@ export default {
         ]),
         updatePromotion(promotion) {
             this.updateObject({ route: 'promotions', value: promotion })
-                .then(this.notify({ message: 'La promotion a bien été modifiée' }))
+                .then(() => this.notify({ message: 'La promotion a bien été modifiée' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de la promotion',
                     full   : err

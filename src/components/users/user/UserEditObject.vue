@@ -103,7 +103,7 @@ export default {
                 route: 'users',
                 value: user
             })
-                .then(this.notify({ message: 'L\'utilisateur a bien été modifié' }))
+                .then(() => this.notify({ message: 'L\'utilisateur a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err
@@ -128,7 +128,7 @@ export default {
                     value: period
                 }
             })
-                .then(this.notify({ message: 'L\'utilisateur a bien été autorisé' }))
+                .then(() => this.notify({ message: 'L\'utilisateur a bien été autorisé' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err
@@ -150,7 +150,7 @@ export default {
                     value: period
                 }
             })
-                .then(this.notify({ message: 'L\'utilisateur a bien été interdit' }))
+                .then(() => this.notify({ message: 'L\'utilisateur a bien été interdit' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err

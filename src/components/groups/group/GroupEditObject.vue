@@ -21,7 +21,7 @@ export default {
         ]),
         updateGroup(group) {
             this.updateObject({ route: 'groups', value: group })
-                .then(this.notify({ message: 'Le groupe a bien été modifié' }))
+                .then(() => this.notify({ message: 'Le groupe a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification du groupe',
                     full   : err

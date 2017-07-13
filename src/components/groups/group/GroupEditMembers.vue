@@ -94,7 +94,7 @@ export default {
                     value: groupUser.period
                 }
             })
-                .then(this.notify({ message: 'L\'utilisateur a bien été ajouté au groupe' }))
+                .then(() => this.notify({ message: 'L\'utilisateur a bien été ajouté au groupe' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err
@@ -127,7 +127,7 @@ export default {
                     value: user._through.period
                 }
             })
-                .then(this.notify({ message: 'L\'utilisateur a bien été supprimé du groupe' }))
+                .then(() => this.notify({ message: 'L\'utilisateur a bien été supprimé du groupe' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err

@@ -66,7 +66,7 @@ export default {
                     fields: right
                 }
             })
-                .then(this.notify({ message: 'Le droit a bien été créé' }))
+                .then(() => this.notify({ message: 'Le droit a bien été créé' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la création du droit',
                     full   : err
