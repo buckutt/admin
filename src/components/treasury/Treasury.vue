@@ -43,6 +43,15 @@
                 :data="displayedReloads">
             </b-table>
 
+            <h4>Remboursements <span class="small">(total: {{ totalRefund | price(true) }})</span></h4>
+            <b-table
+                :headers="[
+                    { title: 'Moyen de paiement', field: 'type' },
+                    { title: 'Total', field: 'reduction', type: 'price' }
+                ]"
+                :data="displayedRefunds">
+            </b-table>
+
             <h4>Transferts <span class="small">(total: {{ totalTransfer | price(true) }})</span></h4>
             <b-table
                 :headers="[
@@ -77,6 +86,7 @@ export default {
         ...mapState({
             transfers     : state => state.objects.transfers,
             reloads       : state => state.objects.reloads,
+            refunds       : state => state.objects.refunds,
             meansofpayment: state => state.objects.meansofpayment
         }),
         ...mapGetters([
@@ -87,6 +97,15 @@ export default {
 
             this.reloads.forEach((reload) => {
                 sum += reload.reduction;
+            });
+
+            return sum;
+        },
+        totalRefund() {
+            let sum = 0;
+
+            this.refunds.forEach((refund) => {
+                sum += refund.reduction;
             });
 
             return sum;
@@ -109,6 +128,12 @@ export default {
             return this.reloads.map((reload) => {
                 reload.type = this.slugToName(reload.group);
                 return reload;
+            });
+        },
+        displayedRefunds() {
+            return this.refunds.map((refund) => {
+                refund.type = this.slugToName(refund.group);
+                return refund;
             });
         },
         displayedTransfers() {
