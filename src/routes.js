@@ -1,3 +1,4 @@
+import account    from './components/account/routes';
 import articles   from './components/articles/routes';
 import categories from './components/categories/routes';
 import dashboard  from './components/dashboard/routes';
@@ -15,6 +16,7 @@ import treasury   from './components/treasury/routes';
 import users      from './components/users/routes';
 
 export default [].concat(
+    account,
     articles,
     categories,
     dashboard,
