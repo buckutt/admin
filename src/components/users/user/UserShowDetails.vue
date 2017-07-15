@@ -58,6 +58,12 @@ export default {
                     icon   : 'email',
                     title  : 'Adresse mail',
                     content: this.modObject.mail
+                },
+                {
+                    icon   : 'attach_money',
+                    type   : 'price',
+                    title  : 'Solde',
+                    content: this.modObject.credit
                 }
             ];
 

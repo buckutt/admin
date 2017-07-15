@@ -24,7 +24,7 @@ export default {
         ]),
         updateEvent(event) {
             this.updateObject({ route: 'events', value: event })
-                .then(this.notify({ message: 'L\'événement a bien été modifié' }))
+                .then(() => this.notify({ message: 'L\'événement a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'événement',
                     full   : err

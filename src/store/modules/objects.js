@@ -12,6 +12,7 @@ const state = {
     users         : [],
     transfers     : [],
     reloads       : [],
+    refunds       : [],
     purchases     : [],
     meansofpayment: []
 };

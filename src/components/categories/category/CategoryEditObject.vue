@@ -22,7 +22,7 @@ export default {
         ]),
         updateCategory(category) {
             this.updateObject({ route: 'categories', value: category })
-                .then(this.notify({ message: 'La catégorie a bien été modifiée' }))
+                .then(() => this.notify({ message: 'La catégorie a bien été modifiée' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de la catégorie',
                     full   : err

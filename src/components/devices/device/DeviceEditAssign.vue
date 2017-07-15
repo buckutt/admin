@@ -94,7 +94,7 @@ export default {
                     value: point._through.period
                 }
             })
-                .then(this.notify({ message: 'Le point a bien été supprimé de l\'équipement' }))
+                .then(() => this.notify({ message: 'Le point a bien été supprimé de l\'équipement' }))
                 .catch(err => this.notifyError({
                     message: 'Le point n\'a pas pu être supprimé de l\'équipement',
                     full   : err

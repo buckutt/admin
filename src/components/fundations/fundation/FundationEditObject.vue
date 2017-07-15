@@ -21,7 +21,7 @@ export default {
         ]),
         updateFundation(fundation) {
             this.updateObject({ route: 'fundations', value: fundation })
-                .then(this.notify({ message: 'La fondation a bien été modifiée' }))
+                .then(() => this.notify({ message: 'La fondation a bien été modifiée' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de la fondation',
                     full   : err

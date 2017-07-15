@@ -6,7 +6,7 @@
                 <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })"  required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
                 <mdl-textfield floating-label="Stock" :value="modObject.stock" @input="updateModObject({ field:'stock', value: $event })"></mdl-textfield><br />
                 <mdl-textfield floating-label="Alcool" :value="modObject.alcohol" @input="updateModObject({ field:'alcohol', value: $event })"></mdl-textfield>
-                <mdl-textfield floating-label="TVA" :value="modObject.vat" @input="updateModObject({ field:'vat', value: $event })"></mdl-textfield><br />
+                <mdl-textfield floating-label="TVA (%, ex: 5.5)" :value="displayedVat" @input="updateModObject({ field:'vat', value: $event / 100 })"></mdl-textfield><br />
                 <mdl-button colored raised>Modifier</mdl-button>
             </form>
         </div>
@@ -35,7 +35,7 @@ export default {
         ]),
         updateArticle(article) {
             this.updateObject({ route: 'articles', value: article })
-                .then(this.notify({ message: 'L\'article a bien été modifié' }))
+                .then(() => this.notify({ message: 'L\'article a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'article',
                     full   : err
@@ -44,7 +44,7 @@ export default {
         updateImage(image) {
             this.updateModObject({ field: 'image', value: image });
             this.updateObject({ route: 'articles', value: this.modObject })
-                .then(this.notify({ message: 'L\'image de l\'article a bien été modifiée' }))
+                .then(() => this.notify({ message: 'L\'image de l\'article a bien été modifiée' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'image',
                     full   : err
@@ -55,7 +55,10 @@ export default {
     computed: {
         ...mapState({
             modObject: state => state.app.modObject
-        })
+        }),
+        displayedVat() {
+            return +(this.modObject.vat * 100).toFixed(2);
+        }
     }
 };
 </script>

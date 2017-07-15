@@ -61,7 +61,7 @@ export default {
                     value: category
                 }
             })
-                .then(this.notify({ message: 'La catégorie a bien été liée au point' }))
+                .then(() => this.notify({ message: 'La catégorie a bien été liée au point' }))
                 .catch(err => this.notifyError({
                     message: 'La catégorie n\'a pas pu être liée au point',
                     full   : err
@@ -78,7 +78,7 @@ export default {
                     value: category
                 }
             })
-                .then(this.notify({ message: 'La catégorie a bien été supprimée du point' }))
+                .then(() => this.notify({ message: 'La catégorie a bien été supprimée du point' }))
                 .catch(err => this.notifyError({
                     message: 'La catégorie n\'a pas pu être supprimée du point',
                     full   : err

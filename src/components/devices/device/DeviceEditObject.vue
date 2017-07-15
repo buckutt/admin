@@ -28,7 +28,7 @@ export default {
         ]),
         updateDevice(device) {
             this.updateObject({ route: 'devices', value: device })
-                .then(this.notify({ message: 'L\'équipement a bien été modifié' }))
+                .then(() => this.notify({ message: 'L\'équipement a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'équipement',
                     full   : err

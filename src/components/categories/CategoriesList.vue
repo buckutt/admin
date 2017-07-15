@@ -26,7 +26,7 @@ export default {
             'removeObject'
         ]),
         editCategory(category) {
-            this.$router.push(`/categories/edit/${category.id}`);
+            this.$router.push(`/categories/${category.id}/edit`);
         }
     },
 

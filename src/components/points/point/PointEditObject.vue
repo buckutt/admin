@@ -27,7 +27,7 @@ export default {
         }),
         updatePoint(point) {
             this.updateObject({ route: 'points', value: point })
-                .then(this.notify({ message: 'Le point a bien été modifié' }))
+                .then(() => this.notify({ message: 'Le point a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification du point',
                     full   : err

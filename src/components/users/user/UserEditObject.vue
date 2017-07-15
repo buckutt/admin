@@ -4,7 +4,7 @@
         <form @submit.prevent="updateUser(modObject)">
             <mdl-textfield floating-label="Nom" :value="modObject.lastname" @input="updateModObject({ field:'lastname', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <mdl-textfield floating-label="Prénom" :value="modObject.firstname" @input="updateModObject({ field:'firstname', value: $event })" required="required" error="Le prénom doit contenir au moins un caractère"></mdl-textfield><br />
-            <mdl-textfield floating-label="Surnom" :value="modObject.nickname" @input="updateModObject({ field:'nickname', value: $event })" required="required" error="Le surnom doit contenir au moins un caractère"></mdl-textfield><br />
+            <mdl-textfield floating-label="Surnom" :value="modObject.nickname" @input="updateModObject({ field:'nickname', value: $event })"></mdl-textfield><br />
             <mdl-textfield floating-label="Mail" :value="modObject.mail" @input="updateModObject({ field:'mail', value: $event })" required="required" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" error="L'adresse mail n'a pas le bon format"></mdl-textfield><br />
             <mdl-button colored raised>Modifier</mdl-button>
         </form>
@@ -103,7 +103,7 @@ export default {
                 route: 'users',
                 value: user
             })
-                .then(this.notify({ message: 'L\'utilisateur a bien été modifié' }))
+                .then(() => this.notify({ message: 'L\'utilisateur a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err
@@ -128,7 +128,7 @@ export default {
                     value: period
                 }
             })
-                .then(this.notify({ message: 'L\'utilisateur a bien été autorisé' }))
+                .then(() => this.notify({ message: 'L\'utilisateur a bien été autorisé' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err
@@ -150,7 +150,7 @@ export default {
                     value: period
                 }
             })
-                .then(this.notify({ message: 'L\'utilisateur a bien été interdit' }))
+                .then(() => this.notify({ message: 'L\'utilisateur a bien été interdit' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err

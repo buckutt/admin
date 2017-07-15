@@ -13,6 +13,12 @@
                     </router-link>
                 </li>
                 <li>
+                    <router-link to="/account" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                        <i class="material-icons">account_box</i>
+                        Mon compte
+                    </router-link>
+                </li>
+                <li>
                     <router-link to="/logout" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                         <i class="material-icons">power_settings_new</i>
                         Déconnexion
@@ -219,7 +225,7 @@ export default {
                     color: var(--sidebarColor) !important;
                 }
 
-                &:nth-child(5) {
+                &:nth-child(6) {
                     margin-bottom: 30px;
                 }
             }

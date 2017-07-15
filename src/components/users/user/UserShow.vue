@@ -26,6 +26,7 @@ export default {
             const tabs = [
                 { route: '', name: 'Détails' },
                 { route: 'edit', name: 'Édition' },
+                { route: 'refund', name: 'Remboursement' },
                 { route: 'mol', name: 'Identifiants' },
                 { route: 'rights', name: 'Droits' }
             ];

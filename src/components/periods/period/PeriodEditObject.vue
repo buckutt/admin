@@ -48,7 +48,7 @@ export default {
         ]),
         updatePeriod(period) {
             this.updateObject({ route: 'periods', value: period })
-                .then(this.notify({ message: 'La période a bien été modifiée' }))
+                .then(() => this.notify({ message: 'La période a bien été modifiée' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de la période',
                     full   : err
