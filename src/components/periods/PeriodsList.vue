@@ -10,7 +10,7 @@
             :data="displayedPeriods"
             :sort="{ field: 'start', order: 'ASC' }"
             :actions="[
-                { action: 'edit', text: 'Modifier', raised: true, colored: true, condition: { field: 'id', statement: 'isNotIn', value: protectedPeriodsIds } },
+                { action: 'edit', text: 'Modifier', raised: true, colored: true },
                 { action: 'remove', text: 'Supprimer', type: 'confirm', condition: { field: 'id', statement: 'isNotIn', value: protectedPeriodsIds } }
             ]"
             route="periods"
