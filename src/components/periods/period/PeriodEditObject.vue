@@ -66,7 +66,7 @@ export default {
         ...mapGetters([
             'protectedPeriodsIds'
         ]),
-        isPeriodProtected(id) {
+        isPeriodProtected() {
             return (this.protectedPeriodsIds.indexOf(this.modObject.id) > -1) ? true : false;
         }
     }
