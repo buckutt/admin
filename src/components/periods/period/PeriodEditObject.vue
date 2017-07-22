@@ -67,7 +67,7 @@ export default {
             'protectedPeriodsIds'
         ]),
         isPeriodProtected() {
-            return (this.protectedPeriodsIds.indexOf(this.modObject.id) > -1) ? true : false;
+            return (this.protectedPeriodsIds.indexOf(this.modObject.id) > -1);
         }
     }
 };
