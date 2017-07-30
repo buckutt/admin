@@ -25,26 +25,14 @@ export default {
                     content: this.modObject.name
                 },
                 {
-                    icon   : 'refresh',
-                    title  : 'Temps réel',
-                    content: (this.modObject.realtime) ?
-                        `Activé (intervalle: ${this.modObject.refreshInterval}s)` :
-                        'Desactivé'
-                },
-                {
                     icon   : 'done_all',
-                    title  : 'Revalidation post-achats',
+                    title  : 'Badgeage avant achat',
                     content: (this.modObject.doubleValidation) ? 'Activé' : 'Désactivé'
                 },
                 {
                     icon   : 'local_drink',
                     title  : 'Avertissement alcool',
                     content: (this.modObject.alcohol) ? 'Activé' : 'Désactivé'
-                },
-                {
-                    icon   : 'format_list_numbered',
-                    title  : 'Affichage des catégories',
-                    content: (this.modObject.showCategories) ? 'Activé' : 'Désactivé'
                 },
                 {
                     icon   : 'person',

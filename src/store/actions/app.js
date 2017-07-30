@@ -28,20 +28,6 @@ export function removeModObjectRelation({ commit }, payload) {
 }
 
 /**
- * Event configurator actions
- */
-
-export function resetLastValidatedStep({ commit }) {
-    commit('UPDATELASTVALIDATEDSTEP', 0);
-}
-
-export function updateLastValidatedStep({ commit, state }, lastValidatedStep) {
-    if (state.app.lastValidatedStep < lastValidatedStep) {
-        commit('UPDATELASTVALIDATEDSTEP', lastValidatedStep);
-    }
-}
-
-/**
  * Global actions
  */
 

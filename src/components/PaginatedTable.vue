@@ -34,9 +34,9 @@
                                     <mdl-menu :for="`b-table-${index}`">
                                         <template v-for="action in actions">
                                             <template v-if="action.type">
-                                                <b-confirm
+                                                <b-confirm :disabled="!displayAction(action, data)"
                                                     v-if="action.type === 'confirm'"
-                                                    @confirm="displayAction(action, data) && callback(action.action, data)">
+                                                    @confirm="callback(action.action, data)">
                                                     <mdl-menu-item
                                                         :disabled="!displayAction(action, data)"
                                                         :key="data.ref">

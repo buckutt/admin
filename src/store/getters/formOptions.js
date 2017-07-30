@@ -2,6 +2,10 @@ export const groupOptions = state => (
     state.objects.groups.map(group => ({ name: group.name, value: group }))
 );
 
+export const groupIdsOptions = state => (
+    state.objects.groups.map(group => ({ name: group.name, value: group.id }))
+);
+
 export const pointOptions = state => (
     state.objects.points.map(point => ({ name: point.name, value: point }))
 );

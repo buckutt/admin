@@ -18,6 +18,7 @@ import routes from './routes';
 
 import App            from './App.vue';
 import Confirm        from './components/Confirm.vue';
+import DetailedSwitch from './components/DetailedSwitch.vue';
 import List           from './components/List.vue';
 import Navbar         from './components/Navbar.vue';
 import PaginatedTable from './components/PaginatedTable.vue';
@@ -32,6 +33,7 @@ Vue.use(Vuex);
 Vue.use(VueMdl);
 
 Vue.component('b-confirm', Confirm);
+Vue.component('b-detailedswitch', DetailedSwitch);
 Vue.component('b-datetime-picker', DateTimePicker);
 Vue.component('b-list', List);
 Vue.component('b-navbar', Navbar);

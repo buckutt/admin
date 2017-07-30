@@ -16,9 +16,15 @@
 
 <script>
 export default {
+    props: {
+        disabled: Boolean
+    },
+
     methods: {
         interceptEvent(e) {
-            this.$refs.confirm.open();
+            if (!this.disabled) {
+                this.$refs.confirm.open();
+            }
 
             e.preventDefault();
             e.stopPropagation();
