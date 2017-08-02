@@ -4,11 +4,8 @@
         <b-table
             :headers="[
                 { title: 'Équipement', field: 'name', object: true },
-                { title: 'Temps réel', field: 'realtime', type: 'checkbox' },
-                { title: 'Intervalle', field: 'refreshInterval' },
-                { title: 'Revalidation', field: 'doubleValidation', type: 'checkbox' },
+                { title: 'Pré-badgeage', field: 'doubleValidation', type: 'checkbox' },
                 { title: 'Alcool', field: 'alcohol', type: 'checkbox' },
-                { title: 'Catégories', field: 'showCategories', type: 'checkbox' },
                 { title: 'Images', field: 'showPicture', type: 'checkbox' }
             ]"
             :data="devices"

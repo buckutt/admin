@@ -158,7 +158,7 @@ export default {
                 return this.notifyError({ message: 'Vous devez choisir au moins un filtre' });
             }
 
-            inputFields.event = this.currentEvent.id;
+            inputFields.event = this.currentEvent;
 
             this.getPurchases(inputFields)
                 .then(() => this.notify({ message: 'Le calcul a été effectué avec succès' }))

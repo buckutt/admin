@@ -11,3 +11,9 @@ export const protectedGroupsIds = (state) => {
     state.objects.events.forEach(event => groups.push(event.DefaultGroup_id));
     return groups;
 };
+
+export const protectedFundationsIds = (state) => {
+    const fundations = [];
+    state.objects.events.forEach(event => fundations.push(event.DefaultFundation_id));
+    return fundations;
+};

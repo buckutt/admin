@@ -4,6 +4,7 @@
         <form @submit.prevent="updatePeriod(modObject)">
             <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
+            <span v-if="isPeriodProtected">Il n'est pas possible de modifier le début ainsi que la fin de la période par défaut de l'événement.</span>
             <b-datetime-picker
                 :value="new Date(modObject.start)"
                 @input="updateModObject({ field: 'start', value: $event })"
@@ -15,7 +16,8 @@
                 pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
                 error="Le début n'est pas une date"
                 label="Début"
-                class="b--limitsize"></b-datetime-picker>
+                class="b--limitsize"
+                v-if="!isPeriodProtected"></b-datetime-picker>
             <br />
             <b-datetime-picker
                 :value="new Date(modObject.end)"
@@ -28,7 +30,8 @@
                 pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
                 error="La fin n'est pas une date"
                 label="Fin"
-                class="b--limitsize"></b-datetime-picker>
+                class="b--limitsize"
+                v-if="!isPeriodProtected"></b-datetime-picker>
             <br />
             <mdl-button colored raised>Modifier</mdl-button>
         </form>
@@ -36,7 +39,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
     methods: {
@@ -59,7 +62,13 @@ export default {
     computed: {
         ...mapState({
             modObject: state => state.app.modObject
-        })
+        }),
+        ...mapGetters([
+            'protectedPeriodsIds'
+        ]),
+        isPeriodProtected() {
+            return (this.protectedPeriodsIds.indexOf(this.modObject.id) > -1);
+        }
     }
 };
 </script>

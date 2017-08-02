@@ -7,7 +7,7 @@
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
                 { action: 'edit', text: 'Modifier' },
-                { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                { action: 'remove', text: 'Supprimer', type: 'confirm', condition: { field: 'id', statement: 'isNotIn', value: protectedFundationsIds }  }
             ]"
             route="fundations"
             :paging="10"
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
     methods: {
@@ -33,7 +33,10 @@ export default {
     computed: {
         ...mapState({
             fundations: state => state.objects.fundations
-        })
+        }),
+        ...mapGetters([
+            'protectedFundationsIds'
+        ])
     }
 };
 </script>

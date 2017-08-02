@@ -7,18 +7,18 @@ import { get } from '../../lib/fetch';
 export function getPurchases({ commit, dispatch }, fields) {
     const q = [];
 
-    q.push(`event=${fields.event}`);
+    q.push(`event=${fields.event.id}`);
 
     if (fields.point) {
-        q.push(`point=${fields.point}`);
+        q.push(`point=${fields.point.id}`);
     }
 
     if (fields.fundation) {
-        q.push(`fundation=${fields.fundation}`);
+        q.push(`fundation=${fields.fundation.id}`);
     }
 
     if (fields.period) {
-        q.push(`period=${fields.period}`);
+        q.push(`period=${fields.period.id}`);
     } else {
         if (fields.dateIn) {
             q.push(`dateIn=${fields.dateIn}`);
@@ -55,11 +55,11 @@ export function getTreasury({ commit, dispatch }, fields) {
     const qt = [];
 
     if (fields.point) {
-        q.push(`point=${fields.point}`);
+        q.push(`point=${fields.point.id}`);
 
         qt.push(JSON.stringify({
             field: 'Point_id',
-            eq   : fields.point
+            eq   : fields.point.id
         }));
     }
 

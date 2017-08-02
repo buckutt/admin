@@ -18,6 +18,7 @@ import routes from './routes';
 
 import App            from './App.vue';
 import Confirm        from './components/Confirm.vue';
+import DetailedSwitch from './components/DetailedSwitch.vue';
 import List           from './components/List.vue';
 import Navbar         from './components/Navbar.vue';
 import PaginatedTable from './components/PaginatedTable.vue';
@@ -32,12 +33,13 @@ Vue.use(Vuex);
 Vue.use(VueMdl);
 
 Vue.component('b-confirm', Confirm);
+Vue.component('b-detailedswitch', DetailedSwitch);
 Vue.component('b-datetime-picker', DateTimePicker);
 Vue.component('b-list', List);
 Vue.component('b-navbar', Navbar);
 Vue.component('b-table', PaginatedTable);
 
-const withoutEventRoutes = ['', 'logout', 'events', 'treasury'];
+const withoutEventRoutes = ['', 'logout', 'events', 'treasury', 'account'];
 
 const router = new VueRouter({ routes });
 
@@ -51,7 +53,7 @@ router.beforeEach((route, from, next) => {
                 store.dispatch('clearModObject');
                 next('/');
             } else if (!isEventConfigured(store.state.app.currentEvent)
-                && path !== 'events' && path !== 'logout' && path !== 'treasury' && path !== '') {
+                && withoutEventRoutes.indexOf(path) === -1) {
                 next(`/events/${store.state.app.currentEvent.id}/config`);
             } else if (route.params.id) {
                 store.dispatch('expandObject', {
