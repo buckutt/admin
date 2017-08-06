@@ -1,15 +1,13 @@
 <template>
     <div>
-        <div v-if="modObject.articles.length > 0">
-            <h5>Articles dans la catégorie:</h5>
-            <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="article in modObject.articles" :key="article.id">
-                <span class="mdl-chip__text">{{ article.name }}</span>
-                <b-confirm @confirm="removeFromCategory(modObject, article)" class="b--inline">
-                    <button class="mdl-chip__action"><i class="material-icons">cancel</i></button>
-                </b-confirm>
-            </span>
-            <br />
-        </div>
+        <h5>Articles dans la catégorie:</h5>
+        <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="article in modObject.articles" :key="article.id">
+            <span class="mdl-chip__text">{{ article.name }}</span>
+            <b-confirm @confirm="removeFromCategory(modObject, article)" class="b--inline">
+                <button class="mdl-chip__action"><i class="material-icons">cancel</i></button>
+            </b-confirm>
+        </span>
+        <p v-if="modObject.articles.length === 0">Aucun pour le moment.</p>
 
         <h5>Rechercher un article:</h5>
         <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>

@@ -1,15 +1,13 @@
 <template>
     <div>
-        <div v-if="modObject.categories.length > 0">
-            <h5>Catégories du point:</h5>
-            <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="category in modObject.categories" :key="category.id">
-                <span class="mdl-chip__text">{{ category.name }}</span>
-                <b-confirm @confirm="removeFromPoint(modObject, category)" class="b--inline">
-                    <button class="mdl-chip__action"><i class="material-icons">cancel</i></button>
-                </b-confirm>
-            </span>
-            <br />
-        </div>
+        <h5>Catégories du point:</h5>
+        <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="category in modObject.categories" :key="category.id">
+            <span class="mdl-chip__text">{{ category.name }}</span>
+            <b-confirm @confirm="removeFromPoint(modObject, category)" class="b--inline">
+                <button class="mdl-chip__action"><i class="material-icons">cancel</i></button>
+            </b-confirm>
+        </span>
+        <p v-if="modObject.categories.length === 0">Aucune pour le moment.</p>
 
         <h5>Rechercher une catégorie:</h5>
         <mdl-textfield floating-label="Nom" v-model="categoryName"></mdl-textfield>
