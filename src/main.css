@@ -112,7 +112,7 @@ html, body, main {
 }
 
 .b--center {
-    text-align: center;
+    text-align: center !important;
 }
 
 .b--fullwidth {

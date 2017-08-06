@@ -3,7 +3,7 @@
  */
 
 export function addArticleToPromotion({ dispatch }, data) {
-    dispatch('createSimpleRelation', {
+    return dispatch('createSimpleRelation', {
         obj1: {
             route: 'promotions',
             value: data.promotion
@@ -16,7 +16,7 @@ export function addArticleToPromotion({ dispatch }, data) {
 }
 
 export function removeArticleFromPromotion({ dispatch }, data) {
-    dispatch('removeSimpleRelation', {
+    return dispatch('removeSimpleRelation', {
         obj1: {
             route: 'promotions',
             value: data.promotion
@@ -40,7 +40,7 @@ export function removeSetFromPromotion({ dispatch }, data) {
         }
     });
 
-    dispatch('removeObject', { route: 'sets', value: data.set });
+    return dispatch('removeObject', { route: 'sets', value: data.set });
 }
 
 export function addArticleToStep({ dispatch }, data) {
@@ -49,27 +49,26 @@ export function addArticleToStep({ dispatch }, data) {
     const step      = data.step;
 
     if (step.type === 'article') {
-        if (step.articles[0].id !== article.id) {
-            dispatch('createSetWithArticles', {
-                set: {
-                    name: promotion.name
-                },
-                articles: [step.articles[0], article],
-                promotion
-            });
-
-            dispatch('removeArticleFromPromotion', { promotion, article: step.articles[0] });
-        } else {
-            dispatch('showClientError', { message: 'L\'article est déjà présent dans l\'ensemble.' });
+        if (step.articles[0].id === article.id) {
+            return Promise.reject({ statusText: 'The article is already in this set' });
         }
+        dispatch('createSetWithArticles', {
+            set: {
+                name: promotion.name
+            },
+            articles: [step.articles[0], article],
+            promotion
+        });
+
+        return dispatch('removeArticleFromPromotion', { promotion, article: step.articles[0] });
     } else if (step.type === 'set') {
         const articlesIds = step.set.articles.map(a => a.id);
 
-        if (articlesIds.indexOf(article.id) === -1) {
-            dispatch('addArticleToSet', { article, set: step.set });
-        } else {
-            dispatch('showClientError', { message: 'L\'article est déjà présent dans l\'ensemble.' });
+        if (articlesIds.indexOf(article.id) !== -1) {
+            return Promise.reject({ statusText: 'The article is already in this set' });
         }
+
+        return dispatch('addArticleToSet', { article, set: step.set });
     }
 }
 
@@ -79,17 +78,17 @@ export function removeArticleFromStep({ dispatch }, data) {
     const step      = data.step;
 
     if (step.type === 'article') {
-        dispatch('removeArticleFromPromotion', { promotion, article });
+        return dispatch('removeArticleFromPromotion', { promotion, article });
     } else if (step.type === 'set') {
         if (step.set.articles.length > 2) {
-            dispatch('removeArticleFromSet', { article, set: step.set });
-        } else {
-            const index       = step.set.articles.findIndex(a => (a.id !== article.id));
-            const keptArticle = step.set.articles[index];
-
-            dispatch('removeArticleFromSet', { article, set: step.set });
-            dispatch('removeSetFromPromotion', { promotion, set: step.set });
-            dispatch('addArticleToPromotion', { promotion, article: keptArticle });
+            return dispatch('removeArticleFromSet', { article, set: step.set });
         }
+
+        const index       = step.set.articles.findIndex(a => (a.id !== article.id));
+        const keptArticle = step.set.articles[index];
+
+        dispatch('removeArticleFromSet', { article, set: step.set });
+        dispatch('removeSetFromPromotion', { promotion, set: step.set });
+        return dispatch('addArticleToPromotion', { promotion, article: keptArticle });
     }
 }

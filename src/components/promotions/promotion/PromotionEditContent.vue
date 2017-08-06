@@ -5,45 +5,54 @@
             <transition name="fade">
                 <div class="b-responsive-table">
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="displayedPromotion.length > 0">
-                       <thead>
-                            <tr>
-                                <th class="mdl-data-table__cell--non-numeric">Ensemble</th>
-                                <th class="mdl-data-table__cell--non-numeric">Choix possibles</th>
-                                <th class="mdl-data-table__cell--non-numeric" v-show="typeof displayRemove === 'number' || displayChoose">Action</th>
-                            </tr>
-                        </thead>
                         <tbody>
                             <tr v-for="(set, index) in displayedPromotion">
-                                <td class="mdl-data-table__cell--non-numeric">
-                                    <strong>{{ index + 1 }}</strong>
+                                <td class="mdl-data-table__cell--non-numeric b-table__little">
+                                    1 article parmi :
+                                    <span class="mdl-chip b-chip--margin b-table-inter"
+                                        v-if="displayedPromotion.length > (index + 1)">
+                                        <span class="mdl-chip__text">
+                                            +
+                                        </span>
+                                    </span>
                                 </td>
                                 <td class="mdl-data-table__cell--non-numeric">
                                     <transition-group name="fade">
-                                        <mdl-button v-for="(article, indexA) in set.articles" :key="index+'_'+indexA" @click.native="chooseArticle(article, index)">{{ article.name }}</mdl-button>
+                                        <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="(article, indexA) in set.articles" :key="index+'_'+indexA">
+                                            <span class="mdl-chip__text">{{ article.name }}</span>
+                                            <b-confirm @confirm="removeSelectedArticleFromStep(article, index)" class="b--inline">
+                                                <button class="mdl-chip__action"><i class="material-icons">cancel</i></button>
+                                            </b-confirm>
+                                        </span>
                                     </transition-group>
                                 </td>
-                                <transition name="fade">
-                                    <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayChoose">
-                                        <mdl-button raised colored @click.native="addChosenArticleToStep(modObject, index)"><i class="material-icons">add</i></mdl-button>
-                                    </td>
-                                </transition>
-                                <transition name="fade">
-                                    <td class="mdl-data-table__cell--non-numeric b--right" v-show="displayRemove === index">
-                                        <mdl-button raised accent @click.native="removeChosenArticleFromStep(modObject, index)"><i class="material-icons">remove</i></mdl-button>
-                                    </td>
-                                </transition>
-                                <td v-show="typeof displayRemove === 'number' && displayRemove !== index"></td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <mdl-button v-if="chooseArticle && !newStep && chosenIndex === index" mini-fab colored @click.native="chooseIndex(index)"><i class="material-icons">remove</i></mdl-button>
+                                    <mdl-button v-else mini-fab @click.native="chooseIndex(index)"><i class="material-icons">add</i></mdl-button>
+                                </td>
                             </tr>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="mdl-data-table__cell--non-numeric b--center">
+                                    <mdl-button v-if="chooseArticle && newStep" raised colored @click.native="createStep()"><i class="material-icons">remove</i></mdl-button>
+                                    <mdl-button v-else @click.native="createStep()"><i class="material-icons">add</i></mdl-button>
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </transition>
             <transition name="fade">
-                <p v-if="displayedPromotion.length == 0">La promotion est vide.</p>
+                <div v-if="displayedPromotion.length == 0">
+                    La promotion est vide.<br /><br />
+                    <mdl-button raised colored @click.native="createStep()">Créer un nouveau choix</mdl-button>
+                </div>
             </transition>
         </div>
-        <div>
-            <h5>Rechercher un article:</h5>
+        <div v-if="chooseArticle">
+            <h5 v-if="newStep">Créer un nouvel ensemble de choix:</h5>
+            <h5 v-else>Ajouter un choix à l'ensemble n°{{ chosenIndex + 1 }}:</h5>
             <mdl-textfield floating-label="Nom" v-model="articleName"></mdl-textfield>
 
             <b-table
@@ -52,13 +61,11 @@
                 :filter="{ val: this.articleName, field: 'name' }"
                 :sort="{ field: 'name', order: 'ASC' }"
                 :actions="[
-                    { action: 'addTo', text: 'Nouvel ensemble', raised: true },
-                    { action: 'choose', text: 'Ajouter à l\'ensemble', raised: true },
+                    { action: 'choose', text: 'Choisir', raised: true, condition: { field: 'id', statement: 'isNotIn', value: alreadyInArticles } },
                 ]"
                 route="articles"
                 :paging="5"
-                @addTo="addArticleToCurrentPromotion"
-                @choose="chooseStepToAdd">
+                @choose="processArticle">
             </b-table>
         </div>
     </div>
@@ -72,51 +79,75 @@ export default {
     data() {
         return {
             articleName  : '',
-            chosenArticle: {},
-            displayChoose: false,
-            displayRemove: false
+            chosenIndex  : 0,
+            chooseArticle: false,
+            newStep      : false
         };
     },
 
     methods: {
         ...mapActions([
-            'addArticleToSet',
             'addArticleToPromotion',
             'addArticleToStep',
-            'removeArticleFromStep'
+            'removeArticleFromStep',
+            'notify',
+            'notifyError'
         ]),
         addArticleToCurrentPromotion(article) {
-            this.addArticleToPromotion({ promotion: this.modObject, article });
-            this.displayChoose = false;
-            this.chosenArticle = {};
+            this.addArticleToPromotion({ promotion: this.modObject, article })
+                .then(() => this.notify({ message: 'L\'article a bien été ajouté à la promotion.' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de l\'ajout à la promotion',
+                    full   : err
+                }));
         },
-        chooseStepToAdd(article) {
-            this.displayRemove = false;
-            this.displayChoose = true;
-            this.chosenArticle = article;
-        },
-        chooseArticle(article, index) {
-            this.displayChoose = false;
-            this.displayRemove = index;
-            this.chosenArticle = article;
-        },
-        addChosenArticleToStep(promotion, index) {
+        addArticleToChosenStep(article) {
             this.addArticleToStep({
-                article: this.chosenArticle,
-                step   : this.displayedPromotion[index],
-                promotion
-            });
-            this.displayChoose = false;
-            this.chosenArticle = {};
+                article,
+                step     : this.displayedPromotion[this.chosenIndex],
+                promotion: this.modObject
+            })
+                .then(() => this.notify({ message: 'L\'article a bien été ajouté à la promotion.' }))
+                .catch((err) => {
+                    let message;
+                    switch (err.statusText) {
+                        case 'The article is already in this set':
+                            message = 'L\'article est déjà présent dans cet ensemble.';
+                            break;
+                        default:
+                            message = 'Une erreur inconue a eu lieu lors de l\'ajout à la promotion';
+                    }
+
+                    this.notifyError({ message, full: err });
+                });
         },
-        removeChosenArticleFromStep(promotion, index) {
+        removeSelectedArticleFromStep(article, index) {
             this.removeArticleFromStep({
-                article: this.chosenArticle,
-                step   : this.displayedPromotion[index],
-                promotion
-            });
-            this.displayRemove = false;
-            this.chosenArticle = {};
+                article,
+                step     : this.displayedPromotion[index],
+                promotion: this.modObject
+            })
+                .then(() => this.notify({ message: 'L\'article a bien été supprimé de la promotion.' }))
+                .catch(err => this.notifyError({
+                    message: 'Une erreur a eu lieu lors de la suppression de la promotion',
+                    full   : err
+                }));
+        },
+        createStep() {
+            this.chooseArticle = !(this.chooseArticle && this.newStep);
+            this.newStep       = true;
+        },
+        chooseIndex(index) {
+            this.chooseArticle = !(this.chooseArticle && !this.newStep && this.chosenIndex === index);
+            this.newStep       = false;
+            this.chosenIndex   = index;
+        },
+        processArticle(article) {
+            if (this.newStep) {
+                this.addArticleToCurrentPromotion(article);
+            } else {
+                this.addArticleToChosenStep(article);
+            }
         }
     },
 
@@ -127,6 +158,15 @@ export default {
         }),
         displayedPromotion() {
             return promotionDisplayer(this.modObject);
+        },
+        alreadyInArticles() {
+            if (this.displayedPromotion.length > 0) {
+                if (!this.newStep) {
+                    return this.displayedPromotion[this.chosenIndex].articles.map(article => article.id);
+                }
+            }
+
+            return [];
         }
     }
 };
@@ -135,10 +175,28 @@ export default {
 <style>
     .b-promotions__contentManager {
         display: flex;
-        justify-content: space-between;
+        flex-wrap: nowrap;
 
         & > div {
-            width: 49%;
+            flex: 1;
+            max-width: 750px;
+            margin-left: 5px;
+            margin-right: 5px;
         }
+    }
+
+    .b-chip--margin {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .b-table__little {
+        max-width: 140px;
+    }
+
+    .b-table-inter {
+        position: relative;
+        top: 30px;
+        left: -72px;
     }
 </style>
