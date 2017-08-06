@@ -115,7 +115,25 @@ export default {
         },
         displayedPrices() {
             return (!this.modObject) ? [] : this.modObject.prices
-                .filter(price => (price.period.Event_id === this.currentEvent.id));
+                .filter(price => (price.period.Event_id === this.currentEvent.id))
+                .map((price) => {
+                    if (price.Fundation_id !== this.currentEvent.DefaultFundation_id
+                        && !this.currentEvent.config.hasFundations) {
+                        price.warning = 'Une fondation autre que<br />celle par défaut est utilisée.';
+                    }
+
+                    if (price.Group_id !== this.currentEvent.DefaultGroup_id
+                        && !this.currentEvent.config.hasGroups) {
+                        price.warning = 'Un groupe autre que<br />celui par défaut est utilisé.';
+                    }
+
+                    if (price.Period_id !== this.currentEvent.DefaultPeriod_id
+                        && !this.currentEvent.config.hasPeriods) {
+                        price.warning = 'Une période autre que<br />celle par défaut est utilisée.';
+                    }
+
+                    return price;
+                });
         },
         disabledAdd() {
             return ((!this.newPrice.fundation && this.currentEvent.config.hasFundations)

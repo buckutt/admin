@@ -123,7 +123,15 @@ export default {
         },
         displayedGroups() {
             return (!this.modObject) ? [] : this.modObject.groups
-                .filter(group => (group._through.period.Event_id === this.currentEvent.id));
+                .filter(group => (group._through.period.Event_id === this.currentEvent.id))
+                .map((group) => {
+                    if (group._through.period.id !== this.currentEvent.DefaultPeriod_id
+                        && !this.currentEvent.config.hasPeriods) {
+                        group.warning = 'Une période autre que<br />celle par défaut est utilisée.';
+                    }
+
+                    return group;
+                });
         },
         disabledAdd() {
             return (!this.groupUser.group || (!this.groupUser.period && this.currentEvent.config.hasPeriods));

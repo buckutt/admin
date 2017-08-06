@@ -103,6 +103,10 @@ html, body, main {
     text-transform: capitalize;
 }
 
+.b--uncapitalize {
+    text-transform: initial;
+}
+
 .b--clear {
     clear: both;
 }
