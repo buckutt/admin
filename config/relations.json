@@ -11,7 +11,8 @@
         "articles": "true"
     },
     "devices": {
-        "points": {
+        "defaultGroup": "true",
+        "points"      : {
             "_through": {
                 "period": "true"
             }
