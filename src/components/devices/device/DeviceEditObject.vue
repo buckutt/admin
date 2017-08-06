@@ -59,7 +59,7 @@ export default {
             'groupOptions'
         ]),
         displayedGroup() {
-            return this.modObject.defaultGroup.name;
+            return (this.modObject.defaultGroup) ? this.modObject.defaultGroup.name : '';
         }
     }
 };
