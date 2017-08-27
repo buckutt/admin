@@ -104,6 +104,12 @@ export default {
                     if (!right.point) {
                         right.point = { name: 'Aucun' };
                     }
+
+                    if (right.period.id !== this.currentEvent.DefaultPeriod_id
+                        && !this.currentEvent.config.hasPeriods) {
+                        right.warning = 'Une période autre que<br />celle par défaut est utilisée.';
+                    }
+
                     return right;
                 });
         },

@@ -3,15 +3,15 @@
         <h5>Modifier l'équipement {{ modObject.name }}</h5>
         <form @submit.prevent="updateDevice(modObject)">
             <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
-            <mdl-select label="Groupe par défaut" id="group-select" v-model="selectedGroup" :options="groupIdsOptions"></mdl-select>
+            <mdl-select label="Groupe par défaut" id="group-select" :value="displayedGroup" @input="updateModObject({ field: 'defaultGroup', value: $event })" :options="groupOptions"></mdl-select>
 
             <h6>Options de l'équipement</h6>
             <b-detailedswitch label="Badgeage avant achat" icon="done_all" :value="modObject.doubleValidation" @input="updateModObject({ field: 'doubleValidation', value: $event })">
                 Oblige l'acheteur à badger une première fois, afin de permettre au vendeur de connaître les articles et tarifs disponibles pour celui-ci, ainsi que de connaître son solde ou vérifier son identité, avant de prendre sa commande. Si cette option n'est pas activée, il vous faut définir un groupe par défaut, dont les tarifs vont être utilisés. (si vous n'utilisez pas les groupes dans votre événement, sélectionnez le nom de l'événement).
 
-                <div v-if="!modObject.doubleValidation && defaultGroup">
+                <div v-if="!modObject.doubleValidation && modObject.defaultGroup">
                     <br />
-                    <strong>Groupe dont les tarifs sont affichés par défaut:</strong> {{ defaultGroup.name }}
+                    <strong>Groupe dont les tarifs seront affichés par défaut:</strong> {{ modObject.defaultGroup.name }}
                 </div>
             </b-detailedswitch>
 
@@ -32,12 +32,6 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
-    data() {
-        return {
-            selectedGroup: ''
-        };
-    },
-
     methods: {
         ...mapActions([
             'updateObject',
@@ -46,7 +40,7 @@ export default {
             'notifyError'
         ]),
         updateDevice(device) {
-            device.defaultGroup = this.selectedGroup;
+            device.DefaultGroup_id = device.defaultGroup.id;
             this.updateObject({ route: 'devices', value: device })
                 .then(() => this.notify({ message: 'L\'équipement a bien été modifié' }))
                 .catch(err => this.notifyError({
@@ -62,15 +56,11 @@ export default {
             groups   : state => state.objects.groups
         }),
         ...mapGetters([
-            'groupIdsOptions'
+            'groupOptions'
         ]),
-        defaultGroup() {
-            return this.groups.find(group => this.selectedGroup === group.id);
+        displayedGroup() {
+            return (this.modObject.defaultGroup) ? this.modObject.defaultGroup.name : '';
         }
-    },
-
-    mounted() {
-        this.selectedGroup = this.modObject.defaultGroup;
     }
 };
 </script>

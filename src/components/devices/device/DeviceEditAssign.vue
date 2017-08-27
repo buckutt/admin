@@ -121,7 +121,15 @@ export default {
         },
         displayedPoints() {
             return (!this.modObject) ? [] : this.modObject.points
-                .filter(point => (point._through.period.Event_id === this.currentEvent.id));
+                .filter(point => (point._through.period.Event_id === this.currentEvent.id))
+                .map((point) => {
+                    if (point._through.period.id !== this.currentEvent.DefaultPeriod_id
+                        && !this.currentEvent.config.hasPeriods) {
+                        point.warning = 'Une période autre que<br />celle par défaut est utilisée.';
+                    }
+
+                    return point;
+                });
         },
         disabledAdd() {
             return (!this.devicePoint.period && this.currentEvent.config.hasPeriods) || !this.devicePoint.point;

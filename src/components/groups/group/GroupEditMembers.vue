@@ -149,6 +149,12 @@ export default {
                 .filter(user => (user._through.period.Event_id === this.currentEvent.id))
                 .map((user) => {
                     user.fullname = `${user.firstname} ${user.lastname}`;
+
+                    if (user._through.period.id !== this.currentEvent.DefaultPeriod_id
+                        && !this.currentEvent.config.hasPeriods) {
+                        user.warning = 'Une période autre que<br />celle par défaut est utilisée.';
+                    }
+
                     return user;
                 });
         },

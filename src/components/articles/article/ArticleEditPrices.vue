@@ -118,6 +118,21 @@ export default {
             return (!this.modObject) ? [] : this.modObject.prices
                 .filter(price => (price.period.Event_id === this.currentEvent.id))
                 .map((price) => {
+                    if (price.Fundation_id !== this.currentEvent.DefaultFundation_id
+                        && !this.currentEvent.config.hasFundations) {
+                        price.warning = 'Une fondation autre que<br />celle par défaut est utilisée.';
+                    }
+
+                    if (price.Group_id !== this.currentEvent.DefaultGroup_id
+                        && !this.currentEvent.config.hasGroups) {
+                        price.warning = 'Un groupe autre que<br />celui par défaut est utilisé.';
+                    }
+
+                    if (price.Period_id !== this.currentEvent.DefaultPeriod_id
+                        && !this.currentEvent.config.hasPeriods) {
+                        price.warning = 'Une période autre que<br />celle par défaut est utilisée.';
+                    }
+
                     price.wt             = price.amount / (1 + this.modObject.vat);
                     price.displayedPrice = `${parsePrice(price.amount, true)} TTC`;
                     if (price.amount !== price.wt) {

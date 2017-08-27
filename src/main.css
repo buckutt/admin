@@ -103,12 +103,16 @@ html, body, main {
     text-transform: capitalize;
 }
 
+.b--uncapitalize {
+    text-transform: initial;
+}
+
 .b--clear {
     clear: both;
 }
 
 .b--center {
-    text-align: center;
+    text-align: center !important;
 }
 
 .b--fullwidth {
