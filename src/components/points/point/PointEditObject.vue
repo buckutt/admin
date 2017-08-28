@@ -18,13 +18,7 @@ export default {
             'updateModObject',
             'notify',
             'notifyError'
-        ])
-    },
-
-    computed: {
-        ...mapState({
-            modObject: state => state.app.modObject
-        }),
+        ]),
         updatePoint(point) {
             this.updateObject({ route: 'points', value: point })
                 .then(() => this.notify({ message: 'Le point a bien été modifié' }))
@@ -33,6 +27,12 @@ export default {
                     full   : err
                 }));
         }
+    },
+
+    computed: {
+        ...mapState({
+            modObject: state => state.app.modObject
+        })
     }
 };
 </script>
