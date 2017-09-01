@@ -12,7 +12,7 @@
         </div>
         <div>
             <h5>Image</h5>
-            <b-uploader :initialImage="modObject.image" :name="modObject.name" @change="updateImage"></b-uploader>
+            <b-uploader :id="modObject.id" :name="modObject.name" @change="imageUpdated"></b-uploader>
         </div>
     </div>
 </template>
@@ -41,14 +41,12 @@ export default {
                     full   : err
                 }));
         },
-        updateImage(image) {
-            this.updateModObject({ field: 'image', value: image });
-            this.updateObject({ route: 'articles', value: this.modObject })
-                .then(() => this.notify({ message: 'L\'image de l\'article a bien été modifiée' }))
-                .catch(err => this.notifyError({
-                    message: 'Une erreur a eu lieu lors de la modification de l\'image',
-                    full   : err
-                }));
+        imageUpdated(error) {
+            if (error) {
+                return this.notifyError({ message: 'L\'image de l\'article a bien été modifiée', full: error });
+            }
+
+            this.notify({ message: 'L\'image de l\'article a bien été modifiée' });
         }
     },
 

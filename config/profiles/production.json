@@ -1,3 +1,4 @@
 {
-    "api": "\"https://api.client.inst.buckless.com\""
+    "api": "\"https://api.client.inst.buckless.com\"",
+    "images": "\"https://client.inst.buckless.com/images\""
 }

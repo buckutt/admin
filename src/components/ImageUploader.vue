@@ -12,18 +12,17 @@
 </template>
 
 <script>
+import { getImage, postImage } from '../lib/fetchImages';
+
 export default {
     props: {
-        name        : String,
-        initialImage: {
-            type    : String,
-            required: false
-        }
+        id  : String,
+        name: String
     },
 
     data() {
         return {
-            image: (this.initialImage) ? this.initialImage : null
+            image: null
         };
     },
 
@@ -34,13 +33,25 @@ export default {
 
             reader.addEventListener('load', () => {
                 this.image = reader.result;
-                this.$emit('change', this.image);
+                postImage(this.id, this.image)
+                    .then(() => this.$emit('change', false))
+                    .catch(err => this.$emit('change', err));
             });
 
             if (file) {
                 reader.readAsDataURL(file);
             }
         }
+    },
+
+    mounted() {
+        getImage(this.id)
+            .then((result) => {
+                this.image = result.image;
+            })
+            .catch(() => {
+                this.image = null;
+            });
     }
 };
 </script>
