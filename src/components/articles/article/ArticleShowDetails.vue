@@ -3,8 +3,8 @@
         <h5>Détails de l'article</h5>
         <div class="b-article-top">
             <div class="b-article-preview">
-                <img :src="modObject.image" :alt="modObject.name" v-show="modObject.image" class="b-article-preview__image" />
-                <div class="b-article-preview__image" v-show="!modObject.image"></div>
+                <img :src="image" :alt="modObject.name" v-show="image" class="b-article-preview__image" />
+                <div class="b-article-preview__image" v-show="!image"></div>
             </div>
             <b-list :elements="elements" :columns="2" class="b-article-top__fill"></b-list>
         </div>
@@ -19,8 +19,15 @@
 <script>
 import groupBy      from 'lodash.groupby';
 import { mapState } from 'vuex';
+import { getImage } from '../../../lib/fetchImages';
 
 export default {
+    data() {
+        return {
+            image: null
+        };
+    },
+
     computed: {
         ...mapState({
             modObject   : state => state.app.modObject,
@@ -79,6 +86,16 @@ export default {
 
             return prices;
         }
+    },
+
+    mounted() {
+        getImage(this.modObject.id)
+            .then((result) => {
+                this.image = result.image;
+            })
+            .catch(() => {
+                this.image = null;
+            });
     }
 };
 </script>
