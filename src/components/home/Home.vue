@@ -20,8 +20,8 @@
         <transition name="fade">
             <div class="b-container__home b-page" v-if="logged">
                 <div class="mdl-card mdl-shadow--2dp">
-                    <h3>Bonjour {{ loggedUser.firstname }} {{ loggedUser.lastname }} !</h3>
-                    Stats générales de buckless + proposition de sélection d'événement + help ?
+                    <h3 class="b--capitalized">Bienvenue {{ loggedUser.firstname }} {{ loggedUser.lastname }}.</h3>
+                    Pour commencer à configurer vos événements, veuillez en sélectionner un dans le menu sur votre gauche.
                 </div>
             </div>
         </transition>
