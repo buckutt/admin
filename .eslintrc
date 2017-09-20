@@ -10,8 +10,9 @@
         "es6": true
     },
     "globals": {
-        "config": false,
-        "moment": false
+        "config"          : false,
+        "moment"          : false,
+        "componentHandler": false
     },
     // required to lint *.vue files
     "plugins": [

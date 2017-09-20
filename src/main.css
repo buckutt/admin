@@ -14,6 +14,7 @@ html, body, main {
     height: 100%;
     margin: 0;
     width: 100%;
+    background-color: #F3F3F3;
 }
 
 #app {
@@ -50,7 +51,7 @@ html, body, main {
 .b-page {
     & > div {
         min-height: calc(100% - 40px);
-        margin-top: 20px;
+        margin-top: 110px;
         margin-bottom: 20px;
         margin-right: calc((100% - var(--cardSize)) / 2);
         margin-left: calc((100% - var(--cardSize)) / 2);
@@ -129,7 +130,7 @@ html, body, main {
 }
 
 .b--limitsize {
-    max-width: 300px;
+    width: 300px;
 }
 
 // Transitions

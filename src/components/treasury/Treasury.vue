@@ -5,7 +5,7 @@
             <h4>Recherche</h4>
             <form @submit.prevent="filter()">
                 <div>
-                    <mdl-select label="Point" id="point-select" v-model="fields.point" :options="pointOptionsAll"></mdl-select>
+                    <b-inputselect label="Point" id="point-select" :options="pointOptionsAll" v-model="fields.point"></b-inputselect>
                 </div>
                 <div>
                     <b-datetime-picker

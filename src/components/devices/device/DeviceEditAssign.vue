@@ -2,8 +2,8 @@
     <div>
         <h5>Assigner l'équipement</h5>
         <form @submit.prevent="addPointToDevice(modObject, devicePoint)">
-            <mdl-select label="Point" id="point-select" v-model="devicePoint.point" :options="pointOptions"></mdl-select>
-            <mdl-select label="Période" id="period-select" v-model="devicePoint.period" :options="periodOptions" v-if="currentEvent.config.hasPeriods"></mdl-select>
+            <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="devicePoint.point"></b-inputselect>
+            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="devicePoint.period" v-if="currentEvent.config.hasPeriods"></b-inputselect>
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <b-table
@@ -109,6 +109,7 @@ export default {
         }),
         ...mapGetters([
             'periodOptions',
+            'currentPeriodOptions',
             'pointOptions'
         ]),
         displayedColumns() {

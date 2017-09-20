@@ -3,10 +3,10 @@
         <h5>Prix de l'article</h5>
         <form @submit.prevent="createArticlePrice(modObject, newPrice)">
             <mdl-textfield floating-label="Montant TTC (centimes)" v-model="newPrice.amount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield>
-            <mdl-select label="Point" id="point-select" v-model="newPrice.point" :options="pointOptions"></mdl-select>
-            <mdl-select label="Fondation" id="fundation-select" v-model="newPrice.fundation" :options="fundationOptions" v-if="currentEvent.config.hasFundations"></mdl-select><br />
-            <mdl-select label="Groupe" id="group-select" v-model="newPrice.group" :options="groupOptions" v-if="currentEvent.config.hasGroups"></mdl-select>
-            <mdl-select label="Période" id="period-select" v-model="newPrice.period" :options="periodOptions" v-if="currentEvent.config.hasPeriods"></mdl-select><br />
+            <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="newPrice.point"></b-inputselect>
+            <b-inputselect label="Fondation" id="fundation-select" :options="fundationOptions" v-model="newPrice.fundation" v-if="currentEvent.config.hasFundations"></b-inputselect><br />
+            <b-inputselect label="Groupe" id="group-select" :options="groupOptions" v-model="newPrice.group" v-if="currentEvent.config.hasGroups"></b-inputselect>
+            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="newPrice.period" v-if="currentEvent.config.hasPeriods"></b-inputselect><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
@@ -93,6 +93,7 @@ export default {
         ...mapGetters([
             'groupOptions',
             'periodOptions',
+            'currentPeriodOptions',
             'pointOptions',
             'fundationOptions'
         ]),

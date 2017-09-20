@@ -2,9 +2,9 @@
     <div>
         <h5>Droits</h5>
         <form @submit.prevent="createUserRight(modObject, userRight)">
-            <mdl-select label="Droit" id="right-select" v-model="userRight.name" :options="rightsList"></mdl-select>
-            <mdl-select label="Point" id="point-select" v-model="userRight.point" :options="pointOptions"></mdl-select>
-            <mdl-select label="Période" id="period-select" v-model="userRight.period" :options="periodOptions" v-if="currentEvent.config.hasPeriods"></mdl-select><br />
+            <b-inputselect label="Droit" id="right-select" :options="rightsList" v-model="userRight.name"></b-inputselect>
+            <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="userRight.point"></b-inputselect>
+            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="userRight.period" v-if="currentEvent.config.hasPeriods"></b-inputselect><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
@@ -83,6 +83,7 @@ export default {
         }),
         ...mapGetters([
             'periodOptions',
+            'currentPeriodOptions',
             'pointOptions'
         ]),
         displayedColumns() {

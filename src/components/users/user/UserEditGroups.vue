@@ -2,8 +2,8 @@
     <div>
         <h5>Groupes</h5>
         <form @submit.prevent="addGroupToUser(modObject, groupUser)">
-            <mdl-select label="Groupe" id="group-select" v-model="groupUser.group" :options="groupOptions"></mdl-select>
-            <mdl-select label="Période" id="period-select" v-model="groupUser.period" :options="periodOptions" v-if="currentEvent.config.hasPeriods"></mdl-select><br />
+            <b-inputselect label="Groupe" id="group-select" :options="groupOptions" v-model="groupUser.group"></b-inputselect>
+            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="groupUser.period" v-if="currentEvent.config.hasPeriods"></b-inputselect><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
@@ -110,6 +110,7 @@ export default {
         }),
         ...mapGetters([
             'groupOptions',
+            'currentPeriodOptions',
             'periodOptions'
         ]),
         displayedColumns() {

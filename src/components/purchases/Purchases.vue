@@ -5,8 +5,8 @@
             <h4>Recherche</h4>
             <form @submit.prevent="filter()">
                 <div>
-                    <mdl-select label="Point" id="point-select" v-model="fields.point" :options="pointOptionsAll"></mdl-select>
-                    <mdl-select label="Fondation" id="select-fundations" v-model="fields.fundation" :options="fundationOptionsAll" v-if="currentEvent.config.hasFundations"></mdl-select>
+                    <b-inputselect label="Point" id="point-select" :options="pointOptionsAll" v-model="fields.point"></b-inputselect>
+                    <b-inputselect label="Fondation" id="fundation-select" :options="fundationOptionsAll" v-model="fields.fundation" v-if="currentEvent.config.hasFundations"></b-inputselect>
                 </div>
                 <div>
                     <div v-if="currentEvent.config.hasPeriods">
@@ -15,7 +15,7 @@
                         <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="1">Achats compris entre deux dates</mdl-radio>
                     </div>
                     <transition name="fade">
-                        <div v-show="dateChoice == 1 || !currentEvent.config.hasPeriods">
+                        <div v-show="dateChoice === 1 || !currentEvent.config.hasPeriods">
                             <b-datetime-picker
                                 v-model="fields.dateIn"
                                 locale="fr"
@@ -41,8 +41,8 @@
                         </div>
                     </transition>
                     <transition name="fade">
-                        <div v-show="dateChoice == 0 && currentEvent.config.hasPeriods">
-                            <mdl-select label="Periode" id="select-periods" v-model="fields.period" :options="periodOptionsAll"></mdl-select>
+                        <div v-show="dateChoice === 0 && currentEvent.config.hasPeriods">
+                            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptionsAll" :fullOptions="periodOptionsAll" v-model="fields.period"></b-inputselect>
                         </div>
                     </transition>
                 </div>
@@ -81,7 +81,7 @@ export default {
     data() {
         return {
             fields    : Object.assign({}, fieldsPattern),
-            dateChoice: '0'
+            dateChoice: 0
         };
     },
 
@@ -92,6 +92,7 @@ export default {
         }),
         ...mapGetters([
             'periodOptions',
+            'currentPeriodOptions',
             'pointOptions',
             'fundationOptions'
         ]),
@@ -121,6 +122,11 @@ export default {
         },
         periodOptionsAll() {
             const periods = Object.assign([], this.periodOptions);
+            periods.unshift({ name: 'Toutes', value: null });
+            return periods;
+        },
+        currentPeriodOptionsAll() {
+            const periods = Object.assign([], this.currentPeriodOptions);
             periods.unshift({ name: 'Toutes', value: null });
             return periods;
         },

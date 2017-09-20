@@ -1,9 +1,10 @@
 :root {
     --sidebarBackground: #34495e;
     --sidebarColor: #fff;
+    --titleBackgroundColor: #223648;
     --sidebarWidth: 200px;
 
-    --sidebarTitleMargin: 1rem 0;
+    --sidebarTitlePadding: 1rem 0;
     --sidebarTitleSize: 2.5rem;
     --sidebarTitleWeight: 300;
 
