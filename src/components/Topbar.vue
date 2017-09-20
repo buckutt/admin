@@ -40,7 +40,7 @@ export default {
 
 <style>
     .b-topbar {
-        z-index: 0;
+        z-index: 9;
         position: fixed;
         display: flex;
         justify-content: flex-start;
