@@ -16,22 +16,21 @@
                 </form>
             </div>
         </div>
-
-        <transition name="fade">
-            <div class="b-container__home b-page" v-if="logged">
-                <div class="mdl-card mdl-shadow--2dp">
-                    <h3 class="b--capitalized">Bienvenue {{ loggedUser.firstname }} {{ loggedUser.lastname }}.</h3>
-                    Pour commencer à configurer vos événements, veuillez en sélectionner un dans le menu sur votre gauche.
-                </div>
-            </div>
-        </transition>
+        <div class="b-container__home b-page" v-else>
+            <b-loggedhome></b-loggedhome>
+        </div>
     </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
+import LoggedHome from './LoggedHome.vue';
 
 export default {
+    components: {
+        'b-loggedhome': LoggedHome
+    },
+
     data() {
         return {
             mail    : null,
@@ -95,7 +94,7 @@ export default {
     .b-container__login {
         & > div {
             width: 500px;
-            margin: 50px auto;
+            margin: 50px auto -50px auto;
 
             & .mdl-textfield {
                 width: 100%;

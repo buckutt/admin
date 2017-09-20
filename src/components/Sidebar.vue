@@ -2,32 +2,14 @@
     <transition name="slide">
         <div class="b-sidebar" v-show="logged">
             <h1>Buckless</h1>
-            <ul class="eventSelector">
-                <li>
-                    <mdl-select label="Évenement" id="event-select" :value="displayEvent" :options="eventOptions" @input="changeEvent($event)"></mdl-select>
+            <ul class="b-sidebar__eventSelector">
+                <li v-if="currentEvent">
+                    Événement: <strong>{{ currentEvent.name }}</strong>
                 </li>
                 <li>
                     <router-link to="/" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                         <i class="material-icons">home</i>
                         Accueil
-                    </router-link>
-                </li>
-                <li>
-                    <router-link to="/account" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                        <i class="material-icons">account_box</i>
-                        Mon compte
-                    </router-link>
-                </li>
-                <li>
-                    <router-link to="/logout" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                        <i class="material-icons">power_settings_new</i>
-                        Déconnexion
-                    </router-link>
-                </li>
-                <li>
-                    <router-link to="/events" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                        <i class="material-icons">cake</i>
-                        Évenements
                     </router-link>
                 </li>
                 <li>
@@ -112,50 +94,17 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
-import { isEventConfigured } from '../lib/isEventConfigured';
+import { mapState, mapGetters } from 'vuex';
+import { isEventConfigured }    from '../lib/isEventConfigured';
 
 export default {
-    methods: {
-        ...mapActions([
-            'updateCurrentEvent'
-        ]),
-        changeEvent(event) {
-            if (!event) {
-                return;
-            }
-
-            if (this.currentEvent) {
-                if (event.id === this.currentEvent.id) {
-                    return;
-                }
-            }
-
-            this.updateCurrentEvent(event)
-                .then(() => {
-                    if (this.isConfigured) {
-                        this.$router.push('/stats');
-                    } else {
-                        this.$router.push(`/events/${event.id}/config`);
-                    }
-                });
-        }
-    },
-
     computed: {
         ...mapState({
             currentEvent: state => state.app.currentEvent
         }),
         ...mapGetters([
-            'logged',
-            'eventOptions'
+            'logged'
         ]),
-        displayEvent() {
-            if (!this.currentEvent) {
-                return '';
-            }
-            return this.currentEvent.name;
-        },
         isConfigured() {
             if (this.currentEvent) {
                 return isEventConfigured(this.currentEvent);
@@ -170,6 +119,7 @@ export default {
     @import '../variables.css';
 
     .b-sidebar {
+        z-index: 10;
         background: var(--sidebarBackground);
         float: left;
         height: 100%;
@@ -179,9 +129,12 @@ export default {
 
         & > h1 {
             color: var(--sidebarColor);
+            background-color: var(--titleBackgroundColor);
             font-size: var(--sidebarTitleSize);
             font-weight: var(--sidebarTitleWeight);
-            margin: var(--sidebarTitleMargin);
+            padding: var(--sidebarTitlePadding);
+            margin-top: 0px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
@@ -212,7 +165,7 @@ export default {
             }
         }
 
-        & > .eventSelector {
+        & > .b-sidebar__eventSelector {
             & > li {
                 &:first-child {
                     padding-left: 10px;
@@ -232,7 +185,7 @@ export default {
         }
     }
 
-    .b-sidebar + div {
+    .b-sidebar + div + div {
         float: left;
         height: 100%;
         width: calc(100% - var(--sidebarWidth));

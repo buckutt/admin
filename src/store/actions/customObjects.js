@@ -162,6 +162,7 @@ export function login({ commit, dispatch }, credentials) {
             sessionStorage.setItem('token', result.token);
 
             commit('UPDATELOGGEDUSER', result.user);
+
             updateBearer(result.token);
 
             dispatch('load');

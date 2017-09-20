@@ -8,7 +8,7 @@
                 { title: 'Fin', field: 'end', type: 'date'}
             ]"
             :data="displayedPeriods"
-            :sort="{ field: 'start', order: 'ASC' }"
+            :sort="{ field: 'end', order: 'DESC' }"
             :actions="[
                 { action: 'edit', text: 'Modifier', raised: true, colored: true },
                 { action: 'remove', text: 'Supprimer', type: 'confirm', condition: { field: 'id', statement: 'isNotIn', value: protectedPeriodsIds } }
@@ -18,6 +18,11 @@
             @edit="editPeriod"
             @remove="removeObject">
         </b-table>
+        <br />
+        <mdl-button accent @click.native="displayOutdated = !displayOutdated">
+            <template v-if="!displayOutdated">Afficher</template>
+            <template v-else>Masquer</template>
+            les anciennes périodes</mdl-button>
     </div>
 </template>
 
@@ -25,6 +30,12 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
+    data() {
+        return {
+            displayOutdated: false
+        };
+    },
+
     methods: {
         ...mapActions([
             'removeObject'
@@ -40,10 +51,12 @@ export default {
             periods     : state => state.objects.periods
         }),
         ...mapGetters([
-            'protectedPeriodsIds'
+            'protectedPeriodsIds',
+            'currentPeriods'
         ]),
         displayedPeriods() {
-            return this.periods.filter(period => (period.Event_id === this.currentEvent.id));
+            const selectedPeriods = (this.displayOutdated) ? this.periods : this.currentPeriods;
+            return selectedPeriods.filter(period => (period.Event_id === this.currentEvent.id));
         }
     }
 };

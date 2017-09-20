@@ -1,4 +1,5 @@
 import lodget  from 'lodash.get';
+import Promise from 'bluebird';
 import { get } from '../../lib/fetch';
 
 /**
@@ -69,7 +70,7 @@ export function updateCreationData({ commit }, creationData) {
     commit('UPDATECREATIONDATA', creationData);
 }
 
-export function load({ dispatch }) {
+export function load({ state, dispatch }) {
     const routes = [
         'points',
         'devices',
@@ -86,9 +87,17 @@ export function load({ dispatch }) {
 
     dispatch('initSocket', sessionStorage.getItem('token'));
 
+    const objectsToFetch = [];
     routes.forEach((route) => {
-        dispatch('fetchObjects', route);
+        objectsToFetch.push(dispatch('fetchObjects', route));
     });
+
+    Promise.all(objectsToFetch)
+        .then(() => {
+            if (state.objects.events.length === 1) {
+                dispatch('updateCurrentEvent', state.objects.events[0]);
+            }
+        });
 
     dispatch('registerModels', routes);
 }

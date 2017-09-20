@@ -17,7 +17,7 @@
             <div v-if="groupUser.user">
                 <form @submit.prevent="addUserToGroup(modObject, groupUser)">
                     <mdl-textfield floating-label="Nom" :value="groupUser.user.fullname" disabled></mdl-textfield><br />
-                    <mdl-select label="Periode" id="select-periods" v-model="groupUser.period" :options="periodOptions"></mdl-select><br />
+                    <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="groupUser.period"></b-inputselect><br />
                     <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
                 </form>
                 <br />
@@ -142,7 +142,8 @@ export default {
             currentEvent: state => state.app.currentEvent
         }),
         ...mapGetters([
-            'periodOptions'
+            'periodOptions',
+            'currentPeriodOptions'
         ]),
         groupUsers() {
             return (!this.modObject) ? [] : this.modObject.users

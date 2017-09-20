@@ -5,7 +5,7 @@
                 :title="title"
                 :tabs="[{ route: '', name: 'Détails' }, { route: 'edit', name: 'Édition' }, { route: 'config', name: 'Configuration' }]"
                 :inCard="true"
-                :goBack="true"
+                :goBack="false"
                 :level="2">
             </b-navbar>
             <router-view></router-view>

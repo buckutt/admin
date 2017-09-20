@@ -15,8 +15,10 @@
                         <tbody>
                             <tr v-for="(data, index) in displayedData">
                                 <td v-for="(header, index2) in headers" class="mdl-data-table__cell--non-numeric" :class="header.class">
-                                    <mdl-tooltip :target="data.id" v-html="data.warning" class="b--uncapitalize"></mdl-tooltip>
-                                    <i v-if="data.warning && index2 === 0" :id="data.id" class="material-icons b-table__warning">warning</i>
+                                    <template v-if="data.warning && index2 === 0">
+                                        <mdl-tooltip :target="data.id" v-html="data.warning" class="b--uncapitalize"></mdl-tooltip>
+                                        <i :id="data.id" class="material-icons b-table__warning">warning</i>
+                                    </template>
                                     <template v-if="header.type">
                                         <span v-if="header.type === 'price'">{{ lodget(data, header.field) | price(true) }}</span>
                                         <span v-if="header.type === 'date'">{{ lodget(data, header.field) | date }}</span>

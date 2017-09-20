@@ -3,7 +3,7 @@
         <h5>Modifier l'équipement {{ modObject.name }}</h5>
         <form @submit.prevent="updateDevice(modObject)">
             <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
-            <mdl-select label="Groupe par défaut" id="group-select" :value="displayedGroup" @input="updateModObject({ field: 'defaultGroup', value: $event })" :options="groupOptions"></mdl-select>
+            <b-inputselect label="Groupe par défaut" id="group-select" :options="groupOptions" :value="modObject.defaultGroup" @input="updateModObject({ field: 'defaultGroup', value: $event })"></b-inputselect>
 
             <h6>Options de l'équipement</h6>
             <b-detailedswitch label="Badgeage avant achat" icon="done_all" :value="modObject.doubleValidation" @input="updateModObject({ field: 'doubleValidation', value: $event })">
@@ -57,10 +57,7 @@ export default {
         }),
         ...mapGetters([
             'groupOptions'
-        ]),
-        displayedGroup() {
-            return (this.modObject.defaultGroup) ? this.modObject.defaultGroup.name : '';
-        }
+        ])
     }
 };
 </script>
