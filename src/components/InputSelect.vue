@@ -8,6 +8,10 @@
             @input="changeInput(content)"
             @focus="displayInput = true"
             @blur="displayInput = false"
+            @keydown.up.prevent.stop="up()"
+            @keydown.down.prevent.stop="down()"
+            @keydown.enter.prevent.stop="select(suggestions[activeIndex])"
+            @keydown.tab="displayMenu = false"
             ref="input"
             autocomplete="off" />
         <label :for="id">
@@ -22,7 +26,12 @@
                 v-if="displayInput || displayMenu"
                 @mouseover="displayMenu = true"
                 @mouseout="displayMenu = false">
-                <li v-for="suggestion in suggestions" @click="select(suggestion)" class="b-completelist__item">
+                <li
+                    v-for="(suggestion, index) in suggestions"
+                    @click="select(suggestion)"
+                    @mouseover="activeIndex = index"
+                    class="b-completelist__item"
+                    :class="{ 'b-completelist__item-active': (index === activeIndex) }">
                     {{ suggestion.name }}
                 </li>
             </ul>
@@ -60,7 +69,8 @@ export default {
         return {
             content     : '',
             displayInput: false,
-            displayMenu : false
+            displayMenu : false,
+            activeIndex : 0
         };
     },
 
@@ -81,6 +91,7 @@ export default {
         select(suggestion) {
             this.$refs.textfield.MaterialTextfield.change(suggestion.name);
             this.$refs.textfield.MaterialTextfield.boundBlurHandler();
+            this.$refs.input.blur();
             this.content     = suggestion.name;
             this.displayMenu = false;
             this.$emit('input', suggestion.value);
@@ -96,6 +107,22 @@ export default {
             return options.map(option => (
                 (!option.name && !option.value) ? { name: option, value: option } : option
             ));
+        },
+        down() {
+            if (this.activeIndex + 1 >= this.suggestions.length) {
+                this.activeIndex = 0;
+                return;
+            }
+
+            this.activeIndex += 1;
+        },
+        up() {
+            if (this.activeIndex <= 0) {
+                this.activeIndex = this.suggestions.length - 1;
+                return;
+            }
+
+            this.activeIndex -= 1;
         }
     },
 
@@ -148,7 +175,7 @@ export default {
         padding: 0 16px;
     }
 
-    .b-completelist__item:hover {
+    .b-completelist__item-active {
         background: #EEEEEE;
         transition: all 0.1s ease-in-out;
     }
