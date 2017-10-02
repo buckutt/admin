@@ -152,6 +152,13 @@ export default {
             const inputFields = JSON.parse(JSON.stringify(this.fields));
             let isFilled      = false;
 
+            if (this.dateChoice === 0) {
+                delete inputFields.dateIn;
+                delete inputFields.dateOut;
+            } else {
+                delete inputFields.period;
+            }
+
             Object.keys(inputFields).forEach((key) => {
                 if (inputFields[key]) {
                     isFilled = true;

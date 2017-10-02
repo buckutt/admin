@@ -1,3 +1,5 @@
+import sortOrder from '../../../lib/sortOrder';
+
 export function promotionDisplayer(promotion) {
     let promotionContent = [];
 
@@ -20,15 +22,7 @@ export function promotionDisplayer(promotion) {
             .forEach((set) => {
                 const sortedArticles = set.articles
                     .filter(article => !article.isRemoved)
-                    .sort((a, b) => {
-                        if (a.name < b.name) {
-                            return -1;
-                        }
-                        if (a.name > b.name) {
-                            return 1;
-                        }
-                        return 0;
-                    });
+                    .sort((a, b) => sortOrder(a.name, b.name));
 
                 if (sortedArticles.length > 0) {
                     promotionContent.push({
@@ -40,15 +34,7 @@ export function promotionDisplayer(promotion) {
             });
     }
 
-    promotionContent = promotionContent.sort((a, b) => {
-        if (a.articles[0].name < b.articles[0].name) {
-            return -1;
-        }
-        if (a.articles[0].name > b.articles[0].name) {
-            return 1;
-        }
-        return 0;
-    });
+    promotionContent = promotionContent.sort((a, b) => sortOrder(a.articles[0].name, b.articles[0].name));
 
     return promotionContent;
 }

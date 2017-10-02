@@ -14,7 +14,9 @@ const state = {
     reloads       : [],
     refunds       : [],
     purchases     : [],
-    meansofpayment: []
+    meansofpayment: [],
+    prices        : [],
+    rights        : []
 };
 
 // mutations
@@ -30,15 +32,19 @@ const mutations = {
     ADDOBJECTS(state_, data) {
         state_[data.route].push(...data.objects);
     },
-    UPDATEOBJECT(state_, data) {
-        const i = state_[data.route].findIndex(o => (o.id === data.object.id));
+    UPDATEOBJECTS(state_, data) {
+        data.objects.forEach((object) => {
+            const i = state_[data.route].findIndex(o => (o.id === object.id));
 
-        state_[data.route][i] = Object.assign({}, state_[data.route][i], data.object);
+            state_[data.route].splice(i, 1, object);
+        });
     },
-    DELETEOBJECT(state_, data) {
-        const i = state_[data.route].findIndex(o => (o.id === data.object.id));
+    DELETEOBJECTS(state_, data) {
+        data.objects.forEach((object) => {
+            const i = state_[data.route].findIndex(o => (o.id === object.id));
 
-        state_[data.route].splice(i, 1);
+            state_[data.route].splice(i, 1);
+        });
     }
 };
 

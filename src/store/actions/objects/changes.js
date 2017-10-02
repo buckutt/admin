@@ -22,15 +22,15 @@ export function initListeners({ dispatch, state }) {
     state.changes.socket.on('update', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
         if (doc.data.to.isRemoved) {
-            dispatch('checkAndDeleteObject', { route, object: doc.data.to });
+            dispatch('checkAndDeleteObjects', { route, objects: [doc.data.to] });
         } else {
-            dispatch('checkAndUpdateObject', { route, object: doc.data.to });
+            dispatch('checkAndUpdateObjects', { route, objects: [doc.data.to] });
         }
     });
 
     state.changes.socket.on('delete', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
-        dispatch('checkAndDeleteObject', { route, object: doc.data.to });
+        dispatch('checkAndDeleteObjects', { route, objects: [doc.data.to] });
     });
 }
 

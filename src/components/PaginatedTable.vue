@@ -32,18 +32,18 @@
                                     <span v-else>{{ lodget(data, header.field) }}</span>
                                 </td>
                                 <td class="mdl-data-table__cell--non-numeric b-actions-cell" v-if="actions">
-                                    <mdl-button :id="`b-table-${index}`" icon>
+                                    <mdl-button :id="`b-table-${index}-${tableId}`" icon>
                                         <i class="material-icons">more_vert</i>
                                     </mdl-button>
-                                    <mdl-menu :for="`b-table-${index}`">
-                                        <template v-for="action in actions">
+                                    <mdl-menu :for="`b-table-${index}-${tableId}`">
+                                        <template v-for="(action, index3) in actions">
                                             <template v-if="action.type">
                                                 <b-confirm :disabled="!displayAction(action, data)"
                                                     v-if="action.type === 'confirm'"
                                                     @confirm="callback(action.action, data)">
                                                     <mdl-menu-item
                                                         :disabled="!displayAction(action, data)"
-                                                        :key="data.ref">
+                                                        :key="`table_${index}_${index3}`">
                                                         {{ action.text }}
                                                     </mdl-menu-item>
                                                 </b-confirm>
@@ -51,14 +51,14 @@
                                                     <mdl-menu-item
                                                         :disabled="!displayAction(action, data)"
                                                         @click.native="displayAction(action, data) && callback(action.action, data)"
-                                                        :key="data.ref"
+                                                        :key="`table_${index}_${index3}`"
                                                         v-if="!data[action.field]">
                                                         {{ action.text1 }}
                                                     </mdl-menu-item>
                                                     <mdl-menu-item
                                                         :disabled="!displayAction(action, data)"
                                                         @click.native="displayAction(action, data) && callback(action.action, data)"
-                                                        :key="data.ref"
+                                                        :key="`table_${index}_${index3}`"
                                                         v-else>
                                                         {{ action.text2 }}
                                                     </mdl-menu-item>
@@ -68,7 +68,7 @@
                                                 <mdl-menu-item
                                                     :disabled="!displayAction(action, data)"
                                                     @click.native="displayAction(action, data) && callback(action.action, data)"
-                                                    :key="data.ref">
+                                                    :key="`table_${index}_${index3}`">
                                                     {{ action.text }}
                                                 </mdl-menu-item>
                                             </template>
@@ -104,8 +104,9 @@
 </template>
 
 <script>
-import lodget from 'lodash.get';
-import fuzzy  from 'fuzzy';
+import lodget    from 'lodash.get';
+import fuzzy     from 'fuzzy';
+import sortOrder from '../lib/sortOrder';
 import '../lib/price';
 import '../lib/date';
 
@@ -139,7 +140,8 @@ export default {
         return {
             page   : 1,
             coordsX: 0,
-            coordsY: 0
+            coordsY: 0,
+            tableId: new Date().getTime().toString()
         };
     },
 
@@ -196,20 +198,8 @@ export default {
             let transformedData = this.filteredData.slice();
 
             if (this.sort) {
-                transformedData = transformedData.sort((a, b) => {
-                    const aField = a[this.sort.field].toLowerCase();
-                    const bField = b[this.sort.field].toLowerCase();
-
-                    if (aField < bField) {
-                        return (this.sort.order !== 'DESC') ? -1 : 1;
-                    }
-
-                    if (aField > bField) {
-                        return (this.sort.order !== 'DESC') ? 1 : -1;
-                    }
-
-                    return 0;
-                });
+                transformedData = transformedData
+                    .sort((a, b) => sortOrder(a[this.sort.field], b[this.sort.field], this.sort.order));
             }
 
             if (this.paging) {

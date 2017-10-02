@@ -2,10 +2,7 @@
     <transition name="slide">
         <div class="b-sidebar" v-show="logged">
             <h1>Buckless</h1>
-            <ul class="b-sidebar__eventSelector">
-                <li v-if="currentEvent">
-                    Événement: <strong>{{ currentEvent.name }}</strong>
-                </li>
+            <ul>
                 <li>
                     <router-link to="/" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                         <i class="material-icons">home</i>
@@ -21,34 +18,20 @@
             </ul>
             <transition name="fade">
                 <ul v-if="isConfigured">
+                    <li class="b-sidebar__eventDisplayer">
+                        Événement<br />
+                        <strong>{{ currentEvent.name }}</strong>
+                    </li>
                     <li>
                         <router-link to="/stats" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                             <i class="material-icons">insert_chart</i>
-                            Statistiques
+                            Tableau de bord
                         </router-link>
                     </li>
                     <li>
                         <router-link to="/purchases" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                             <i class="material-icons">shopping_cart</i>
                             Achats
-                        </router-link>
-                    </li>
-                    <li>
-                        <router-link to="/devices" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                            <i class="material-icons">devices</i>
-                            Équipements
-                        </router-link>
-                    </li>
-                    <li v-if="currentEvent.config.hasFundations">
-                        <router-link to="/fundations" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                            <i class="material-icons">local_atm</i>
-                            Fondations
-                        </router-link>
-                    </li>
-                    <li>
-                        <router-link to="/points" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                            <i class="material-icons">location_on</i>
-                            Points
                         </router-link>
                     </li>
                     <li v-if="currentEvent.config.hasPeriods">
@@ -58,33 +41,15 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/articles" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                            <i class="material-icons">view_module</i>
-                            Articles
+                        <router-link to="/wikets" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">location_on</i>
+                            Points de vente
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/promotions" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                            <i class="material-icons">stars</i>
-                            Promotions
-                        </router-link>
-                    </li>
-                    <li>
-                        <router-link to="/categories" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                            <i class="material-icons">format_list_numbered</i>
-                            Catégories
-                        </router-link>
-                    </li>
-                    <li>
-                        <router-link to="/users" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                            <i class="material-icons">person</i>
-                            Utilisateurs
-                        </router-link>
-                    </li>
-                    <li v-if="currentEvent.config.hasGroups">
-                        <router-link to="/groups" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
-                            <i class="material-icons">group</i>
-                            Groupes
+                        <router-link to="/participants" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">nature_people</i>
+                            Participants
                         </router-link>
                     </li>
                 </ul>
@@ -106,10 +71,7 @@ export default {
             'logged'
         ]),
         isConfigured() {
-            if (this.currentEvent) {
-                return isEventConfigured(this.currentEvent);
-            }
-            return false;
+            return (this.currentEvent) ? isEventConfigured(this.currentEvent) : false;
         }
     }
 };
@@ -163,23 +125,15 @@ export default {
             & > li:hover {
                 background-color: lighten(var(--sidebarBackground), 10%);
             }
-        }
 
-        & > .b-sidebar__eventSelector {
-            & > li {
-                &:first-child {
-                    padding-left: 10px;
-                    padding-right: 10px;
-                    font-family: 'Roboto', sans-serif;
-                    color: var(--sidebarColor);
-                }
+            & > .b-sidebar__eventDisplayer {
+                color: var(--sidebarColor) !important;
+                text-align: center;
+                padding-left: 5px;
+                padding-right: 5px;
 
-                & label {
-                    color: var(--sidebarColor) !important;
-                }
-
-                &:nth-child(6) {
-                    margin-bottom: 30px;
+                & > strong {
+                    font-size: 18px;
                 }
             }
         }

@@ -24,7 +24,7 @@ export default {
         }),
         displayedTabs() {
             const tabs = [
-                { route: '', name: 'Détails' },
+                { route: '', name: 'Détails', exact: true },
                 { route: 'edit', name: 'Édition' },
                 { route: 'refund', name: 'Remboursement' },
                 { route: 'mol', name: 'Identifiants' },

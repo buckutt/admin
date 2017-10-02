@@ -24,7 +24,7 @@
                 class="b-completelist mdl-shadow--2dp"
                 ref="menu"
                 v-if="displayInput || displayMenu"
-                @mouseover="displayMenu = true"
+                @mouseenter="displayMenu = true"
                 @mouseout="displayMenu = false">
                 <li
                     v-for="(suggestion, index) in suggestions"
@@ -67,10 +67,11 @@ export default {
 
     data() {
         return {
-            content     : '',
-            displayInput: false,
-            displayMenu : false,
-            activeIndex : 0
+            content         : '',
+            displayInput    : false,
+            displayMenu     : false,
+            activeIndex     : 0,
+            ignoreNextUpdate: false
         };
     },
 
@@ -92,8 +93,9 @@ export default {
             this.$refs.textfield.MaterialTextfield.change(suggestion.name);
             this.$refs.textfield.MaterialTextfield.boundBlurHandler();
             this.$refs.input.blur();
-            this.content     = suggestion.name;
-            this.displayMenu = false;
+            this.content          = suggestion.name;
+            this.displayMenu      = false;
+            this.ignoreNextUpdate = true;
             this.$emit('input', suggestion.value);
         },
         changeInput(content) {
@@ -101,6 +103,7 @@ export default {
                 return this.select(this.suggestions[0]);
             }
 
+            this.ignoreNextUpdate = true;
             this.$emit('input', undefined);
         },
         convertOptions(options) {
@@ -133,6 +136,18 @@ export default {
             const object = this.suggestions
                 .find(suggestion => (JSON.stringify(this.value) === JSON.stringify(suggestion.value)));
             this.select(object);
+        }
+    },
+
+    watch: {
+        value(newValue) {
+            if (this.ignoreNextUpdate) {
+                this.ignoreNextUpdate = false;
+                return;
+            }
+
+            this.content = newValue;
+            this.$refs.textfield.MaterialTextfield.change(newValue);
         }
     }
 };
