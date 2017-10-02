@@ -1,7 +1,7 @@
 <template>
     <div class="b-promotions__contentManager">
         <div>
-            <h5>Contenu de la promotion:</h5>
+            <h5>Contenu de la formule:</h5>
             <transition name="fade">
                 <div class="b-responsive-table">
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="displayedPromotion.length > 0">

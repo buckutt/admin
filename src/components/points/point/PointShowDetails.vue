@@ -1,9 +1,9 @@
 <template>
     <div>
-        <h5>Détails du point</h5>
+        <h5>Détails du guichet</h5>
         <b-list :elements="elements"></b-list>
 
-        <h5 v-if="categories.length > 0">Catégories liées au point</h5>
+        <h5 v-if="categories.length > 0">Catégories liées au guichet</h5>
         <b-list :elements="categories" :columns="3"></b-list>
     </div>
 </template>

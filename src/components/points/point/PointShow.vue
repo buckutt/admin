@@ -3,7 +3,7 @@
         <div class="mdl-card mdl-shadow--2dp">
             <b-navbar
                 :title="title"
-                :tabs="[{ route: '', name: 'Détails' }, { route: 'edit', name: 'Édition' }, { route: 'categories', name: 'Catégories' }]"
+                :tabs="[{ route: '', name: 'Détails', exact: true }, { route: 'edit', name: 'Édition' }, { route: 'categories', name: 'Catégories' }]"
                 :inCard="true"
                 :goBack="true"
                 :level="2">
@@ -22,7 +22,7 @@ export default {
             modObject: state => state.app.modObject
         }),
         title() {
-            return `Point ${this.modObject.name}`;
+            return `Guichet ${this.modObject.name}`;
         }
     }
 };

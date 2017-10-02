@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h5>Catégories du point:</h5>
+        <h5>Catégories du guichet:</h5>
         <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="category in modObject.categories" :key="category.id">
             <span class="mdl-chip__text">{{ category.name }}</span>
             <b-confirm @confirm="removeFromPoint(modObject, category)" class="b--inline">

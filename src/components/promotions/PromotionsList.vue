@@ -1,8 +1,8 @@
 <template>
     <div>
-        <h5>Liste des promotions</h5>
+        <h5>Liste des formules</h5>
         <b-table
-            :headers="[{ title: 'Promotion', field: 'name', object: true }]"
+            :headers="[{ title: 'Formule', field: 'name', object: true }]"
             :data="promotions"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[

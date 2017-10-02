@@ -1,10 +1,10 @@
 <template>
     <div>
-        <h5>Détails de la promotion</h5>
+        <h5>Détails de la formule</h5>
         <b-list :elements="elements"></b-list>
 
         <template v-if="displayedPromotion.length > 0">
-            <h5>Contenu de la promotion</h5>
+            <h5>Contenu de la formule</h5>
             <div class="b-responsive-table--nofullwidth">
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                     <tbody>
@@ -34,7 +34,7 @@
         </template>
 
         <template v-for="pricePerPoint in prices">
-            <h5>Prix de la promotion sur le point {{ pricePerPoint.point }}</h5>
+            <h5>Prix de la formule sur le point {{ pricePerPoint.point }}</h5>
             <b-list :elements="pricePerPoint.prices" :columns="3"></b-list>
         </template>
     </div>

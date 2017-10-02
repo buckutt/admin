@@ -89,7 +89,7 @@ export function load({ state, dispatch }) {
 
     const objectsToFetch = [];
     routes.forEach((route) => {
-        objectsToFetch.push(dispatch('fetchObjects', route));
+        objectsToFetch.push(dispatch('fetchObjects', { route }));
     });
 
     Promise.all(objectsToFetch)

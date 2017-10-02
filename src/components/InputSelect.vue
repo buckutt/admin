@@ -8,6 +8,10 @@
             @input="changeInput(content)"
             @focus="displayInput = true"
             @blur="displayInput = false"
+            @keydown.up.prevent.stop="up()"
+            @keydown.down.prevent.stop="down()"
+            @keydown.enter.prevent.stop="select(suggestions[activeIndex])"
+            @keydown.tab="displayMenu = false"
             ref="input"
             autocomplete="off" />
         <label :for="id">
@@ -20,9 +24,14 @@
                 class="b-completelist mdl-shadow--2dp"
                 ref="menu"
                 v-if="displayInput || displayMenu"
-                @mouseover="displayMenu = true"
+                @mouseenter="displayMenu = true"
                 @mouseout="displayMenu = false">
-                <li v-for="suggestion in suggestions" @click="select(suggestion)" class="b-completelist__item">
+                <li
+                    v-for="(suggestion, index) in suggestions"
+                    @click="select(suggestion)"
+                    @mouseover="activeIndex = index"
+                    class="b-completelist__item"
+                    :class="{ 'b-completelist__item-active': (index === activeIndex) }">
                     {{ suggestion.name }}
                 </li>
             </ul>
@@ -58,9 +67,11 @@ export default {
 
     data() {
         return {
-            content     : '',
-            displayInput: false,
-            displayMenu : false
+            content         : '',
+            displayInput    : false,
+            displayMenu     : false,
+            activeIndex     : 0,
+            ignoreNextUpdate: false
         };
     },
 
@@ -81,8 +92,10 @@ export default {
         select(suggestion) {
             this.$refs.textfield.MaterialTextfield.change(suggestion.name);
             this.$refs.textfield.MaterialTextfield.boundBlurHandler();
-            this.content     = suggestion.name;
-            this.displayMenu = false;
+            this.$refs.input.blur();
+            this.content          = suggestion.name;
+            this.displayMenu      = false;
+            this.ignoreNextUpdate = true;
             this.$emit('input', suggestion.value);
         },
         changeInput(content) {
@@ -90,12 +103,29 @@ export default {
                 return this.select(this.suggestions[0]);
             }
 
+            this.ignoreNextUpdate = true;
             this.$emit('input', undefined);
         },
         convertOptions(options) {
             return options.map(option => (
                 (!option.name && !option.value) ? { name: option, value: option } : option
             ));
+        },
+        down() {
+            if (this.activeIndex + 1 >= this.suggestions.length) {
+                this.activeIndex = 0;
+                return;
+            }
+
+            this.activeIndex += 1;
+        },
+        up() {
+            if (this.activeIndex <= 0) {
+                this.activeIndex = this.suggestions.length - 1;
+                return;
+            }
+
+            this.activeIndex -= 1;
         }
     },
 
@@ -106,6 +136,18 @@ export default {
             const object = this.suggestions
                 .find(suggestion => (JSON.stringify(this.value) === JSON.stringify(suggestion.value)));
             this.select(object);
+        }
+    },
+
+    watch: {
+        value(newValue) {
+            if (this.ignoreNextUpdate) {
+                this.ignoreNextUpdate = false;
+                return;
+            }
+
+            this.content = newValue;
+            this.$refs.textfield.MaterialTextfield.change(newValue);
         }
     }
 };
@@ -148,7 +190,7 @@ export default {
         padding: 0 16px;
     }
 
-    .b-completelist__item:hover {
+    .b-completelist__item-active {
         background: #EEEEEE;
         transition: all 0.1s ease-in-out;
     }

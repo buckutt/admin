@@ -1,7 +1,8 @@
 <template>
     <div class="mdl-card mdl-shadow--2dp">
         <h3 class="b--capitalized">Bienvenue {{ loggedUser.firstname }} {{ loggedUser.lastname }}.</h3>
-        Sélectionnez l'événement auquel souhaitez accéder:<br />
+        Avant de commencer, n'oubliez pas de remplir vos différentes banques d'objets, via la barre située en haut de votre écran.<br /><br />
+        Ensuite, sélectionnez l'événement auquel souhaitez accéder:<br />
         <div class="b-home__eventContainer">
             <b-eventtile
                 v-for="event in events"
@@ -86,10 +87,9 @@ export default {
 </script>
 
 <style>
-    @import '../../variables.css';
-
     .b-home__eventContainer {
         display: flex;
+        flex-wrap: wrap;
 
         & > div {
             margin: 10px;

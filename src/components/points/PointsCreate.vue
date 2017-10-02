@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h5>Créer un point</h5>
+        <h5>Créer un guichet</h5>
         <form @submit.prevent="createPoint(newPoint)">
             <mdl-textfield floating-label="Nom" v-model="newPoint.name" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
@@ -30,11 +30,11 @@ export default {
         createPoint(point) {
             this.createObject({ route: 'points', value: point })
                 .then((createdPoint) => {
-                    this.notify({ message: 'Le point a bien été créé' });
+                    this.notify({ message: 'Le guichet a bien été créé' });
                     this.$router.push(`/points/${createdPoint.id}`);
                 })
                 .catch(err => this.notifyError({
-                    message: 'Une erreur a eu lieu lors de la création du point',
+                    message: 'Une erreur a eu lieu lors de la création du guichet',
                     full   : err
                 }));
         }

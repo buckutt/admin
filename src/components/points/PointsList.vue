@@ -1,8 +1,8 @@
 <template>
     <div>
-        <h5>Liste des points</h5>
+        <h5>Liste des guichets</h5>
         <b-table
-            :headers="[{ title: 'Point', field: 'name', object: true }]"
+            :headers="[{ title: 'Guichet', field: 'name', object: true }]"
             :data="points"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[

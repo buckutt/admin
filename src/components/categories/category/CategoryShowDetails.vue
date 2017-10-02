@@ -27,7 +27,7 @@ export default {
         },
         articles() {
             return this.modObject.articles.map(article => ({
-                icon   : 'view_module',
+                icon   : 'free_breakfast',
                 content: article.name
             }));
         }

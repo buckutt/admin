@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h5>Prix de la promotion</h5>
+        <h5>Prix de la formule</h5>
         <form @submit.prevent="createPromotionPrice(modObject, newPrice)">
             <mdl-textfield floating-label="Montant TTC (centimes)" v-model="newPrice.amount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield>
             <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="newPrice.point"></b-inputselect>
@@ -75,10 +75,10 @@ export default {
             })
                 .then(() => {
                     this.newPrice = Object.assign({}, pricePattern);
-                    this.notify({ message: 'Le prix a bien été ajouté à la promotion' });
+                    this.notify({ message: 'Le prix a bien été ajouté à la formule' });
                 })
                 .catch(err => this.notifyError({
-                    message: 'Le prix n\'a pas pu être ajouté à la promotion',
+                    message: 'Le prix n\'a pas pu être ajouté à la formule',
                     full   : err
                 }));
         }
