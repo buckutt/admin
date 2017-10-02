@@ -86,6 +86,8 @@ export default {
                 align-items: center;
                 width: 50%;
                 flex: auto;
+                overflow: hidden;
+                margin-right: 5px;
 
                 & > i {
                     margin-right: 5px;

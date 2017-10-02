@@ -46,6 +46,7 @@ export const wiketCategories = (state) => {
 export const wiketTabsArticles = (state, getters) => {
     const now          = new Date();
     const event        = state.app.currentEvent;
+    const pointId      = state.route.params.id;
     const articles     = [];
     const promotions   = [];
     const tabsArticles = Object.assign([], getters.wiketCategories);
@@ -53,6 +54,7 @@ export const wiketTabsArticles = (state, getters) => {
     state.objects.prices
         .filter(price => (
             price.period.Event_id === event.id &&
+            price.Point_id === pointId &&
             new Date(price.period.end) >= now
         ))
         .forEach((price) => {
