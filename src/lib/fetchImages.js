@@ -15,7 +15,7 @@ export function getImage(id) {
         method: 'GET'
     });
 
-    return fetch(`${config.images}/image/${id}`, opts)
+    return fetch(`${config.images}/image/${id}?width=100&height=100`, opts)
         .then((res) => {
             if (res.status !== 200) {
                 return Promise.reject(res);
