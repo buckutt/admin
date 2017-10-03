@@ -11,6 +11,7 @@ export const wikets = (state) => {
             const devices = point.devices
                 .filter(device => (
                     device._through.period.Event_id === event.id &&
+                    !device.isRemoved &&
                     new Date(device._through.period.end) >= now
                 ));
 
@@ -59,6 +60,10 @@ export const wiketTabsArticles = (state, getters) => {
         ))
         .forEach((price) => {
             price.articles.forEach((article) => {
+                if (article.isRemoved) {
+                    return;
+                }
+
                 let articleIndex = articles.findIndex(a => article.id === a.id);
 
                 if (articleIndex === -1) {
@@ -72,6 +77,10 @@ export const wiketTabsArticles = (state, getters) => {
             });
 
             price.promotions.forEach((promotion) => {
+                if (promotion.isRemoved) {
+                    return;
+                }
+
                 let promotionIndex = promotions.findIndex(p => promotion.id === p.id);
 
                 if (promotionIndex === -1) {
