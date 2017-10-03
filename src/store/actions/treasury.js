@@ -36,11 +36,10 @@ export function getPurchases({ commit, dispatch }, fields) {
         .then((purchases) => {
             commit('CLEAROBJECT', 'purchases');
             const purchasesWT = purchases.map((purchase) => {
-                if (!purchase.totalWT) {
-                    purchase.totalWT = purchase.totalVAT;
-                }
+                const newPurchase   = Object.assign({}, purchase);
+                newPurchase.totalWT = newPurchase.totalTI - newPurchase.totalVAT;
 
-                return purchase;
+                return newPurchase;
             });
             dispatch('checkAndAddObjects', { route: 'purchases', objects: purchasesWT });
         });
