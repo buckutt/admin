@@ -38,6 +38,7 @@ export function getPurchases({ commit, dispatch }, fields) {
             const purchasesWT = purchases.map((purchase) => {
                 const newPurchase   = Object.assign({}, purchase);
                 newPurchase.totalWT = newPurchase.totalTI - newPurchase.totalVAT;
+                newPurchase.id      = newPurchase.name;
 
                 return newPurchase;
             });
@@ -92,13 +93,27 @@ export function getTreasury({ commit, dispatch }, fields) {
     return get(`services/treasury/reloads?${qString}`)
         .then((reloads) => {
             commit('CLEAROBJECT', 'reloads');
-            dispatch('checkAndAddObjects', { route: 'reloads', objects: reloads });
+            const idReloads = reloads.map((reload) => {
+                const newReload = Object.assign({}, reload);
+                newReload.id    = newReload.type;
+
+                return newReload;
+            });
+
+            dispatch('checkAndAddObjects', { route: 'reloads', objects: idReloads });
 
             return get(`services/treasury/refunds?${qString}`);
         })
         .then((refunds) => {
             commit('CLEAROBJECT', 'refunds');
-            dispatch('checkAndAddObjects', { route: 'refunds', objects: refunds });
+            const idRefunds = refunds.map((refund) => {
+                const newRefund = Object.assign({}, refund);
+                newRefund.id    = newRefund.type;
+
+                return newRefund;
+            });
+
+            dispatch('checkAndAddObjects', { route: 'refunds', objects: idRefunds });
 
             const relEmbed = encodeURIComponent(JSON.stringify(config.relations.transfers));
 
