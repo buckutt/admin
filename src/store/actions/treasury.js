@@ -95,7 +95,7 @@ export function getTreasury({ commit, dispatch }, fields) {
             commit('CLEAROBJECT', 'reloads');
             const idReloads = reloads.map((reload) => {
                 const newReload = Object.assign({}, reload);
-                newReload.id    = newReload.type;
+                newReload.id    = newReload.group;
 
                 return newReload;
             });
@@ -108,7 +108,7 @@ export function getTreasury({ commit, dispatch }, fields) {
             commit('CLEAROBJECT', 'refunds');
             const idRefunds = refunds.map((refund) => {
                 const newRefund = Object.assign({}, refund);
-                newRefund.id    = newRefund.type;
+                newRefund.id    = newRefund.group;
 
                 return newRefund;
             });
