@@ -38,7 +38,7 @@
             <b-table
                 :headers="[
                     { title: 'Moyen de paiement', field: 'type' },
-                    { title: 'Total', field: 'reduction', type: 'price' }
+                    { title: 'Total', field: 'credit', type: 'price' }
                 ]"
                 :data="displayedReloads">
             </b-table>
@@ -47,7 +47,7 @@
             <b-table
                 :headers="[
                     { title: 'Moyen de paiement', field: 'type' },
-                    { title: 'Total', field: 'reduction', type: 'price' }
+                    { title: 'Total', field: 'amount', type: 'price' }
                 ]"
                 :data="displayedRefunds">
             </b-table>
@@ -59,6 +59,7 @@
                     { title: 'À', field: 'reciever.fullname', class: 'b--capitalized' },
                     { title: 'Montant', field: 'amount', type: 'price' },
                 ]"
+                :paging="10"
                 :data="displayedTransfers">
             </b-table>
         </div>
@@ -93,31 +94,19 @@ export default {
             'pointOptions'
         ]),
         totalReload() {
-            let sum = 0;
-
-            this.reloads.forEach((reload) => {
-                sum += reload.reduction;
-            });
-
-            return sum;
+            return this.reloads
+                .map(reload => parseInt(reload.credit, 10))
+                .reduce((a, b) => a + b, 0);
         },
         totalRefund() {
-            let sum = 0;
-
-            this.refunds.forEach((refund) => {
-                sum += refund.reduction;
-            });
-
-            return sum;
+            return this.refunds
+                .map(refund => parseInt(refund.amount, 10))
+                .reduce((a, b) => a + b, 0);
         },
         totalTransfer() {
-            let sum = 0;
-
-            this.transfers.forEach((transfer) => {
-                sum += transfer.amount;
-            });
-
-            return sum;
+            return this.transfers
+                .map(transfer => parseInt(transfer.amount, 10))
+                .reduce((a, b) => a + b, 0);
         },
         pointOptionsAll() {
             const points = Object.assign([], this.pointOptions);
@@ -126,13 +115,13 @@ export default {
         },
         displayedReloads() {
             return this.reloads.map((reload) => {
-                reload.type = this.slugToName(reload.group);
+                reload.type = this.slugToName(reload.type);
                 return reload;
             });
         },
         displayedRefunds() {
             return this.refunds.map((refund) => {
-                refund.type = this.slugToName(refund.group);
+                refund.type = this.slugToName(refund.type);
                 return refund;
             });
         },

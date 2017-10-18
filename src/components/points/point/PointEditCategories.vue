@@ -39,26 +39,26 @@ export default {
 
     methods: {
         ...mapActions([
-            'createSimpleRelation',
-            'removeSimpleRelation',
+            'createRelation',
+            'removeRelation',
             'notify',
             'notifyError'
         ]),
         isInCurrentPoint(category) {
-            const index = this.modObject.categories.findIndex(c => (c.id === category.id));
-            return (index !== -1);
+            return this.modObject.categories.some(c => (c.id === category.id));
         },
         addToPoint(point, category) {
-            this.createSimpleRelation({
-                obj1: {
-                    route: 'points',
-                    value: point
-                },
-                obj2: {
-                    route: 'categories',
-                    value: category
-                }
-            })
+            this
+                .createRelation({
+                    obj1: {
+                        route: 'points',
+                        value: point
+                    },
+                    obj2: {
+                        route: 'categories',
+                        value: category
+                    }
+                })
                 .then(() => this.notify({ message: 'La catégorie a bien été liée au point' }))
                 .catch(err => this.notifyError({
                     message: 'La catégorie n\'a pas pu être liée au point',
@@ -66,16 +66,17 @@ export default {
                 }));
         },
         removeFromPoint(point, category) {
-            this.removeSimpleRelation({
-                obj1: {
-                    route: 'points',
-                    value: point
-                },
-                obj2: {
-                    route: 'categories',
-                    value: category
-                }
-            })
+            this
+                .removeRelation({
+                    obj1: {
+                        route: 'points',
+                        value: point
+                    },
+                    obj2: {
+                        route: 'categories',
+                        value: category
+                    }
+                })
                 .then(() => this.notify({ message: 'La catégorie a bien été supprimée du point' }))
                 .catch(err => this.notifyError({
                     message: 'La catégorie n\'a pas pu être supprimée du point',

@@ -4,7 +4,7 @@
         <form @submit.prevent="createUserRight(modObject, userRight)">
             <b-inputselect label="Droit" id="right-select" :options="rightsList" v-model="userRight.name"></b-inputselect>
             <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="userRight.point"></b-inputselect>
-            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="userRight.period" v-if="currentEvent.config.hasPeriods"></b-inputselect><br />
+            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="userRight.period" v-if="currentEvent.usePeriods"></b-inputselect><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
@@ -41,31 +41,28 @@ export default {
     methods: {
         ...mapActions([
             'removeObject',
-            'createMultipleRelation',
+            'createObject',
             'notify',
             'notifyError'
         ]),
         createUserRight(user, right) {
-            right.period = (this.currentEvent.config.hasPeriods) ? right.period : this.currentEvent.defaultPeriod;
+            right.period = (this.currentEvent.usePeriods) ? right.period : this.currentEvent.defaultPeriod;
 
-            right.Period_id = right.period.id;
+            right.period_id = right.period.id;
             delete right.period;
 
             if (right.point) {
-                right.Point_id = right.point.id;
+                right.point_id = right.point.id;
             }
             delete right.point;
 
-            this.createMultipleRelation({
-                obj: {
-                    route: 'users',
-                    value: user
-                },
-                relation: {
-                    route : 'rights',
-                    fields: right
-                }
-            })
+            right.user_id = user.id;
+
+            this
+                .createObject({
+                    route: 'rights',
+                    value: right
+                })
                 .then(() => this.notify({ message: 'Le droit a bien été créé' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la création du droit',
@@ -92,7 +89,7 @@ export default {
                 { title: 'Point', field: 'point.name' }
             ];
 
-            if (this.currentEvent.config.hasPeriods) {
+            if (this.currentEvent.usePeriods) {
                 columns.push({ title: 'Période', field: 'period.name' });
             }
 
@@ -100,14 +97,14 @@ export default {
         },
         displayedRights() {
             return (!this.modObject) ? [] : this.modObject.rights
-                .filter(right => (right.period.Event_id === this.currentEvent.id))
+                .filter(right => (right.period.event_id === this.currentEvent.id))
                 .map((right) => {
                     if (!right.point) {
                         right.point = { name: 'Aucun' };
                     }
 
-                    if (right.period.id !== this.currentEvent.DefaultPeriod_id
-                        && !this.currentEvent.config.hasPeriods) {
+                    if (right.period.id !== this.currentEvent.defaultPeriod_id
+                        && !this.currentEvent.usePeriods) {
                         right.warning = 'Une période autre que<br />celle par défaut est utilisée.';
                     }
 
@@ -115,7 +112,7 @@ export default {
                 });
         },
         disabledAdd() {
-            return (!this.userRight.name || (!this.userRight.period && this.currentEvent.config.hasPeriods));
+            return (!this.userRight.name || (!this.userRight.period && this.currentEvent.usePeriods));
         }
     }
 };

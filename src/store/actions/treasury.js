@@ -1,4 +1,6 @@
-import { get } from '../../lib/fetch';
+import { get }         from '../../lib/fetch';
+import queryString     from '../../lib/queryString';
+import routeToRelation from '../../lib/routeToRelation';
 
 /**
  * Purchases actions
@@ -38,7 +40,6 @@ export function getPurchases({ commit, dispatch }, fields) {
             const purchasesWT = purchases.map((purchase) => {
                 const newPurchase   = Object.assign({}, purchase);
                 newPurchase.totalWT = newPurchase.totalTI - newPurchase.totalVAT;
-                newPurchase.id      = newPurchase.name;
 
                 return newPurchase;
             });
@@ -56,39 +57,35 @@ export function getTreasury({ commit, dispatch }, fields) {
 
     if (fields.point) {
         q.push(`point=${fields.point.id}`);
-
-        qt.push(JSON.stringify({
-            field: 'Point_id',
-            eq   : fields.point.id
-        }));
     }
 
     if (fields.dateIn) {
         q.push(`dateIn=${fields.dateIn}`);
 
-        qt.push(JSON.stringify({
-            field: 'createdAt',
+        qt.push({
+            field: 'created_at',
             ge   : fields.dateIn,
             date : true
-        }));
+        });
     }
 
     if (fields.dateOut) {
         q.push(`dateOut=${fields.dateOut}`);
 
-        qt.push(JSON.stringify({
-            field: 'createdAt',
+        qt.push({
+            field: 'created_at',
             le   : fields.dateOut,
             date : true
-        }));
+        });
     }
 
     const qString = q
         .join('&');
 
-    const orQt = qt
-        .map(o => encodeURIComponent(o))
-        .join('&q[]=');
+    let orQt = queryString(qt);
+    if (orQt) {
+        orQt = `&q=${orQt}`;
+    }
 
     return get(`services/treasury/reloads?${qString}`)
         .then((reloads) => {
@@ -115,12 +112,12 @@ export function getTreasury({ commit, dispatch }, fields) {
 
             dispatch('checkAndAddObjects', { route: 'refunds', objects: idRefunds });
 
-            const relEmbed = encodeURIComponent(JSON.stringify(config.relations.transfers));
+            const relEmbed = routeToRelation('transfers');
 
-            return get(`transfers/search?q=${orQt}&embed=${relEmbed}`);
+            return get(`transfers?embed=${relEmbed}${orQt}`);
         })
         .then((transfers) => {
             commit('CLEAROBJECT', 'transfers');
-            dispatch('checkAndAddObjects', { route: 'transfers', objects: transfers.filter(t => !t.isRemoved) });
+            dispatch('checkAndAddObjects', { route: 'transfers', objects: transfers });
         });
 }

@@ -7,13 +7,13 @@
             <b-list :elements="rightPerPoint.rights" :columns="3"></b-list>
         </template>
 
-        <template v-if="!currentEvent.config.hasGroups">
+        <template v-if="!currentEvent.useGroups">
             <h5>Résumé des accès</h5>
             <p v-if="isInDefaultGroup">Cet utilisateur participe à l'événement sélectionné.</p>
             <p v-else>Cet utilisateur ne participe pas à l'événement sélectionné.</p>
         </template>
 
-        <template v-if="currentEvent.config.hasGroups">
+        <template v-if="currentEvent.useGroups">
             <h5>Résumé des groupes pour l'événement</h5>
             <template v-if="groups.length > 0">
                 <b-list :elements="groups" :columns="3"></b-list>
@@ -41,7 +41,7 @@ export default {
         }),
         filteredRights() {
             return (!this.modObject) ? [] : this.modObject.rights
-                .filter(right => (right.period.Event_id === this.currentEvent.id))
+                .filter(right => (right.period.event_id === this.currentEvent.id))
                 .map((right) => {
                     if (!right.point) {
                         right.point = { id: '0', name: 'Aucun' };
@@ -58,7 +58,7 @@ export default {
 
                 groupedRights[key].forEach(right => rightPerPoint.rights.push({
                     icon : 'assignment_turned_in',
-                    title: (this.currentEvent.config.hasPeriods) ?
+                    title: (this.currentEvent.usePeriods) ?
                         `Période ${right.period.name}` :
                         undefined,
                     content: right.name
@@ -70,14 +70,14 @@ export default {
             return rights;
         },
         groups() {
-            return (!this.modObject) ? [] : this.modObject.groups
-                .filter(group => (group._through.period.Event_id === this.currentEvent.id))
-                .map(group => ({
+            return (!this.modObject) ? [] : this.modObject.memberships
+                .filter(membership => (membership.period.event_id === this.currentEvent.id))
+                .map(membership => ({
                     icon : 'group',
-                    title: (this.currentEvent.config.hasPeriods) ?
-                        `Période ${group._through.period.name}` :
+                    title: (this.currentEvent.usePeriods) ?
+                        `Période ${membership.period.name}` :
                         undefined,
-                    content: group.name
+                    content: membership.group.name
                 }));
         },
         isInDefaultGroup() {

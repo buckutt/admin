@@ -39,8 +39,8 @@ export default {
 
     methods: {
         ...mapActions([
-            'createSimpleRelation',
-            'removeSimpleRelation',
+            'createRelation',
+            'removeRelation',
             'notify',
             'notifyError'
         ]),
@@ -49,16 +49,17 @@ export default {
             return (index !== -1);
         },
         addToCategory(category, article) {
-            this.createSimpleRelation({
-                obj1: {
-                    route: 'categories',
-                    value: category
-                },
-                obj2: {
-                    route: 'articles',
-                    value: article
-                }
-            })
+            this
+                .createRelation({
+                    obj1: {
+                        route: 'categories',
+                        value: category
+                    },
+                    obj2: {
+                        route: 'articles',
+                        value: article
+                    }
+                })
                 .then(() => this.notify({ message: 'L\'article a bien été lié à la catégorie' }))
                 .catch(err => this.notifyError({
                     message: 'L\'article n\'a pas pu être lié à la catégorie',
@@ -66,7 +67,7 @@ export default {
                 }));
         },
         removeFromCategory(category, article) {
-            this.removeSimpleRelation({
+            this.removeRelation({
                 obj1: {
                     route: 'categories',
                     value: category

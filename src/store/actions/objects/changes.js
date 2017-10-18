@@ -15,22 +15,20 @@ export function registerModels({ commit, state }, routes) {
 
 export function initListeners({ dispatch, state }) {
     state.changes.socket.on('create', (doc) => {
-        const route = state.changes.modelsToRoutes[doc.model];
-        dispatch('checkAndAddObjects', { route, objects: [doc.data.to] });
+        const route   = state.changes.modelsToRoutes[doc.model];
+        const objects = (Array.isArray) ? doc.data.to : [doc.data.to];
+
+        dispatch('checkAndAddObjects', { route, objects });
     });
 
     state.changes.socket.on('update', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
-        if (doc.data.to.isRemoved) {
-            dispatch('checkAndDeleteObjects', { route, objects: [doc.data.to] });
-        } else {
-            dispatch('checkAndUpdateObjects', { route, objects: [doc.data.to] });
-        }
+        dispatch('checkAndUpdateObjects', { route, objects: [doc.data.to] });
     });
 
     state.changes.socket.on('delete', (doc) => {
         const route = state.changes.modelsToRoutes[doc.model];
-        dispatch('checkAndDeleteObjects', { route, objects: [doc.data.to] });
+        dispatch('checkAndDeleteObjects', { route, objects: [doc.data.from] });
     });
 }
 

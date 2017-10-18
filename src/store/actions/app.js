@@ -1,6 +1,7 @@
-import lodget  from 'lodash.get';
-import Promise from 'bluebird';
-import { get } from '../../lib/fetch';
+import lodget          from 'lodash.get';
+import Promise         from 'bluebird';
+import { get }         from '../../lib/fetch';
+import routeToRelation from '../../lib/routeToRelation';
 
 /**
  * ModObject actions
@@ -22,6 +23,8 @@ export function updateModObject({ commit, state }, payload) {
     } else {
         commit('UPDATEMODOBJECTFIELD', payload);
     }
+
+    return Promise.resolve();
 }
 
 export function removeModObjectRelation({ commit }, payload) {
@@ -33,20 +36,16 @@ export function removeModObjectRelation({ commit }, payload) {
  */
 
 export function updateCurrentEvent({ dispatch }, currentEvent) {
-    const embedEvents = encodeURIComponent(JSON.stringify(config.relations.events));
+    const embedEvents = routeToRelation('events');
 
-    return new Promise((resolve, reject) => {
-        get(`events/${currentEvent.id}?embed=${embedEvents}`)
-            .then((result) => {
-                if (result.periods) {
-                    result.periods = result.periods.filter(period => !period.isRemoved);
-                }
+    return get(`events/${currentEvent.id}?embed=${embedEvents}`)
+        .then((result) => {
+            if (result.periods) {
+                result.periods = result.periods.filter(period => !period.isRemoved);
+            }
 
-                return dispatch('changeCurrentEvent', result);
-            })
-            .then(() => resolve())
-            .catch(() => reject());
-    });
+            return dispatch('changeCurrentEvent', result);
+        });
 }
 
 export function changeCurrentEvent({ commit }, currentEvent) {

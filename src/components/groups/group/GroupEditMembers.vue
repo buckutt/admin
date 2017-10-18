@@ -4,26 +4,27 @@
             <h5>Membres actuels</h5>
             <b-table
                 :headers="displayedColumns"
-                :data="groupUsers"
+                :data="memberships"
                 :actions="[
-                    { action: 'unlink', text: 'Supprimer', type: 'confirm' }
+                    { action: 'remove', text: 'Supprimer', type: 'confirm' }
                 ]"
+                route="memberships"
                 :paging="5"
-                @unlink="removeUserFromCurrentGroup">
+                @remove="removeObject">
             </b-table>
         </div>
         <div>
             <h5>Ajouter un membre</h5>
-            <div v-if="groupUser.user">
-                <form @submit.prevent="addUserToGroup(modObject, groupUser)">
-                    <mdl-textfield floating-label="Nom" :value="groupUser.user.fullname" disabled></mdl-textfield><br />
-                    <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="groupUser.period"></b-inputselect><br />
+            <div v-if="membership.user">
+                <form @submit.prevent="addUserToGroup(modObject, membership)">
+                    <mdl-textfield floating-label="Nom" :value="membership.user.fullname" disabled></mdl-textfield><br />
+                    <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="membership.period"></b-inputselect><br />
                     <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
                 </form>
                 <br />
                 <mdl-button colored raised accent @click.native="clearUser">Retour</mdl-button>
             </div>
-            <div v-if="!groupUser.user">
+            <div v-if="!membership.user">
                 <mdl-textfield floating-label="Nom/Prénom" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
                 <b-table
                     :headers="[{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' }]"
@@ -43,7 +44,7 @@
 import debounce from 'lodash.debounce';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
-const groupUserPattern = {
+const membershipPattern = {
     period: null,
     user  : null
 };
@@ -51,87 +52,58 @@ const groupUserPattern = {
 export default {
     data() {
         return {
-            userName : '',
-            groupUser: Object.assign({}, groupUserPattern)
+            userName  : '',
+            membership: Object.assign({}, membershipPattern)
         };
     },
 
     methods: {
         ...mapActions([
             'searchUsers',
-            'createSimpleRelation',
-            'removeSimpleRelation',
+            'createObject',
+            'removeObject',
             'notify',
             'notifyError'
         ]),
         selectUser(user) {
-            this.groupUser.user = user;
+            this.membership.user = user;
         },
         clearUser() {
-            this.groupUser.user = null;
+            this.membership.user = null;
         },
-        addUserToGroup(group, groupUser) {
-            const index = group.users.findIndex(u => (
-                u.id === groupUser.user.id && u._through.period.id === groupUser.period.id
+        addUserToGroup(group, membership) {
+            const index = group.memberships.findIndex(m => (
+                m.group.id === group.id && m.period.id === membership.period.id
             ));
 
             if (index > -1) {
                 return this.notifyError({ message: 'L\'utilisateur est déjà membre du groupe sur cette période.' });
             }
 
-            this.createSimpleRelation({
-                obj1: {
-                    route: 'users',
-                    value: groupUser.user
-                },
-                obj2: {
-                    route: 'groups',
-                    value: group
-                },
-                through: {
-                    obj  : 'period',
-                    field: 'Period_id',
-                    value: groupUser.period
-                }
-            })
+            const newMembership = {
+                group_id : group.id,
+                period_id: membership.period.id,
+                user_id  : membership.user.id
+            };
+
+            this
+                .createObject({
+                    route: 'memberships',
+                    value: newMembership
+                })
                 .then(() => this.notify({ message: 'L\'utilisateur a bien été ajouté au groupe' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err
                 }));
 
-            this.groupUser = Object.assign({}, groupUserPattern);
+            this.membership = Object.assign({}, membershipPattern);
         },
         addUserToCurrentGroup(user) {
             this.addUserToGroup(this.modObject, {
                 period: this.currentEvent.defaultPeriod,
                 user
             });
-        },
-        removeUserFromCurrentGroup(user) {
-            this.removeUserFromGroup(this.modObject, user);
-        },
-        removeUserFromGroup(group, user) {
-            this.removeSimpleRelation({
-                obj1: {
-                    route: 'users',
-                    value: user
-                },
-                obj2: {
-                    route: 'groups',
-                    value: group
-                },
-                through: {
-                    obj  : 'period',
-                    field: 'Period_id',
-                    value: user._through.period
-                }
-            })
-                .then(() => this.notify({ message: 'L\'utilisateur a bien été supprimé du groupe' }))
-                .catch(err => this.notifyError({
-                    message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
-                    full   : err
-                }));
         }
     },
 
@@ -145,30 +117,30 @@ export default {
             'periodOptions',
             'currentPeriodOptions'
         ]),
-        groupUsers() {
-            return (!this.modObject) ? [] : this.modObject.users
-                .filter(user => (user._through.period.Event_id === this.currentEvent.id))
-                .map((user) => {
-                    user.fullname = `${user.firstname} ${user.lastname}`;
+        memberships() {
+            return (!this.modObject) ? [] : this.modObject.memberships
+                .filter(membership => (membership.period.event_id === this.currentEvent.id))
+                .map((membership) => {
+                    membership.user.fullname = `${membership.user.firstname} ${membership.user.lastname}`;
 
-                    if (user._through.period.id !== this.currentEvent.DefaultPeriod_id
-                        && !this.currentEvent.config.hasPeriods) {
-                        user.warning = 'Une période autre que<br />celle par défaut est utilisée.';
+                    if (membership.period.id !== this.currentEvent.defaultPeriod_id
+                        && !this.currentEvent.usePeriods) {
+                        membership.warning = 'Une période autre que<br />celle par défaut est utilisée.';
                     }
 
-                    return user;
+                    return membership;
                 });
         },
         displayedColumns() {
-            const columns = [{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized' }];
-            if (this.currentEvent.config.hasPeriods) {
-                columns.push({ title: 'Période', field: '_through.period.name' });
+            const columns = [{ title: 'Utilisateur', field: 'user.fullname', class: 'b--capitalized' }];
+            if (this.currentEvent.usePeriods) {
+                columns.push({ title: 'Période', field: 'period.name' });
             }
 
             return columns;
         },
         displayedActions() {
-            return (this.currentEvent.config.hasPeriods) ?
+            return (this.currentEvent.usePeriods) ?
                 [{ action: 'select', text: 'Sélectionner', raised: true, colored: true }] :
                 [{ action: 'add', text: 'Ajouter', raised: true, colored: true }];
         },
@@ -179,7 +151,7 @@ export default {
             });
         },
         disabledAdd() {
-            return !this.groupUser.period;
+            return !this.membership.period;
         }
     },
 

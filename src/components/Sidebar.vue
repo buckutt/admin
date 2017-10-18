@@ -34,7 +34,7 @@
                             Achats
                         </router-link>
                     </li>
-                    <li v-if="currentEvent.config.hasPeriods">
+                    <li v-if="currentEvent.usePeriods">
                         <router-link to="/periods" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
                             <i class="material-icons">alarm</i>
                             Périodes

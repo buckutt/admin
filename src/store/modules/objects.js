@@ -16,7 +16,8 @@ const state = {
     purchases     : [],
     meansofpayment: [],
     prices        : [],
-    rights        : []
+    rights        : [],
+    wikets        : []
 };
 
 // mutations

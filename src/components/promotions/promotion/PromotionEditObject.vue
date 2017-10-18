@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import pick from 'lodash.pick';
 import { mapState, mapActions } from 'vuex';
 
 export default {
@@ -20,7 +21,9 @@ export default {
             'notifyError'
         ]),
         updatePromotion(promotion) {
-            this.updateObject({ route: 'promotions', value: promotion })
+            const fields = ['id', 'name'];
+
+            this.updateObject({ route: 'promotions', value: pick(promotion, fields) })
                 .then(() => this.notify({ message: 'La formule a bien été modifiée' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de la formule',

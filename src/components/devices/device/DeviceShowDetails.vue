@@ -41,17 +41,17 @@ export default {
                 }
             ];
         },
-        displayedPoints() {
-            return (!this.modObject) ? [] : this.modObject.points
-                .filter(point => (point._through.period.Event_id === this.currentEvent.id));
+        displayedWikets() {
+            return (!this.modObject) ? [] : this.modObject.wikets
+                .filter(wiket => (wiket.period.event_id === this.currentEvent.id));
         },
         assignments() {
-            return this.displayedPoints.map(point => ({
+            return this.displayedWikets.map(wiket => ({
                 icon : 'location_on',
-                title: (this.currentEvent.config.hasPeriods) ?
-                    `Période ${point._through.period.name}` :
+                title: (this.currentEvent.usePeriods) ?
+                    `Période ${wiket.period.name}` :
                     undefined,
-                content: point.name
+                content: wiket.point.name
             }));
         }
     }

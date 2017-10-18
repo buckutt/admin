@@ -2,10 +2,10 @@
     <div>
         <h5 class="b--capitalized">Modifier {{ modObject.firstname }} {{ modObject.lastname }}</h5>
         <form @submit.prevent="updateUser(modObject)">
-            <mdl-textfield floating-label="Nom" :value="modObject.lastname" @input="updateModObject({ field:'lastname', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
-            <mdl-textfield floating-label="Prénom" :value="modObject.firstname" @input="updateModObject({ field:'firstname', value: $event })" required="required" error="Le prénom doit contenir au moins un caractère"></mdl-textfield><br />
-            <mdl-textfield floating-label="Surnom" :value="modObject.nickname" @input="updateModObject({ field:'nickname', value: $event })"></mdl-textfield><br />
-            <mdl-textfield floating-label="Mail" :value="modObject.mail" @input="updateModObject({ field:'mail', value: $event })" required="required" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" error="L'adresse mail n'a pas le bon format"></mdl-textfield><br />
+            <mdl-textfield floating-label="Nom" :value="modObject.lastname" @input="updateModObject({ field: 'lastname', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+            <mdl-textfield floating-label="Prénom" :value="modObject.firstname" @input="updateModObject({ field: 'firstname', value: $event })" required="required" error="Le prénom doit contenir au moins un caractère"></mdl-textfield><br />
+            <mdl-textfield floating-label="Surnom" :value="modObject.nickname" @input="updateModObject({ field: 'nickname', value: $event })"></mdl-textfield><br />
+            <mdl-textfield floating-label="Mail" :value="modObject.mail" @input="updateModObject({ field: 'mail', value: $event })" required="required" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" error="L'adresse mail n'a pas le bon format"></mdl-textfield><br />
             <mdl-button colored raised>Modifier</mdl-button>
         </form>
         <h5>Sécurité</h5>
@@ -18,15 +18,16 @@
             <p v-show="newPassword">Le nouveau mot de passe généré est <strong>{{ newPassword }}</strong></p>
         </transition>
         <br />
-        <div v-if="!currentEvent.config.hasGroups">
+        <div v-if="!currentEvent.useGroups">
             <h5>Accès à l'événement</h5>
-            <mdl-button v-if="isUserInGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod)" @click.native="removeUserFromGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod)">Interdire {{ modObject.firstname }}</mdl-button>
+            <mdl-button v-if="isUserInGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod)" @click.native="removeMembership(isUserInGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod))">Interdire {{ modObject.firstname }}</mdl-button>
             <mdl-button v-else @click.native="addUserToGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod)">Autoriser {{ modObject.firstname }}</mdl-button>
         </div>
     </div>
 </template>
 
 <script>
+import pick from 'lodash.pick';
 import bcrypt from 'bcryptjs';
 import { mapState, mapActions } from 'vuex';
 import { randString } from '../../../lib/randString';
@@ -44,8 +45,7 @@ export default {
         ...mapActions([
             'createObject',
             'updateObject',
-            'createSimpleRelation',
-            'removeSimpleRelation',
+            'removeObject',
             'updateModObject',
             'notify',
             'notifyError'
@@ -59,10 +59,7 @@ export default {
                 pin: bcrypt.hashSync(pin, 10)
             };
 
-            this.updateObject({
-                route: 'users',
-                value: modUser
-            });
+            this.updateObject({ route: 'users', value: modUser });
         },
         regenPassword(user) {
             const password   = randString(8);
@@ -72,10 +69,7 @@ export default {
                 password: bcrypt.hashSync(password, 10)
             };
 
-            this.updateObject({
-                route: 'users',
-                value: modUser
-            });
+            this.updateObject({ route: 'users', value: modUser });
         },
         updateUser(user) {
             let existingMol = null;
@@ -89,7 +83,7 @@ export default {
             if (!existingMol) {
                 this.createObject({
                     route: 'meansOfLogin',
-                    value: { type: 'etuMail', data: user.mail, User_id: user.id }
+                    value: { type: 'etuMail', data: user.mail, user_id: user.id }
                 });
             } else {
                 existingMol.data = user.mail;
@@ -99,10 +93,9 @@ export default {
                 });
             }
 
-            this.updateObject({
-                route: 'users',
-                value: user
-            })
+            const fields = ['id', 'lastname', 'firstname', 'nickname', 'mail'];
+
+            this.updateObject({ route: 'users', value: pick(user, fields) })
                 .then(() => this.notify({ message: 'L\'utilisateur a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
@@ -113,43 +106,29 @@ export default {
             return isUserInGroup(user, group, period);
         },
         addUserToGroup(user, group, period) {
-            this.createSimpleRelation({
-                obj1: {
-                    route: 'users',
-                    value: user
-                },
-                obj2: {
-                    route: 'groups',
-                    value: group
-                },
-                through: {
-                    obj  : 'period',
-                    field: 'Period_id',
-                    value: period
-                }
-            })
+            const newMembership = {
+                user_id  : user.id,
+                period_id: period.id,
+                group_id : group.id
+            };
+
+            this
+                .createObject({
+                    route: 'memberships',
+                    value: newMembership
+                })
                 .then(() => this.notify({ message: 'L\'utilisateur a bien été autorisé' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err
                 }));
         },
-        removeUserFromGroup(user, group, period) {
-            this.removeSimpleRelation({
-                obj1: {
-                    route: 'users',
-                    value: user
-                },
-                obj2: {
-                    route: 'groups',
-                    value: group
-                },
-                through: {
-                    obj  : 'period',
-                    field: 'Period_id',
-                    value: period
-                }
-            })
+        removeMembership(membership) {
+            this
+                .removeObject({
+                    route: 'memberships',
+                    value: membership
+                })
                 .then(() => this.notify({ message: 'L\'utilisateur a bien été interdit' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',

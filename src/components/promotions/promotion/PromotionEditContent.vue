@@ -87,14 +87,18 @@ export default {
 
     methods: {
         ...mapActions([
-            'addArticleToPromotion',
+            'addStepToPromotion',
             'addArticleToStep',
             'removeArticleFromStep',
             'notify',
             'notifyError'
         ]),
         addArticleToCurrentPromotion(article) {
-            this.addArticleToPromotion({ promotion: this.modObject, article })
+            this
+                .addStepToPromotion({
+                    promotion: this.modObject,
+                    articles : [article]
+                })
                 .then(() => this.notify({ message: 'L\'article a bien été ajouté à la promotion.' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de l\'ajout à la promotion',
@@ -102,11 +106,12 @@ export default {
                 }));
         },
         addArticleToChosenStep(article) {
-            this.addArticleToStep({
-                article,
-                step     : this.displayedPromotion[this.chosenIndex],
-                promotion: this.modObject
-            })
+            this
+                .addArticleToStep({
+                    article,
+                    step     : this.displayedPromotion[this.chosenIndex],
+                    promotion: this.modObject
+                })
                 .then(() => this.notify({ message: 'L\'article a bien été ajouté à la promotion.' }))
                 .catch((err) => {
                     let message;
@@ -122,11 +127,12 @@ export default {
                 });
         },
         removeSelectedArticleFromStep(article, index) {
-            this.removeArticleFromStep({
-                article,
-                step     : this.displayedPromotion[index],
-                promotion: this.modObject
-            })
+            this
+                .removeArticleFromStep({
+                    article,
+                    step     : this.displayedPromotion[index],
+                    promotion: this.modObject
+                })
                 .then(() => this.notify({ message: 'L\'article a bien été supprimé de la promotion.' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la suppression de la promotion',

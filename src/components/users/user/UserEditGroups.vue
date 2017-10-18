@@ -1,20 +1,21 @@
 <template>
     <div>
         <h5>Groupes</h5>
-        <form @submit.prevent="addGroupToUser(modObject, groupUser)">
-            <b-inputselect label="Groupe" id="group-select" :options="groupOptions" v-model="groupUser.group"></b-inputselect>
-            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="groupUser.period" v-if="currentEvent.config.hasPeriods"></b-inputselect><br />
+        <form @submit.prevent="addGroupToUser(modObject, membership)">
+            <b-inputselect label="Groupe" id="group-select" :options="groupOptions" v-model="membership.group"></b-inputselect>
+            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="membership.period" v-if="currentEvent.usePeriods"></b-inputselect><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
         <b-table
             :headers="displayedColumns"
-            :data="displayedGroups"
+            :data="displayedMemberships"
             :actions="[
-                { action: 'unlink', text: 'Supprimer', type: 'confirm' }
+                { action: 'remove', text: 'Supprimer', type: 'confirm' }
             ]"
+            route="memberships"
             :paging="10"
-            @unlink="removeGroupFromCurrentUser">
+            @remove="removeObject">
         </b-table>
     </div>
 </template>
@@ -22,7 +23,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 
-const groupUserPattern = {
+const membershipPattern = {
     group : null,
     period: null
 };
@@ -30,76 +31,47 @@ const groupUserPattern = {
 export default {
     data() {
         return {
-            groupUser: Object.assign({}, groupUserPattern)
+            membership: Object.assign({}, membershipPattern)
         };
     },
 
     methods: {
         ...mapActions([
-            'createSimpleRelation',
-            'removeSimpleRelation',
+            'createObject',
+            'removeObject',
             'notify',
             'notifyError'
         ]),
-        addGroupToUser(user, groupUser) {
-            groupUser.period = (this.currentEvent.config.hasPeriods) ?
-                groupUser.period : this.currentEvent.defaultPeriod;
+        addGroupToUser(user, membership) {
+            membership.period = (this.currentEvent.usePeriods) ?
+                membership.period : this.currentEvent.defaultPeriod;
 
-            const index = user.groups.findIndex(g => (
-                g.id === groupUser.group.id && g._through.period.id === groupUser.period.id
+            const index = user.memberships.findIndex(m => (
+                m.group.id === membership.group.id && m.period.id === membership.period.id
             ));
 
             if (index > -1) {
                 return this.notifyError({ message: 'L\'utilisateur est déjà membre du groupe sur cette période.' });
             }
 
-            this.createSimpleRelation({
-                obj1: {
-                    route: 'users',
-                    value: user
-                },
-                obj2: {
-                    route: 'groups',
-                    value: groupUser.group
-                },
-                through: {
-                    obj  : 'period',
-                    field: 'Period_id',
-                    value: groupUser.period
-                }
-            })
+            const newMembership = {
+                group_id : membership.group.id,
+                period_id: membership.period.id,
+                user_id  : user.id
+            };
+
+            this
+                .createObject({
+                    route: 'memberships',
+                    value: newMembership
+                })
                 .then(() => this.notify({ message: 'L\'utilisateur a bien été ajouté au groupe' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err
                 }));
 
-            this.groupUser = Object.assign({}, groupUserPattern);
-        },
-        removeGroupFromCurrentUser(group) {
-            this.removeGroupFromUser(this.modObject, group);
-        },
-        removeGroupFromUser(user, group) {
-            this.removeSimpleRelation({
-                obj1: {
-                    route: 'users',
-                    value: user
-                },
-                obj2: {
-                    route: 'groups',
-                    value: group
-                },
-                through: {
-                    obj  : 'period',
-                    field: 'Period_id',
-                    value: group._through.period
-                }
-            })
-                .then(() => this.notify({ message: 'L\'utilisateur a bien été supprimé du groupe' }))
-                .catch(err => this.notifyError({
-                    message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
-                    full   : err
-                }));
+            this.membership = Object.assign({}, membershipPattern);
         }
     },
 
@@ -114,28 +86,28 @@ export default {
             'periodOptions'
         ]),
         displayedColumns() {
-            const columns = [{ title: 'Groupe', field: 'name' }];
+            const columns = [{ title: 'Groupe', field: 'group.name' }];
 
-            if (this.currentEvent.config.hasPeriods) {
-                columns.push({ title: 'Période', field: '_through.period.name' });
+            if (this.currentEvent.usePeriods) {
+                columns.push({ title: 'Période', field: 'period.name' });
             }
 
             return columns;
         },
-        displayedGroups() {
-            return (!this.modObject) ? [] : this.modObject.groups
-                .filter(group => (group._through.period.Event_id === this.currentEvent.id))
-                .map((group) => {
-                    if (group._through.period.id !== this.currentEvent.DefaultPeriod_id
-                        && !this.currentEvent.config.hasPeriods) {
-                        group.warning = 'Une période autre que<br />celle par défaut est utilisée.';
+        displayedMemberships() {
+            return (!this.modObject) ? [] : this.modObject.memberships
+                .filter(membership => (membership.period.event_id === this.currentEvent.id))
+                .map((membership) => {
+                    if (membership.period.id !== this.currentEvent.defaultPeriod_id
+                        && !this.currentEvent.usePeriods) {
+                        membership.warning = 'Une période autre que<br />celle par défaut est utilisée.';
                     }
 
-                    return group;
+                    return membership;
                 });
         },
         disabledAdd() {
-            return (!this.groupUser.group || (!this.groupUser.period && this.currentEvent.config.hasPeriods));
+            return (!this.membership.group || (!this.membership.period && this.currentEvent.usePeriods));
         }
     }
 };
