@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import pick from 'lodash.pick';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
@@ -40,8 +41,12 @@ export default {
             'notifyError'
         ]),
         updateDevice(device) {
-            device.DefaultGroup_id = device.defaultGroup.id;
-            this.updateObject({ route: 'devices', value: device })
+            const fields = ['id', 'name', 'defaultGroup_id', 'doubleValidation', 'alcohol', 'showPicture'];
+            if (device.defaultGroup) {
+                device.defaultGroup_id = device.defaultGroup.id;
+            }
+
+            this.updateObject({ route: 'devices', value: pick(device, fields) })
                 .then(() => this.notify({ message: 'L\'équipement a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'équipement',

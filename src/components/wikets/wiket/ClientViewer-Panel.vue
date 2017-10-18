@@ -13,13 +13,13 @@
                 <span>
                     <i class="material-icons">attach_money</i> {{ price.amount | price(true) }} TTC
                 </span>
-                <span v-if="currentEvent.config.hasPeriods">
+                <span v-if="currentEvent.usePeriods">
                     <i class="material-icons">alarm</i> {{ price.period.name }}
                 </span>
-                <span v-if="currentEvent.config.hasFundations">
+                <span v-if="currentEvent.useFundations">
                     <i class="material-icons">local_atm</i> {{ price.fundation.name }}
                 </span>
-                <span v-if="currentEvent.config.hasGroups">
+                <span v-if="currentEvent.useGroups">
                     <i class="material-icons">group</i> {{ price.group.name }}
                 </span>
                 <template v-if="generateWarning(price)">
@@ -87,18 +87,18 @@ export default {
         generateWarning(price) {
             let warning;
 
-            if (price.Fundation_id !== this.currentEvent.DefaultFundation_id
-                && !this.currentEvent.config.hasFundations) {
+            if (price.fundation_id !== this.currentEvent.DefaultFundation_id
+                && !this.currentEvent.useFundations) {
                 warning = 'Une fondation autre que<br />celle par défaut est utilisée.';
             }
 
-            if (price.Group_id !== this.currentEvent.DefaultGroup_id
-                && !this.currentEvent.config.hasGroups) {
+            if (price.group_id !== this.currentEvent.DefaultGroup_id
+                && !this.currentEvent.useGroups) {
                 warning = 'Un groupe autre que<br />celui par défaut est utilisé.';
             }
 
-            if (price.Period_id !== this.currentEvent.DefaultPeriod_id
-                && !this.currentEvent.config.hasPeriods) {
+            if (price.period_id !== this.currentEvent.DefaultPeriod_id
+                && !this.currentEvent.usePeriods) {
                 warning = 'Une période autre que<br />celle par défaut est utilisée.';
             }
 

@@ -17,10 +17,10 @@
                 <span>
                     <i class="material-icons">devices</i> {{ device.name }}
                 </span>
-                <span v-if="currentEvent.config.hasPeriods">
-                    <i class="material-icons">alarm</i> {{ device._through.period.name }}
+                <span v-if="currentEvent.usePeriods">
+                    <i class="material-icons">alarm</i> {{ device.period.name }}
                 </span>
-                <template v-else-if="device._through.period.id !== currentEvent.DefaultPeriod_id">
+                <template v-else-if="device.period.id !== currentEvent.defaultPeriod_id">
                     <mdl-tooltip :target="`wiket_${index}`" class="b--uncapitalize">
                         Une période autre que<br />celle par défaut est utilisée.
                     </mdl-tooltip>

@@ -1,4 +1,5 @@
-import { post, put } from '../../../lib/fetch';
+import { post, put, del } from '../../../lib/fetch';
+import routeToRelation    from '../../../lib/routeToRelation';
 
 /**
  * App actions
@@ -35,7 +36,7 @@ export function checkAndUpdateObjects({ commit, state }, data) {
         const objects = data.objects.filter((object) => {
             const foundObject = state.objects[data.route].find(o => (o.id === object.id));
             if (foundObject) {
-                return (foundObject.editedAt !== object.editedAt ||
+                return (foundObject.updated_at !== object.updated_at ||
                     (data.forceUpdate && JSON.stringify(foundObject) !== JSON.stringify(object)));
             }
 
@@ -66,7 +67,12 @@ export function checkAndDeleteObjects({ commit, dispatch, state }, data) {
 }
 
 export function createObject({ dispatch, state }, object) {
-    return post(object.route.toLowerCase(), object.value).then((result) => {
+    let embed = '';
+    if (routeToRelation(object.route)) {
+        embed = `?embed=${routeToRelation(object.route)}`;
+    }
+
+    return post(`${object.route.toLowerCase()}${embed}`, object.value).then((result) => {
         if (state.objects[object.route]) {
             dispatch('checkAndAddObjects', { route: object.route, objects: [result] });
         }
@@ -85,12 +91,13 @@ export function createObject({ dispatch, state }, object) {
 }
 
 export function updateObject({ dispatch, state }, object) {
-    return put(`${object.route.toLowerCase()}/${object.value.id}`, object.value).then((result) => {
-        if (result.isRemoved) {
-            dispatch('checkAndDeleteObjects', { route: object.route, objects: [result] });
-        } else {
-            dispatch('checkAndUpdateObjects', { route: object.route, objects: [result] });
-        }
+    let embed = '';
+    if (routeToRelation(object.route)) {
+        embed = `?embed=${routeToRelation(object.route)}`;
+    }
+
+    return put(`${object.route.toLowerCase()}/${object.value.id}${embed}`, object.value).then((result) => {
+        dispatch('checkAndUpdateObjects', { route: object.route, objects: [result] });
 
 
         if (state.app.modObject) {
@@ -107,8 +114,8 @@ export function updateObject({ dispatch, state }, object) {
 }
 
 export function removeObject({ dispatch, state }, object) {
-    return put(`${object.route.toLowerCase()}/${object.value.id}`, { isRemoved: true }).then((result) => {
-        dispatch('checkAndDeleteObjects', { route: object.route, objects: [result] });
+    return del(`${object.route.toLowerCase()}/${object.value.id}`).then(() => {
+        dispatch('checkAndDeleteObjects', { route: object.route, objects: [object.value] });
 
         if (state.app.modObject) {
             if (state.app.modObject[object.route]) {
@@ -119,6 +126,6 @@ export function removeObject({ dispatch, state }, object) {
             }
         }
 
-        return result;
+        return { deleted: true };
     });
 }

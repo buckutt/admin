@@ -23,21 +23,21 @@ export default {
                 {
                     icon   : 'local_drink',
                     title  : 'Unités alcool maximales par participant',
-                    content: (this.modObject.config.maxAlcohol > 0) ?
-                        this.modObject.config.maxAlcohol :
+                    content: (this.modObject.maxAlcohol > 0) ?
+                        this.modObject.maxAlcohol :
                         'Pas de limite'
                 },
                 {
                     icon   : 'attach_money',
                     type   : 'price',
                     title  : 'Rechargement minimal',
-                    content: this.modObject.config.minReload
+                    content: this.modObject.minReload
                 },
                 {
                     icon   : 'attach_money',
                     type   : 'price',
                     title  : 'Solde maximal',
-                    content: this.modObject.config.maxPerAccount
+                    content: this.modObject.maxPerAccount
                 }
             ];
         }

@@ -65,7 +65,7 @@ export default {
         },
         filteredPrices() {
             return (!this.modObject) ? [] : this.modObject.prices
-                .filter(price => (price.period.Event_id === this.currentEvent.id));
+                .filter(price => (price.period.event_id === this.currentEvent.id));
         },
         prices() {
             const prices        = [];
@@ -77,7 +77,7 @@ export default {
                 groupedPrices[key].forEach(price => pricePerPoint.prices.push({
                     icon : 'attach_money',
                     type : 'price',
-                    title: (this.currentEvent.config.hasPeriods) ?
+                    title: (this.currentEvent.usePeriods) ?
                         `Période ${price.period.name}` :
                         undefined,
                     content: price.amount

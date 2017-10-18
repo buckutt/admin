@@ -51,7 +51,7 @@ export default {
 
     mounted() {
         this.fetchObjectsAndRelations({ route: 'points' });
-        this.fetchObjectsAndRelations({ route: 'prices', filters: [{ field: 'Point_id', eq: this.modObject.id }] });
+        this.fetchObjectsAndRelations({ route: 'prices' });
 
         if (!this.params.category && this.displayedTabs[0]) {
             this.$router.push(`${this.fullPath}/${this.displayedTabs[0].route}`);

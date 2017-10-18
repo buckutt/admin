@@ -56,7 +56,7 @@ export default {
         ]),
         displayedPeriods() {
             const selectedPeriods = (this.displayOutdated) ? this.periods : this.currentPeriods;
-            return selectedPeriods.filter(period => (period.Event_id === this.currentEvent.id));
+            return selectedPeriods.filter(period => (period.event_id === this.currentEvent.id));
         }
     }
 };

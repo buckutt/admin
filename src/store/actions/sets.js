@@ -22,11 +22,10 @@ export function createSetWithArticles({ commit, dispatch }, payload) {
                 post(`sets/${result.id}/articles/${article.id}`);
             });
 
-            dispatch('updateModObject', {
+            return dispatch('updateModObject', {
                 newRelation: 'sets',
                 value      : {
-                    id  : result.id,
-                    name: set.name,
+                    id: result.id,
                     articles
                 }
             });
@@ -41,7 +40,7 @@ export function addArticleToSet({ dispatch, state }, payload) {
         value      : payload.article
     });
 
-    return dispatch('createSimpleRelation', {
+    return dispatch('createRelation', {
         obj1: {
             route: 'sets',
             value: payload.set
@@ -61,7 +60,7 @@ export function removeArticleFromSet({ dispatch, state }, payload) {
         value   : payload.article
     });
 
-    return dispatch('removeSimpleRelation', {
+    return dispatch('removeRelation', {
         obj1: {
             route: 'sets',
             value: payload.set

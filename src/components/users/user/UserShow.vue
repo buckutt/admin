@@ -31,7 +31,7 @@ export default {
                 { route: 'rights', name: 'Droits' }
             ];
 
-            if (this.currentEvent.config.hasGroups) {
+            if (this.currentEvent.useGroups) {
                 tabs.push({ route: 'groups', name: 'Groupes' });
             }
 

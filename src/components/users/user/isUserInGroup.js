@@ -1,12 +1,3 @@
 export function isUserInGroup(user, group, period) {
-    if (user.groups.length > 0) {
-        const index = user.groups.findIndex(g => (g.id === group.id));
-        if (index > -1) {
-            if (user.groups[index]._through.Period_id === period.id) {
-                return true;
-            }
-        }
-    }
-
-    return false;
+    return user.memberships.find(m => (m.group.id === group.id && m.period.id === period.id));
 }

@@ -3,10 +3,10 @@
         <div>
             <h5>Modifier l'article {{ modObject.name }}</h5>
             <form @submit.prevent="updateArticle(modObject)">
-                <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })"  required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
-                <mdl-textfield floating-label="Stock" :value="modObject.stock" @input="updateModObject({ field:'stock', value: $event })"></mdl-textfield><br />
-                <mdl-textfield floating-label="Alcool" :value="modObject.alcohol" @input="updateModObject({ field:'alcohol', value: $event })"></mdl-textfield>
-                <mdl-textfield floating-label="TVA (%, ex: 5.5)" :value="displayedVat" @input="updateModObject({ field:'vat', value: $event / 100 })"></mdl-textfield><br />
+                <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field: 'name', value: $event })"  required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+                <mdl-textfield floating-label="Stock" :value="modObject.stock" @input="updateModObject({ field: 'stock', value: $event })"></mdl-textfield><br />
+                <mdl-textfield floating-label="Alcool" :value="modObject.alcohol" @input="updateModObject({ field: 'alcohol', value: $event })"></mdl-textfield>
+                <mdl-textfield floating-label="TVA (%, ex: 5.5)" :value="displayedVat" @input="updateModObject({ field: 'vat', value: $event / 100 })"></mdl-textfield><br />
                 <mdl-button colored raised>Modifier</mdl-button>
             </form>
         </div>
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import pick from 'lodash.pick';
 import { mapState, mapActions } from 'vuex';
 import ImageUploader from '../../ImageUploader.vue';
 
@@ -34,7 +35,9 @@ export default {
             'notifyError'
         ]),
         updateArticle(article) {
-            this.updateObject({ route: 'articles', value: article })
+            const fields = ['id', 'name', 'stock', 'alcohol', 'vat'];
+
+            this.updateObject({ route: 'articles', value: pick(article, fields) })
                 .then(() => this.notify({ message: 'L\'article a bien été modifié' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de l\'article',

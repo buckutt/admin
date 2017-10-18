@@ -6,16 +6,16 @@
             <form @submit.prevent="filter()">
                 <div>
                     <b-inputselect label="Point" id="point-select" :options="pointOptionsAll" v-model="fields.point"></b-inputselect>
-                    <b-inputselect label="Fondation" id="fundation-select" :options="fundationOptionsAll" v-model="fields.fundation" v-if="currentEvent.config.hasFundations"></b-inputselect>
+                    <b-inputselect label="Fondation" id="fundation-select" :options="fundationOptionsAll" v-model="fields.fundation" v-if="currentEvent.useFundations"></b-inputselect>
                 </div>
                 <div>
-                    <div v-if="currentEvent.config.hasPeriods">
+                    <div v-if="currentEvent.usePeriods">
                         Recherche par:<br />
                         <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="0">Achats liés à une période en particulier</mdl-radio><br />
                         <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="1">Achats compris entre deux dates</mdl-radio>
                     </div>
                     <transition name="fade">
-                        <div v-show="dateChoice === 1 || !currentEvent.config.hasPeriods">
+                        <div v-show="dateChoice === 1 || !currentEvent.usePeriods">
                             <b-datetime-picker
                                 v-model="fields.dateIn"
                                 locale="fr"
@@ -41,7 +41,7 @@
                         </div>
                     </transition>
                     <transition name="fade">
-                        <div v-show="dateChoice === 0 && currentEvent.config.hasPeriods">
+                        <div v-show="dateChoice === 0 && currentEvent.usePeriods">
                             <b-inputselect label="Période" id="period-select" :options="currentPeriodOptionsAll" :fullOptions="periodOptionsAll" v-model="fields.period"></b-inputselect>
                         </div>
                     </transition>
@@ -59,6 +59,7 @@
                     { title: 'Total TTC', field: 'totalTI', type: 'price' },
                     { title: 'Total HT', field: 'totalWT', type: 'price' }
                 ]"
+                :paging="15"
                 :data="displayedPurchases">
             </b-table>
         </div>
@@ -103,22 +104,14 @@ export default {
             });
         },
         totalSell() {
-            let sum = 0;
-
-            this.displayedPurchases.forEach((purchase) => {
-                sum += purchase.totalTI;
-            });
-
-            return sum;
+            return this.displayedPurchases
+                .map(purchase => parseInt(purchase.totalTI, 10))
+                .reduce((a, b) => a + b, 0);
         },
         totalSellWT() {
-            let sum = 0;
-
-            this.displayedPurchases.forEach((purchase) => {
-                sum += purchase.totalWT;
-            });
-
-            return sum;
+            return this.displayedPurchases
+                .map(purchase => parseInt(purchase.totalWT, 10))
+                .reduce((a, b) => a + b, 0);
         },
         periodOptionsAll() {
             const periods = Object.assign([], this.periodOptions);

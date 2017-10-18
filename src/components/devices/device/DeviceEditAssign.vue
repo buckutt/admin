@@ -1,19 +1,20 @@
 <template>
     <div>
         <h5>Assigner l'équipement</h5>
-        <form @submit.prevent="addPointToDevice(modObject, devicePoint)">
-            <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="devicePoint.point"></b-inputselect>
-            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="devicePoint.period" v-if="currentEvent.config.hasPeriods"></b-inputselect>
+        <form @submit.prevent="addPointToDevice(modObject, wiket)">
+            <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="wiket.point"></b-inputselect>
+            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="wiket.period" v-if="currentEvent.usePeriods"></b-inputselect>
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <b-table
             :headers="displayedColumns"
-            :data="displayedPoints"
+            :data="displayedWikets"
             :actions="[
-                { action: 'unlink', text: 'Supprimer', type: 'confirm' }
+                { action: 'remove', text: 'Supprimer', type: 'confirm' }
             ]"
+            route="wikets"
             :paging="5"
-            @unlink="removePointFromCurrentDevice">
+            @remove="removeObject">
         </b-table>
     </div>
 </template>
@@ -22,7 +23,7 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { isPointUsedByEvent } from './isPointUsedByEvent';
 
-const devicePointPattern = {
+const wiketPattern = {
     point : null,
     period: null
 };
@@ -30,73 +31,47 @@ const devicePointPattern = {
 export default {
     data() {
         return {
-            devicePoint: Object.assign({}, devicePointPattern)
+            wiket: Object.assign({}, wiketPattern)
         };
     },
 
     methods: {
         ...mapActions([
-            'createSimpleRelation',
-            'removeSimpleRelation',
+            'createObject',
+            'removeObject',
             'notify',
             'notifyError'
         ]),
-        addPointToDevice(device, devicePoint) {
-            devicePoint.period = (this.currentEvent.config.hasPeriods) ?
-                devicePoint.period : this.currentEvent.defaultPeriod;
+        addPointToDevice(device, wiket) {
+            wiket.period = (this.currentEvent.usePeriods) ?
+                wiket.period : this.currentEvent.defaultPeriod;
 
-            if (isPointUsedByEvent(this.modObject.points, devicePoint)) {
+            if (isPointUsedByEvent(this.modObject.wikets, wiket)) {
                 return this.notifyError({
                     message: 'Le point est déjà utilisé par un autre événement pendant cette période'
                 });
             }
 
-            this.createSimpleRelation({
-                obj1: {
-                    route: 'devices',
-                    value: device
-                },
-                obj2: {
-                    route: 'points',
-                    value: devicePoint.point
-                },
-                through: {
-                    obj  : 'period',
-                    field: 'Period_id',
-                    value: devicePoint.period
-                }
-            })
+            const newWiket = {
+                point_id : wiket.point.id,
+                device_id: device.id
+            };
+
+            if (wiket.period) {
+                newWiket.period_id = wiket.period.id;
+            }
+
+            this
+                .createObject({
+                    route: 'wikets',
+                    value: newWiket
+                })
                 .then(() => {
-                    this.devicePoint = Object.assign({}, devicePointPattern);
+                    this.wiket = Object.assign({}, wiketPattern);
                     this.notify({ message: 'Le point a bien été lié à l\'équipement' });
                 })
                 .catch(err => this.notifyError({
                     message: 'Le point n\'a pas pu être lié à l\'équipement',
-                    full   : err
-                }));
-        },
-        removePointFromCurrentDevice(point) {
-            this.removePointFromDevice(this.modObject, point);
-        },
-        removePointFromDevice(device, point) {
-            this.removeSimpleRelation({
-                obj1: {
-                    route: 'devices',
-                    value: device
-                },
-                obj2: {
-                    route: 'points',
-                    value: point
-                },
-                through: {
-                    obj  : 'period',
-                    field: 'Period_id',
-                    value: point._through.period
-                }
-            })
-                .then(() => this.notify({ message: 'Le point a bien été supprimé de l\'équipement' }))
-                .catch(err => this.notifyError({
-                    message: 'Le point n\'a pas pu être supprimé de l\'équipement',
                     full   : err
                 }));
         }
@@ -113,27 +88,27 @@ export default {
             'pointOptions'
         ]),
         displayedColumns() {
-            const columns = [{ title: 'Point', field: 'name' }];
-            if (this.currentEvent.config.hasPeriods) {
-                columns.push({ title: 'Période', field: '_through.period.name' });
+            const columns = [{ title: 'Point', field: 'point.name' }];
+            if (this.currentEvent.usePeriods) {
+                columns.push({ title: 'Période', field: 'period.name' });
             }
 
             return columns;
         },
-        displayedPoints() {
-            return (!this.modObject) ? [] : this.modObject.points
-                .filter(point => (point._through.period.Event_id === this.currentEvent.id))
-                .map((point) => {
-                    if (point._through.period.id !== this.currentEvent.DefaultPeriod_id
-                        && !this.currentEvent.config.hasPeriods) {
-                        point.warning = 'Une période autre que<br />celle par défaut est utilisée.';
+        displayedWikets() {
+            return (!this.modObject) ? [] : this.modObject.wikets
+                .filter(wiket => (wiket.period.event_id === this.currentEvent.id))
+                .map((wiket) => {
+                    if (wiket.period.id !== this.currentEvent.defaultPeriod_id
+                        && !this.currentEvent.usePeriods) {
+                        wiket.warning = 'Une période autre que<br />celle par défaut est utilisée.';
                     }
 
-                    return point;
+                    return wiket;
                 });
         },
         disabledAdd() {
-            return (!this.devicePoint.period && this.currentEvent.config.hasPeriods) || !this.devicePoint.point;
+            return (!this.wiket.period && this.currentEvent.usePeriods) || !this.wiket.point;
         }
     }
 };

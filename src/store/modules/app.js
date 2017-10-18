@@ -24,17 +24,12 @@ const mutations = {
         const relations = lodget(state_.modObject, payload.relation).slice(0);
         const i         = relations.findIndex(o => (o.id === payload.value.id));
         if (i > -1) {
-            relations[i]    = payload.value;
+            relations[i] = payload.value;
             lodset(state_.modObject, payload.relation, relations);
         }
     },
     REMOVEMODOBJECTRELATION(state_, payload) {
-        const i = (payload.through) ?
-            lodget(state_.modObject, payload.relation).findIndex(o => (
-                o.id === payload.value.id &&
-                o._through[payload.through.field] === payload.through.value.id
-            )) :
-            lodget(state_.modObject, payload.relation).findIndex(o => (o.id === payload.value.id));
+        const i = lodget(state_.modObject, payload.relation).findIndex(o => (o.id === payload.value.id));
 
         if (i > -1) {
             lodget(state_.modObject, payload.relation).splice(i, 1);

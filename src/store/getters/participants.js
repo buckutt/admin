@@ -7,33 +7,33 @@ export const staff = (state) => {
 
     state.objects.rights
         .filter(right => (
-            right.period.Event_id === event.id &&
+            right.period.event_id === event.id &&
             new Date(right.period.end) >= now
         ))
         .forEach((right) => {
-            right.users.forEach((user) => {
-                let userIndex = staffList.findIndex(u => user.id === u.id);
+            const user = right.user;
 
-                if (userIndex === -1) {
-                    const newUser  = user;
-                    newUser.rights = [];
-                    userIndex = staffList.push(newUser) - 1;
-                }
+            let userIndex = staffList.findIndex(u => user.id === u.id);
 
-                let userPoint = right.point;
-                if (!userPoint) {
-                    userPoint = { name: 'Aucun' };
-                }
+            if (userIndex === -1) {
+                const newUser  = user;
+                newUser.rights = [];
+                userIndex = staffList.push(newUser) - 1;
+            }
 
-                staffList[userIndex].rights.push({
-                    name  : right.name,
-                    period: right.period,
-                    point : userPoint
-                });
+            let userPoint = right.point;
+            if (!userPoint) {
+                userPoint = { name: 'Aucun' };
+            }
 
-                staffList[userIndex].rights = staffList[userIndex].rights
-                    .sort((a, b) => sortOrder(a.name, b.name));
+            staffList[userIndex].rights.push({
+                name  : right.name,
+                period: right.period,
+                point : userPoint
             });
+
+            staffList[userIndex].rights = staffList[userIndex].rights
+                .sort((a, b) => sortOrder(a.name, b.name));
         });
 
     return staffList

@@ -2,18 +2,22 @@ import sortOrder from '../../lib/sortOrder';
 
 export const wikets = (state) => {
     const now        = new Date();
-    const event      = state.app.currentEvent;
     const points     = state.objects.points;
+    const event      = state.app.currentEvent;
     const wiketsList = [];
 
     points.forEach((point) => {
-        if (point.devices) {
-            const devices = point.devices
-                .filter(device => (
-                    device._through.period.Event_id === event.id &&
-                    !device.isRemoved &&
-                    new Date(device._through.period.end) >= now
-                ));
+        if (point.wikets) {
+            const devices = point.wikets
+                .filter(wiket => (
+                    wiket.period.event_id === event.id &&
+                    new Date(wiket.period.end) >= now &&
+                    wiket.device.id
+                ))
+                .map(wiket => ({
+                    ...wiket.device,
+                    period: wiket.period
+                }));
 
             if (devices.length > 0) {
                 wiketsList.push({
@@ -54,16 +58,13 @@ export const wiketTabsArticles = (state, getters) => {
 
     state.objects.prices
         .filter(price => (
-            price.period.Event_id === event.id &&
-            price.Point_id === pointId &&
+            price.period.event_id === event.id &&
+            price.point_id === pointId &&
             new Date(price.period.end) >= now
         ))
         .forEach((price) => {
-            price.articles.forEach((article) => {
-                if (article.isRemoved) {
-                    return;
-                }
-
+            if (price.article_id) {
+                const article    = price.article;
                 let articleIndex = articles.findIndex(a => article.id === a.id);
 
                 if (articleIndex === -1) {
@@ -74,13 +75,8 @@ export const wiketTabsArticles = (state, getters) => {
                 }
 
                 articles[articleIndex].prices.push(price);
-            });
-
-            price.promotions.forEach((promotion) => {
-                if (promotion.isRemoved) {
-                    return;
-                }
-
+            } else if (price.promotion_id) {
+                const promotion    = price.promotion;
                 let promotionIndex = promotions.findIndex(p => promotion.id === p.id);
 
                 if (promotionIndex === -1) {
@@ -91,7 +87,7 @@ export const wiketTabsArticles = (state, getters) => {
                 }
 
                 promotions[promotionIndex].prices.push(price);
-            });
+            }
         });
 
     return tabsArticles.map((tab) => {
@@ -101,7 +97,7 @@ export const wiketTabsArticles = (state, getters) => {
             id      : tab.id,
             name    : tab.name,
             articles: articles
-                .filter(article => article.categories.some(matchReqCategory))
+                .filter(article => (article.categories && article.categories.some(matchReqCategory)))
                 .sort((a, b) => sortOrder(a.name, b.name)),
             promotions: promotions
                 .sort((a, b) => sortOrder(a.name, b.name))

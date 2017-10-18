@@ -4,9 +4,9 @@
         <form @submit.prevent="createArticlePrice(modObject, newPrice)">
             <mdl-textfield floating-label="Montant TTC (centimes)" v-model="newPrice.amount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield>
             <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="newPrice.point"></b-inputselect>
-            <b-inputselect label="Fondation" id="fundation-select" :options="fundationOptions" v-model="newPrice.fundation" v-if="currentEvent.config.hasFundations"></b-inputselect><br />
-            <b-inputselect label="Groupe" id="group-select" :options="groupOptions" v-model="newPrice.group" v-if="currentEvent.config.hasGroups"></b-inputselect>
-            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="newPrice.period" v-if="currentEvent.config.hasPeriods"></b-inputselect><br />
+            <b-inputselect label="Fondation" id="fundation-select" :options="fundationOptions" v-model="newPrice.fundation" v-if="currentEvent.useFundations"></b-inputselect><br />
+            <b-inputselect label="Groupe" id="group-select" :options="groupOptions" v-model="newPrice.group" v-if="currentEvent.useGroups"></b-inputselect>
+            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="newPrice.period" v-if="currentEvent.usePeriods"></b-inputselect><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
         </form>
         <br />
@@ -45,35 +45,31 @@ export default {
     methods: {
         ...mapActions([
             'removeObject',
-            'createMultipleRelation',
+            'createObject',
             'notify',
             'notifyError'
         ]),
         createArticlePrice(article, price) {
-            price.fundation = (this.currentEvent.config.hasFundations) ?
+            price.fundation = (this.currentEvent.useFundations) ?
                 price.fundation : this.currentEvent.defaultFundation;
-            price.group     = (this.currentEvent.config.hasGroups) ? price.group : this.currentEvent.defaultGroup;
-            price.period    = (this.currentEvent.config.hasPeriods) ? price.period : this.currentEvent.defaultPeriod;
+            price.group     = (this.currentEvent.useGroups) ? price.group : this.currentEvent.defaultGroup;
+            price.period    = (this.currentEvent.usePeriods) ? price.period : this.currentEvent.defaultPeriod;
 
-            price.Fundation_id = price.fundation.id;
-            price.Group_id     = price.group.id;
-            price.Period_id    = price.period.id;
-            price.Point_id     = price.point.id;
+            price.fundation_id = price.fundation.id;
+            price.group_id     = price.group.id;
+            price.period_id    = price.period.id;
+            price.point_id     = price.point.id;
+            price.article_id   = article.id;
             delete price.fundation;
             delete price.group;
             delete price.period;
             delete price.point;
 
-            this.createMultipleRelation({
-                obj: {
-                    route: 'articles',
-                    value: article
-                },
-                relation: {
-                    route : 'prices',
-                    fields: price
-                }
-            })
+            this
+                .createObject({
+                    route: 'prices',
+                    value: price
+                })
                 .then(() => {
                     this.newPrice = Object.assign({}, pricePattern);
                     this.notify({ message: 'Le prix a bien été ajouté à l\'article' });
@@ -103,13 +99,13 @@ export default {
                 { title: 'Point', field: 'point.name' }
             ];
 
-            if (this.currentEvent.config.hasFundations) {
+            if (this.currentEvent.useFundations) {
                 columns.push({ title: 'Fondation', field: 'fundation.name' });
             }
-            if (this.currentEvent.config.hasGroups) {
+            if (this.currentEvent.useGroups) {
                 columns.push({ title: 'Groupe', field: 'group.name' });
             }
-            if (this.currentEvent.config.hasPeriods) {
+            if (this.currentEvent.usePeriods) {
                 columns.push({ title: 'Période', field: 'period.name' });
             }
 
@@ -117,20 +113,20 @@ export default {
         },
         displayedPrices() {
             return (!this.modObject) ? [] : this.modObject.prices
-                .filter(price => (price.period.Event_id === this.currentEvent.id))
+                .filter(price => (price.period.event_id === this.currentEvent.id))
                 .map((price) => {
-                    if (price.Fundation_id !== this.currentEvent.DefaultFundation_id
-                        && !this.currentEvent.config.hasFundations) {
+                    if (price.fundation_id !== this.currentEvent.defaultFundation_id
+                        && !this.currentEvent.useFundations) {
                         price.warning = 'Une fondation autre que<br />celle par défaut est utilisée.';
                     }
 
-                    if (price.Group_id !== this.currentEvent.DefaultGroup_id
-                        && !this.currentEvent.config.hasGroups) {
+                    if (price.group_id !== this.currentEvent.defaultGroup_id
+                        && !this.currentEvent.useGroups) {
                         price.warning = 'Un groupe autre que<br />celui par défaut est utilisé.';
                     }
 
-                    if (price.Period_id !== this.currentEvent.DefaultPeriod_id
-                        && !this.currentEvent.config.hasPeriods) {
+                    if (price.period_id !== this.currentEvent.defaultPeriod_id
+                        && !this.currentEvent.usePeriods) {
                         price.warning = 'Une période autre que<br />celle par défaut est utilisée.';
                     }
 
@@ -143,9 +139,9 @@ export default {
                 });
         },
         disabledAdd() {
-            return ((!this.newPrice.fundation && this.currentEvent.config.hasFundations)
-                || (!this.newPrice.period && this.currentEvent.config.hasPeriods)
-                || (!this.newPrice.group && this.currentEvent.config.hasGroups)
+            return ((!this.newPrice.fundation && this.currentEvent.useFundations)
+                || (!this.newPrice.period && this.currentEvent.usePeriods)
+                || (!this.newPrice.group && this.currentEvent.useGroups)
                 || !this.newPrice.point);
         }
     }

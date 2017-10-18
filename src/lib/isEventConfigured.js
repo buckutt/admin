@@ -1,14 +1,11 @@
 export function isEventConfigured(event) {
     if (!event) {
-        return true;
+        return false;
     }
-
-    if (event.config) {
-        if (event.config.hasGroups !== null
-            && event.config.hasFundations !== null
-            && event.config.hasGroups !== null) {
-            return true;
-        }
+    if (event.useGroups !== null
+        && event.useFundations !== null
+        && event.usePeriods !== null) {
+        return true;
     }
     return false;
 }

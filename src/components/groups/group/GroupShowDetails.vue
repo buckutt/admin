@@ -5,8 +5,8 @@
 
         <h5>Membres du groupe</h5>
         <b-table
-            :headers="[{ title: 'Utilisateur', field: 'fullname' }]"
-            :data="groupUsers"
+            :headers="[{ title: 'Utilisateur', field: 'user.fullname' }]"
+            :data="memberships"
             :paging="10">
         </b-table>
     </div>
@@ -30,12 +30,12 @@ export default {
                 }
             ];
         },
-        groupUsers() {
-            return (!this.modObject) ? [] : this.modObject.users
-                .filter(user => (user._through.period.Event_id === this.currentEvent.id))
-                .map((user) => {
-                    user.fullname = `${user.firstname} ${user.lastname}`;
-                    return user;
+        memberships() {
+            return (!this.modObject) ? [] : this.modObject.memberships
+                .filter(membership => (membership.period.event_id === this.currentEvent.id))
+                .map((membership) => {
+                    membership.user.fullname = `${membership.user.firstname} ${membership.user.lastname}`;
+                    return membership;
                 });
         }
     }

@@ -16,12 +16,12 @@ export const eventOptions = state => (
 
 export const periodOptions = state => (
     (!state.app.currentEvent) ? [] : state.objects.periods
-        .filter(period => (period.Event_id === state.app.currentEvent.id))
+        .filter(period => (period.event_id === state.app.currentEvent.id))
         .map(period => ({ name: period.name, value: period }))
 );
 
 export const currentPeriodOptions = (state, getters) => (
     (!state.app.currentEvent) ? [] : getters.currentPeriods
-        .filter(period => (period.Event_id === state.app.currentEvent.id))
+        .filter(period => (period.event_id === state.app.currentEvent.id))
         .map(period => ({ name: period.name, value: period }))
 );

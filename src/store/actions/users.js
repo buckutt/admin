@@ -10,7 +10,7 @@ export function createUserWithMol({ dispatch, state }, user) {
     return post('users', user)
         .then((result) => {
             if (result.mail) {
-                post('meansoflogin', { type: 'etuMail', data: result.mail, User_id: result.id });
+                post('meansoflogin', { type: 'etuMail', data: result.mail, user_id: result.id });
             }
 
             dispatch('checkAndAddObjects', { route: 'users', objects: [result] });
@@ -20,55 +20,25 @@ export function createUserWithMol({ dispatch, state }, user) {
         .then((newUser) => {
             createdUser = newUser;
 
-            return dispatch('createSimpleRelation', {
-                obj1: {
-                    route: 'users',
-                    value: newUser
-                },
-                obj2: {
-                    route: 'groups',
-                    value: state.app.currentEvent.defaultGroup
-                },
-                through: {
-                    obj  : 'period',
-                    field: 'Period_id',
-                    value: state.app.currentEvent.defaultPeriod
+            return dispatch('createObject', {
+                route: 'memberships',
+                value: {
+                    user_id  : createdUser.id,
+                    group_id : state.app.currentEvent.defaultGroup_id,
+                    period_id: state.app.currentEvent.defaultPeriod_id
                 }
             });
         })
         .then(() => createdUser);
 }
 
-export function searchUsers({ commit, dispatch }, name) {
+export function searchUsers({ dispatch }, name) {
     return get(`services/manager/searchuser?name=${name}`)
         .then((results) => {
+            dispatch('clearObject', 'users');
             if (results.length > 0) {
-                const q = [];
-
-                results.forEach((result) => {
-                    q.push(JSON.stringify({
-                        field: 'id',
-                        eq   : result.id
-                    }));
-                });
-
-                const orQ = q
-                    .map(o => encodeURIComponent(o))
-                    .join('&or[]=');
-
-                return get(`users/search?q=${orQ}&embed=${encodeURIComponent(JSON.stringify(config.relations.users))}`);
+                dispatch('checkAndAddObjects', { route: 'users', objects: results });
             }
             return [];
-        })
-        .then((results) => {
-            commit('CLEAROBJECT', 'users');
-            const users = results.map((result) => {
-                Object.keys(config.relations.users).forEach((key) => {
-                    result[key] = result[key].filter(rel => !rel.isRemoved);
-                });
-
-                return result;
-            });
-            dispatch('checkAndAddObjects', { route: 'users', objects: users });
         });
 }

@@ -2,7 +2,7 @@
     <div>
         <h5>Modifier la période</h5>
         <form @submit.prevent="updatePeriod(modObject)">
-            <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+            <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
             <span v-if="isPeriodProtected">Il n'est pas possible de modifier le début ainsi que la fin de la période par défaut de l'événement.</span>
             <b-datetime-picker
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import pick from 'lodash.pick';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
@@ -50,7 +51,9 @@ export default {
             'notifyError'
         ]),
         updatePeriod(period) {
-            this.updateObject({ route: 'periods', value: period })
+            const fields = ['id', 'name', 'start', 'end'];
+
+            this.updateObject({ route: 'periods', value: pick(period, fields) })
                 .then(() => this.notify({ message: 'La période a bien été modifiée' }))
                 .catch(err => this.notifyError({
                     message: 'Une erreur a eu lieu lors de la modification de la période',

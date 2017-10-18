@@ -4,9 +4,9 @@
         <b-table
             :headers="[
                 { title: 'Évenement', field: 'name', object: true },
-                { title: 'Rechargement minimal', field: 'config.minReload', type: 'price' },
-                { title: 'Solde maximal', field: 'config.maxPerAccount', type: 'price' },
-                { title: 'Alcool maximal', field: 'config.maxAlcohol' }
+                { title: 'Rechargement minimal', field: 'minReload', type: 'price' },
+                { title: 'Solde maximal', field: 'maxPerAccount', type: 'price' },
+                { title: 'Alcool maximal', field: 'maxAlcohol' }
             ]"
             :data="events"
             :sort="{ field: 'name', order: 'ASC' }"
