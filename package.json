@@ -18,7 +18,7 @@
     "start": "static dist --host-address 0.0.0.0 --port 8082"
   },
   "dependencies": {
-    "@buckless/datetime-picker": "^0.1.8",
+    "@buckless/datetime-picker": "^0.1.9",
     "anytime": "^1.4.2",
     "autoprefixer": "^7.1.5",
     "bcryptjs": "^2.3.0",
