@@ -19,8 +19,8 @@ export function refundUser({ state, dispatch }, refundData) {
                 amount   : refundData.refund.amount,
                 trace    : refundData.refund.trace,
                 type     : refundData.refund.type,
-                Seller_id: state.app.loggedUser.id,
-                Buyer_id : refundedUser.id
+                seller_id: state.app.loggedUser.id,
+                buyer_id : refundedUser.id
             };
 
             return dispatch('createObject', {
