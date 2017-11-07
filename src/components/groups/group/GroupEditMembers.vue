@@ -141,8 +141,12 @@ export default {
         },
         displayedActions() {
             return (this.currentEvent.usePeriods) ?
-                [{ action: 'select', text: 'Sélectionner', raised: true, colored: true }] :
-                [{ action: 'add', text: 'Ajouter', raised: true, colored: true }];
+                [{
+                    action : 'select', text   : 'Sélectionner', raised : true, colored: true
+                }] :
+                [{
+                    action : 'add', text   : 'Ajouter', raised : true, colored: true
+                }];
         },
         displayedUsers() {
             return this.users.map((user) => {

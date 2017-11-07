@@ -1,6 +1,7 @@
 @import './variables.css';
 @import './mixins.css';
 @import './spinner.css';
+@import './styles/c3.css';
 @import './styles/select.css';
 @import './styles/modal.css';
 

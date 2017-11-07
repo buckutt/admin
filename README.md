@@ -1,7 +1,7 @@
 # Admin
 
-[![dependencies Status](https://david-dm.org/buckless/admin/status.png)](https://david-dm.org/buckless/admin)
-[![Build Status](https://travis-ci.org/buckless/admin.svg?branch=master)](https://travis-ci.org/buckless/admin)
+[![dependencies Status](https://david-dm.org/buckless-team/admin/status.png)](https://david-dm.org/buckless-team/admin)
+[![Build Status](https://travis-ci.org/buckless-team/admin.svg?branch=master)](https://travis-ci.org/buckless-team/admin)
 
 > Buckless Administration Tool
 

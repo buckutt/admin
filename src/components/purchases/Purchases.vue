@@ -9,42 +9,29 @@
                     <b-inputselect label="Fondation" id="fundation-select" :options="fundationOptionsAll" v-model="fields.fundation" v-if="currentEvent.useFundations"></b-inputselect>
                 </div>
                 <div>
-                    <div v-if="currentEvent.usePeriods">
-                        Recherche par:<br />
-                        <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="0">Achats liés à une période en particulier</mdl-radio><br />
-                        <mdl-radio v-model="dateChoice" class="mdl-js-ripple-effect" :val="1">Achats compris entre deux dates</mdl-radio>
-                    </div>
-                    <transition name="fade">
-                        <div v-show="dateChoice === 1 || !currentEvent.usePeriods">
-                            <b-datetime-picker
-                                v-model="fields.dateIn"
-                                locale="fr"
-                                header-format="DD MMM"
-                                cancel="Annuler"
-                                next="Suivant"
-                                back="Retour"
-                                pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
-                                error="Le début n'est pas une date"
-                                label="Début"
-                                class="b--limitsize"></b-datetime-picker>
-                            <b-datetime-picker
-                                v-model="fields.dateOut"
-                                locale="fr"
-                                header-format="DD MMM"
-                                cancel="Annuler"
-                                next="Suivant"
-                                back="Retour"
-                                pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
-                                error="La fin n'est pas une date"
-                                label="Fin"
-                                class="b--limitsize"></b-datetime-picker>
-                        </div>
-                    </transition>
-                    <transition name="fade">
-                        <div v-show="dateChoice === 0 && currentEvent.usePeriods">
-                            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptionsAll" :fullOptions="periodOptionsAll" v-model="fields.period"></b-inputselect>
-                        </div>
-                    </transition>
+                    <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-if="currentEvent.usePeriods" @input="fillDates"></b-inputselect>
+                    <b-datetime-picker
+                        v-model="fields.dateIn"
+                        locale="fr"
+                        header-format="DD MMM"
+                        cancel="Annuler"
+                        next="Suivant"
+                        back="Retour"
+                        pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
+                        error="Le début n'est pas une date"
+                        label="Début"
+                        class="b--limitsize b--inline"></b-datetime-picker>
+                    <b-datetime-picker
+                        v-model="fields.dateOut"
+                        locale="fr"
+                        header-format="DD MMM"
+                        cancel="Annuler"
+                        next="Suivant"
+                        back="Retour"
+                        pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
+                        error="La fin n'est pas une date"
+                        label="Fin"
+                        class="b--limitsize b--inline"></b-datetime-picker>
                 </div>
                 <mdl-button colored raised>Rechercher</mdl-button>
             </form>
@@ -74,8 +61,7 @@ const fieldsPattern = {
     point    : null,
     fundation: null,
     dateIn   : null,
-    dateOut  : null,
-    period   : null
+    dateOut  : null
 };
 
 export default {
@@ -113,16 +99,6 @@ export default {
                 .map(purchase => parseInt(purchase.totalWT, 10))
                 .reduce((a, b) => a + b, 0);
         },
-        periodOptionsAll() {
-            const periods = Object.assign([], this.periodOptions);
-            periods.unshift({ name: 'Toutes', value: null });
-            return periods;
-        },
-        currentPeriodOptionsAll() {
-            const periods = Object.assign([], this.currentPeriodOptions);
-            periods.unshift({ name: 'Toutes', value: null });
-            return periods;
-        },
         pointOptionsAll() {
             const points = Object.assign([], this.pointOptions);
             points.unshift({ name: 'Tous', value: null });
@@ -145,13 +121,6 @@ export default {
             const inputFields = JSON.parse(JSON.stringify(this.fields));
             let isFilled      = false;
 
-            if (this.dateChoice === 0) {
-                delete inputFields.dateIn;
-                delete inputFields.dateOut;
-            } else {
-                delete inputFields.period;
-            }
-
             Object.keys(inputFields).forEach((key) => {
                 if (inputFields[key]) {
                     isFilled = true;
@@ -172,6 +141,12 @@ export default {
                     message: 'Une erreur a eu lieu lors du calcul des achats',
                     full   : err
                 }));
+        },
+        fillDates(period) {
+            if (period) {
+                this.fields.dateIn  = new Date(period.start);
+                this.fields.dateOut = new Date(period.end);
+            }
         }
     }
 };
