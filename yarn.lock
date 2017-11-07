@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@buckless/datetime-picker@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@buckless/datetime-picker/-/datetime-picker-0.2.1.tgz#0391b32be48d878cfb9c68c3d00f94d84137cc7f"
+"@buckless/datetime-picker@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@buckless/datetime-picker/-/datetime-picker-0.2.2.tgz#d17bbe0b399d94ed91806b2471a8d073aa32cdc3"
   dependencies:
     lodash "^4.16.4"
     rollup-plugin-livereload "^0.4.0"
