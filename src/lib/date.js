@@ -7,7 +7,7 @@ export function parseDate(date) {
 
     const dateJs = new Date(date);
 
-    if (isNaN(dateJs.getDate())) {
+    if (Number.isNaN(dateJs.getDate())) {
         return date;
     }
 

@@ -146,8 +146,15 @@ export default {
                 return;
             }
 
-            this.content = newValue;
-            this.$refs.textfield.MaterialTextfield.change(newValue);
+            const object = this.suggestions
+                .find(suggestion => (JSON.stringify(newValue) === JSON.stringify(suggestion.value)));
+
+            if (object) {
+                this.select(object);
+            } else {
+                this.content = newValue;
+                this.$refs.textfield.MaterialTextfield.change(newValue);
+            }
         }
     }
 };

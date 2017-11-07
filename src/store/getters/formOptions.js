@@ -1,9 +1,17 @@
+export const articleOptions = state => (
+    state.objects.articles.map(article => ({ name: article.name, value: article }))
+);
+
 export const groupOptions = state => (
     state.objects.groups.map(group => ({ name: group.name, value: group }))
 );
 
 export const pointOptions = state => (
     state.objects.points.map(point => ({ name: point.name, value: point }))
+);
+
+export const promotionOptions = state => (
+    state.objects.promotions.map(promotion => ({ name: promotion.name, value: promotion }))
 );
 
 export const fundationOptions = state => (

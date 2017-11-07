@@ -31,13 +31,6 @@ export function get(url, opts_) {
             }
 
             return res.json();
-        })
-        .then((results) => {
-            if (Array.isArray(results)) {
-                return results.filter(r => !r.isRemoved);
-            } else if (!results.isRemoved) {
-                return results;
-            }
         });
 }
 
