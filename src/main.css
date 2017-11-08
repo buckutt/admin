@@ -43,7 +43,6 @@ html, body, main {
     overflow: visible !important;
 }
 
-// AnyTime Picker
 .anytime-picker { display: none; position: absolute; top: 0; left: 0; }
 .anytime-picker--is-visible { display: block; }
 .anytime-picker__dates { width: 200px; }
@@ -134,7 +133,6 @@ html, body, main {
     width: 300px;
 }
 
-// Transitions
 .fade-enter-active, .fade-leave-active {
     transition: opacity .4s ease;
 }
