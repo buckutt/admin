@@ -1,7 +1,7 @@
 <template>
     <transition name="slide">
         <div class="b-sidebar" v-show="logged">
-            <h1>Buckless</h1>
+            <h1>{{ barName }}</h1>
             <ul>
                 <li>
                     <router-link to="/" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
@@ -72,6 +72,9 @@ export default {
         ]),
         isConfigured() {
             return (this.currentEvent) ? isEventConfigured(this.currentEvent) : false;
+        },
+        barName() {
+            return config.name;
         }
     }
 };
