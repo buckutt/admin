@@ -17,12 +17,6 @@
         <transition name="fade">
             <p v-show="newPassword">Le nouveau mot de passe généré est <strong>{{ newPassword }}</strong></p>
         </transition>
-        <br />
-        <div v-if="!currentEvent.useGroups">
-            <h5>Accès à l'événement</h5>
-            <mdl-button v-if="isUserInGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod)" @click.native="removeMembership(isUserInGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod))">Interdire {{ modObject.firstname }}</mdl-button>
-            <mdl-button v-else @click.native="addUserToGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod)">Autoriser {{ modObject.firstname }}</mdl-button>
-        </div>
     </div>
 </template>
 
@@ -31,7 +25,6 @@ import pick from 'lodash.pick';
 import bcrypt from 'bcryptjs';
 import { mapState, mapActions } from 'vuex';
 import { randString } from '../../../lib/randString';
-import { isUserInGroup } from './isUserInGroup';
 
 export default {
     data() {
@@ -45,7 +38,6 @@ export default {
         ...mapActions([
             'createObject',
             'updateObject',
-            'removeObject',
             'updateModObject',
             'notify',
             'notifyError'
@@ -101,46 +93,12 @@ export default {
                     message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
                     full   : err
                 }));
-        },
-        isUserInGroup(user, group, period) {
-            return isUserInGroup(user, group, period);
-        },
-        addUserToGroup(user, group, period) {
-            const newMembership = {
-                user_id  : user.id,
-                period_id: period.id,
-                group_id : group.id
-            };
-
-            this
-                .createObject({
-                    route: 'memberships',
-                    value: newMembership
-                })
-                .then(() => this.notify({ message: 'L\'utilisateur a bien été autorisé' }))
-                .catch(err => this.notifyError({
-                    message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
-                    full   : err
-                }));
-        },
-        removeMembership(membership) {
-            this
-                .removeObject({
-                    route: 'memberships',
-                    value: membership
-                })
-                .then(() => this.notify({ message: 'L\'utilisateur a bien été interdit' }))
-                .catch(err => this.notifyError({
-                    message: 'Une erreur a eu lieu lors de la modification de l\'utilisateur',
-                    full   : err
-                }));
         }
     },
 
     computed: {
         ...mapState({
-            currentEvent: state => state.app.currentEvent,
-            modObject   : state => state.app.modObject
+            modObject: state => state.app.modObject
         })
     }
 };

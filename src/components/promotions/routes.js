@@ -5,7 +5,6 @@ import PromotionsList       from './PromotionsList.vue';
 import PromotionShow        from './promotion/PromotionShow.vue';
 import PromotionShowDetails from './promotion/PromotionShowDetails.vue';
 import PromotionEditObject  from './promotion/PromotionEditObject.vue';
-import PromotionEditPrices  from './promotion/PromotionEditPrices.vue';
 import PromotionEditContent from './promotion/PromotionEditContent.vue';
 
 export default [
@@ -23,7 +22,6 @@ export default [
         children : [
             { path: '', component: PromotionShowDetails },
             { path: 'edit', component: PromotionEditObject },
-            { path: 'prices', component: PromotionEditPrices },
             { path: 'content', component: PromotionEditContent }
         ]
     }

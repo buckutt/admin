@@ -1,8 +1,8 @@
 <template>
     <router-link
         :to="toLink"
-        class="b-promotion mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect"
-        :class="{ 'b-promotion--selected': selected }">
+        class="b-promotion"
+        :class="{ 'b-promotion--selected': selected, 'b-promotion--gray': gray }">
         <i class="material-icons">stars</i>
         {{ promotion.name }}
     </router-link>
@@ -29,6 +29,9 @@ export default {
                 (this.selectedWiketItem.id === this.promotion.id && this.selectedWiketItem.type === 'promotion') :
                 false;
         },
+        gray() {
+            return this.promotion.prices.length === 0;
+        },
         toLink() {
             if (!this.params.article && !this.params.promotion) {
                 return `${this.fullPath}/promotion/${this.promotion.id}`;
@@ -54,13 +57,23 @@ export default {
         text-decoration: none;
         padding-left: 10px;
         color: #222 !important;
+        text-transform: uppercase;
+        padding: 7px 16px;
+
+        &:hover {
+            background-color: rgba(158,158,158,.2);
+        }
 
         & > i {
             margin-right: 10px;
         }
 
+        &--gray {
+            color: #848281 !important;
+        }
+
         &--selected {
-            background: #E1E1E1;
+            background: #E1E1E1 !important;
         }
     }
 </style>

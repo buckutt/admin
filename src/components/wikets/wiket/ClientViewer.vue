@@ -4,6 +4,7 @@
             <b-clientpanel></b-clientpanel>
         </div>
         <div class="b-clientviewer__items">
+            <p v-if="!wiketCurrentTab.articles || wiketCurrentTab.articles.length === 0">Aucun article à afficher ici.</p>
             <div class="b-clientviewer__articles">
                 <b-clientitem
                     v-for="article in wiketCurrentTab.articles"
@@ -12,7 +13,11 @@
                 </b-clientitem>
             </div>
             <div class="b-clientviewer__promotions" v-if="displayPromotions">
-                <strong>Formules</strong>
+                <div>
+                    <strong>Formules</strong>
+                    <i class="material-icons" id="promotitle">info</i>
+                    <mdl-tooltip target="promotitle">Seules les formules dont les items sont en vente dans le guichet apparaissent.</mdl-tooltip>
+                </div>
                 <b-clientpromotion
                     v-for="promotion in wiketCurrentTab.promotions"
                     :promotion="promotion"
@@ -24,7 +29,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters }  from 'vuex';
 import ClientItem      from './ClientViewer-Item';
 import ClientPanel     from './ClientViewer-Panel';
 import ClientPromotion from './ClientViewer-Promotion';
@@ -79,6 +84,16 @@ export default {
                 width: 20%;
                 margin: -10px 0px -20px 0px;
                 padding: 20px 0px 0px 20px;
+
+                & > div:first-child {
+                    display: flex;
+                    align-items: center;
+
+                    & > i {
+                        margin-left: 5px;
+                        margin-bottom: 2px;
+                    }
+                }
             }
         }
     }

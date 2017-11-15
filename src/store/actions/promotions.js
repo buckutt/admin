@@ -11,7 +11,7 @@ export function addStepToPromotion({ dispatch }, data) {
 }
 
 export function removeSetFromPromotion({ dispatch }, data) {
-    return dispatch('removeSimpleRelation', {
+    return dispatch('removeRelation', {
         obj1: {
             route: 'promotions',
             value: data.promotion

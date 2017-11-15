@@ -5,7 +5,6 @@ import ArticlesList       from './ArticlesList.vue';
 import ArticleShow        from './article/ArticleShow.vue';
 import ArticleShowDetails from './article/ArticleShowDetails.vue';
 import ArticleEditObject  from './article/ArticleEditObject.vue';
-import ArticleEditPrices  from './article/ArticleEditPrices.vue';
 
 export default [
     {
@@ -21,8 +20,7 @@ export default [
         component: ArticleShow,
         children : [
             { path: '', component: ArticleShowDetails },
-            { path: 'edit', component: ArticleEditObject },
-            { path: 'prices', component: ArticleEditPrices }
+            { path: 'edit', component: ArticleEditObject }
         ]
     }
 ];

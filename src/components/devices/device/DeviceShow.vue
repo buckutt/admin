@@ -3,7 +3,7 @@
         <div class="mdl-card mdl-shadow--2dp">
             <b-navbar
                 :title="title"
-                :tabs="[{ route: '', name: 'Détails', exact: true }, { route: 'edit', name: 'Édition' }, { route: 'assign', name: 'Assignation' }, { route: 'ssl', name: 'Certificat SSL' }]"
+                :tabs="[{ route: '', name: 'Détails', exact: true }, { route: 'edit', name: 'Édition' }, { route: 'ssl', name: 'Certificat SSL' }]"
                 :inCard="true"
                 :goBack="true"
                 :level="2">

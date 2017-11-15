@@ -1,34 +1,43 @@
 <template>
-    <router-link
-        :to="wiket.id"
-        append
+    <div
         class="tile-card-wiket mdl-card"
         :class="{ 'mdl-shadow--2dp': !active, 'mdl-shadow--8dp': active }"
-        @mouseover.native="active = true"
-        @mouseleave.native="active = false">
-        <div class="mdl-card__title mdl-card--expand">
-            <h4>
-                {{ wiket.point.name }}
-            </h4>
-        </div>
-        <div class="mdl-card__supporting-text">
-            Sur les équipements:
-            <div v-for="(device, index) in wiket.devices">
-                <span>
-                    <i class="material-icons">devices</i> {{ device.name }}
-                </span>
-                <span v-if="currentEvent.usePeriods">
-                    <i class="material-icons">alarm</i> {{ device.period.name }}
-                </span>
-                <template v-else-if="device.period.id !== currentEvent.defaultPeriod_id">
-                    <mdl-tooltip :target="`wiket_${index}`" class="b--uncapitalize">
-                        Une période autre que<br />celle par défaut est utilisée.
-                    </mdl-tooltip>
-                    <i :id="`wiket_${index}`" class="material-icons">warning</i>
-                </template>
+        @mouseover="active = true"
+        @mouseleave="active = false">
+        <div>
+            <div class="mdl-card__title mdl-card--expand">
+                <i class="material-icons">view_comfy</i>
+                <h6 class="b--capitalized">
+                    {{ point.name }}
+                </h6>
+            </div>
+            <div class="mdl-card__supporting-text">
+                Équipements:
+                <div v-for="(wiket, index) in point.wikets">
+                    <span>
+                        <i class="material-icons">devices</i> {{ wiket.device.name }}
+                    </span>
+                    <span v-if="currentEvent.usePeriods">
+                        <i class="material-icons">alarm</i> {{ wiket.period.name }}
+                    </span>
+                    <template v-else-if="wiket.period.id !== currentEvent.defaultPeriod_id">
+                        <mdl-tooltip :target="`point_${point.id}_${index}`" class="b--uncapitalize">
+                            Une période autre que<br />celle par défaut est utilisée.
+                        </mdl-tooltip>
+                        <i :id="`point_${point.id}_${index}`" class="material-icons">warning</i>
+                    </template>
+                </div>
             </div>
         </div>
-    </router-link>
+        <div class="mdl-card__actions mdl-card--border">
+            <router-link :to="`/wikets/${point.id}/assign`">
+                <mdl-button colored>Gérer les équipements</mdl-button>
+            </router-link>
+            <router-link :to="`/wikets/${point.id}`">
+                <mdl-button colored>Modifier les articles</mdl-button>
+            </router-link>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -36,7 +45,7 @@ import { mapState } from 'vuex';
 
 export default {
     props: {
-        wiket: {
+        point: {
             type    : Object,
             required: true
         }
@@ -58,46 +67,59 @@ export default {
 
 <style>
     .tile-card-wiket.mdl-card {
-        display: flex;
-        width: 256px;
-        height: 256px;
+        width: 700px;
         margin: 10px;
-        text-decoration: none;
-    }
+        max-height: 300px;
 
-    .tile-card-wiket > .mdl-card__title {
-        align-items: flex-start;
-    }
-
-    .tile-card-wiket > .mdl-card__title > h4 {
-        margin-top: 0;
-    }
-
-    .tile-card-wiket > .mdl-card__supporting-text {
-        height: 125px;
-        width: 250px;
-        overflow-y: overlay;
-
-        & > div {
+        & > div:first-child {
             display: flex;
+            flex-direction: row;
+            align-items: center;
 
-            & > span {
-                display: flex;
+            & > .mdl-card__title {
                 align-items: center;
-                width: 50%;
-                flex: auto;
-                overflow: hidden;
-                margin-right: 5px;
+                flex-direction: column;
+                width: 250px;
+                text-align: center;
+                margin-top: 15px;
+                color: #222;
 
                 & > i {
-                    margin-right: 5px;
-                    font-size: 25px;
+                    font-size: 100px;
+                    margin-left: -5px;
+                }
+
+                & > h6 {
+                    margin-top: 0;
+                }
+            }
+
+            & > .mdl-card__supporting-text {
+                overflow-y: overlay;
+                height: 120px;
+                margin-right: 5px;
+                padding: 0;
+
+                & > div {
+                    display: flex;
+
+                    & > span {
+                        display: flex;
+                        align-items: center;
+                        width: 50%;
+                        flex: auto;
+
+                        & > i {
+                            margin-right: 5px;
+                            font-size: 25px;
+                        }
+                    }
                 }
             }
         }
-    }
 
-    .tile-card-wiket > .mdl-card__title {
-        color: #000;
+        & > .mdl-card__actions {
+            text-align: right;
+        }
     }
 </style>

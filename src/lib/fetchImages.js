@@ -1,3 +1,5 @@
+import memoize from 'lodash.memoize';
+
 const headers = {
     headers: {
         Accept        : 'application/json',
@@ -10,7 +12,8 @@ const headers = {
  * @param  {String} id   The id of the image
  * @return {Promise} The result as JSON
  */
-export function getImage(id) {
+
+export const getImage = memoize((id) => {
     const opts = Object.assign({}, headers, {
         method: 'GET'
     });
@@ -23,7 +26,7 @@ export function getImage(id) {
 
             return res.json();
         });
-}
+});
 
 /**
  * Post an image to the imageAPI
@@ -31,7 +34,8 @@ export function getImage(id) {
  * @param  {String} image  The base64 image
  * @return {Promise} The result as JSON
  */
-export function postImage(id, image) {
+
+export const postImage = (id, image) => {
     const opts = Object.assign({}, headers, {
         method: 'POST',
         body  : JSON.stringify({ image })
@@ -43,6 +47,8 @@ export function postImage(id, image) {
                 return Promise.reject(res);
             }
 
+            getImage.cache.clear();
+
             return res.json();
         });
-}
+};

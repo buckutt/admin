@@ -64,10 +64,10 @@ router.beforeEach((route, from, next) => {
                 next(`/events/${store.state.app.currentEvent.id}/config`);
             } else if (route.params.id && (route.params.id === from.params.id)) {
                 // We are inside the same modObject, we can display while loading
-                store.dispatch('expandObject', {
-                    route: pathToRoute(path),
-                    value: { id: route.params.id }
-                });
+                // store.dispatch('expandObject', {
+                //     route: pathToRoute(path),
+                //     value: { id: route.params.id }
+                // });
 
                 next();
             } else if (route.params.id) {

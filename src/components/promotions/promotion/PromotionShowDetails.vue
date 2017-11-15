@@ -32,24 +32,17 @@
                 </table>
             </div>
         </template>
-
-        <template v-for="pricePerPoint in prices">
-            <h5>Prix de la formule sur le point {{ pricePerPoint.point }}</h5>
-            <b-list :elements="pricePerPoint.prices" :columns="3"></b-list>
-        </template>
     </div>
 </template>
 
 <script>
-import groupBy                from 'lodash.groupby';
 import { mapState }           from 'vuex';
 import { promotionDisplayer } from './promotionDisplayer';
 
 export default {
     computed: {
         ...mapState({
-            modObject   : state => state.app.modObject,
-            currentEvent: state => state.app.currentEvent
+            modObject: state => state.app.modObject
         }),
         elements() {
             return [
@@ -62,31 +55,6 @@ export default {
         },
         displayedPromotion() {
             return promotionDisplayer(this.modObject);
-        },
-        filteredPrices() {
-            return (!this.modObject) ? [] : this.modObject.prices
-                .filter(price => (price.period.event_id === this.currentEvent.id));
-        },
-        prices() {
-            const prices        = [];
-            const groupedPrices = groupBy(this.filteredPrices, 'point.id');
-
-            Object.keys(groupedPrices).forEach((key) => {
-                const pricePerPoint = { point: groupedPrices[key][0].point.name, prices: [] };
-
-                groupedPrices[key].forEach(price => pricePerPoint.prices.push({
-                    icon : 'attach_money',
-                    type : 'price',
-                    title: (this.currentEvent.usePeriods) ?
-                        `Période ${price.period.name}` :
-                        undefined,
-                    content: price.amount
-                }));
-
-                prices.push(pricePerPoint);
-            });
-
-            return prices;
         }
     }
 };
