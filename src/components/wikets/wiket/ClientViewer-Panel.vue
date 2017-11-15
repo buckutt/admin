@@ -2,13 +2,14 @@
     <div class="b-panel">
         <div class="b-panel__item b-item">
             <div class="b-item__image">
-                <img draggable="false" height="100%" width="100%" v-if="selectedWiketItem.type === 'article'" />
-                <i class="material-icons" v-else>stars</i>
+                <img :src="image" draggable="false" height="100%" width="100%" v-if="selectedWiketItem.type === 'article'" />
+                <i class="material-icons b-item__promotion" v-else>stars</i>
             </div>
             <div class="b-item__text" ref="name">{{ selectedWiketItem.name }}</div>
         </div>
         <div class="b-panel__prices">
             <h4>Tarifs</h4>
+            <span v-if="selectedWiketItem.prices.length === 0">Aucun prix n'est encore défini pour cet article.</span>
             <div v-for="price in selectedWiketItem.prices">
                 <span>
                     <i class="material-icons">attach_money</i> {{ price.amount | price(true) }} TTC
@@ -22,41 +23,78 @@
                 <span v-if="currentEvent.useGroups">
                     <i class="material-icons">group</i> {{ price.group.name }}
                 </span>
+                <b-confirm @confirm="removeObject({ route: 'prices', value: price })">
+                    <mdl-button icon="delete"></mdl-button>
+                </b-confirm>
                 <template v-if="generateWarning(price)">
                     <mdl-tooltip :target="price.id" class="b--uncapitalize" v-html="generateWarning(price)"></mdl-tooltip>
                     <i :id="price.id" class="material-icons">warning</i>
                 </template>
             </div>
+            <form @submit.prevent="createPrice(newPrice)">
+                <mdl-textfield floating-label="Montant TTC (centimes)" v-model="newPrice.amount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield>
+                <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="newPrice.period" v-if="currentEvent.usePeriods"></b-inputselect>
+                <b-inputselect label="Fondation" id="fundation-select" :options="fundationOptions" v-model="newPrice.fundation" v-if="currentEvent.useFundations"></b-inputselect>
+                <b-inputselect label="Groupe" id="group-select" :options="groupOptions" v-model="newPrice.group" v-if="currentEvent.useGroups"></b-inputselect>
+                <mdl-button :disabled="disabledAdd" icon="add" colored></mdl-button>
+            </form>
         </div>
     </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
-import { getImage }             from '../../../lib/fetchImages';
-import textSize                 from '../../../lib/textSize';
-import ClientItem               from './ClientViewer-Item';
+import { mapState, mapGetters, mapActions } from 'vuex';
+import { getImage } from '../../../lib/fetchImages';
+import textSize     from '../../../lib/textSize';
+import ClientItem   from './ClientViewer-Item';
 import '../../../lib/price';
+
+const pricePattern = {
+    amount   : 0,
+    period   : null,
+    group    : null,
+    fundation: null,
+    point    : null
+};
 
 export default {
     components: {
         'b-clientitem': ClientItem
     },
 
-    props: {
-        article: Object
+    data() {
+        return {
+            newPrice: Object.assign({}, pricePattern),
+            image   : null
+        };
     },
 
     computed: {
         ...mapState({
+            modObject   : state => state.app.modObject,
             currentEvent: state => state.app.currentEvent
         }),
         ...mapGetters([
-            'selectedWiketItem'
-        ])
+            'selectedWiketItem',
+            'groupOptions',
+            'periodOptions',
+            'currentPeriodOptions',
+            'fundationOptions'
+        ]),
+        disabledAdd() {
+            return ((!this.newPrice.fundation && this.currentEvent.useFundations)
+                || (!this.newPrice.period && this.currentEvent.usePeriods)
+                || (!this.newPrice.group && this.currentEvent.useGroups));
+        }
     },
 
     methods: {
+        ...mapActions([
+            'removeObject',
+            'createObject',
+            'notify',
+            'notifyError'
+        ]),
         updateItem() {
             const initialFontSize = 16;
 
@@ -77,32 +115,61 @@ export default {
             if (this.selectedWiketItem.type === 'article') {
                 getImage(this.selectedWiketItem.id)
                     .then((image) => {
-                        this.$el.querySelector('img').src = image.image;
+                        this.image = image.image;
                     })
                     .catch(() => {
-                        this.$el.querySelector('img').src = null;
+                        this.image = null;
                     });
             }
         },
         generateWarning(price) {
             let warning;
 
-            if (price.fundation_id !== this.currentEvent.DefaultFundation_id
+            if (price.fundation_id !== this.currentEvent.defaultFundation_id
                 && !this.currentEvent.useFundations) {
                 warning = 'Une fondation autre que<br />celle par défaut est utilisée.';
             }
 
-            if (price.group_id !== this.currentEvent.DefaultGroup_id
+            if (price.group_id !== this.currentEvent.defaultGroup_id
                 && !this.currentEvent.useGroups) {
                 warning = 'Un groupe autre que<br />celui par défaut est utilisé.';
             }
 
-            if (price.period_id !== this.currentEvent.DefaultPeriod_id
+            if (price.period_id !== this.currentEvent.defaultPeriod_id
                 && !this.currentEvent.usePeriods) {
                 warning = 'Une période autre que<br />celle par défaut est utilisée.';
             }
 
             return warning;
+        },
+        createPrice(price) {
+            const priceToCreate = {
+                amount      : price.amount,
+                point_id    : this.modObject.id,
+                fundation_id: (this.currentEvent.useFundations) ? price.fundation.id : this.currentEvent.defaultFundation_id,
+                group_id    : (this.currentEvent.useGroups) ? price.group.id : this.currentEvent.defaultGroup_id,
+                period_id   : (this.currentEvent.usePeriods) ? price.period.id : this.currentEvent.defaultPeriod_id
+            };
+
+            if (this.selectedWiketItem.type === 'article') {
+                priceToCreate.article_id = this.selectedWiketItem.id;
+            } else {
+                priceToCreate.promotion_id = this.selectedWiketItem.id;
+            }
+
+            this
+                .createObject({
+                    route: 'prices',
+                    value: priceToCreate
+                })
+                .then(() => {
+                    this.newPrice = Object.assign({}, pricePattern);
+                    this.notify({ message: 'Le prix a bien été ajouté à l\'article' });
+                })
+                .catch(err => this.notifyError({
+                    message: 'Le prix n\'a pas pu être ajouté à l\'article',
+                    full   : err
+                }));
         }
     },
 
@@ -141,16 +208,33 @@ export default {
 
             & > div {
                 display: flex;
+                align-items: center;
+
+                & > i {
+                    margin-left: 5px;
+                }
 
                 & > span {
                     display: flex;
                     align-items: center;
-                    width: 130px;
+                    width: 180px;
+                    margin-right: 10px;
 
                     & > i {
                         margin-right: 5px;
                         font-size: 25px;
                     }
+                }
+            }
+
+            & > form {
+                display: flex;
+                align-items: center;
+                margin-top: 15px;
+
+                & > .mdl-textfield {
+                    width: 180px;
+                    margin-right: 10px;
                 }
             }
         }

@@ -5,7 +5,6 @@ import GroupsList       from './GroupsList.vue';
 import GroupShow        from './group/GroupShow.vue';
 import GroupShowDetails from './group/GroupShowDetails.vue';
 import GroupEditObject  from './group/GroupEditObject.vue';
-import GroupEditMembers from './group/GroupEditMembers.vue';
 
 export default [
     {
@@ -21,8 +20,7 @@ export default [
         component: GroupShow,
         children : [
             { path: '', component: GroupShowDetails },
-            { path: 'edit', component: GroupEditObject },
-            { path: 'members', component: GroupEditMembers }
+            { path: 'edit', component: GroupEditObject }
         ]
     }
 ];

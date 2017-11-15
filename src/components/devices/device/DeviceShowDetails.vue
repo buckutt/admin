@@ -2,9 +2,6 @@
     <div>
         <h5>Détails de l'équipement</h5>
         <b-list :elements="elements" :columns="2"></b-list>
-
-        <h5 v-if="assignments.length > 0">Points assignés à l'équipement</h5>
-        <b-list :elements="assignments" :columns="2"></b-list>
     </div>
 </template>
 
@@ -14,8 +11,7 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject   : state => state.app.modObject,
-            currentEvent: state => state.app.currentEvent
+            modObject: state => state.app.modObject
         }),
         elements() {
             return [
@@ -40,19 +36,6 @@ export default {
                     content: (this.modObject.showPicture) ? 'Activé' : 'Désactivé'
                 }
             ];
-        },
-        displayedWikets() {
-            return (!this.modObject) ? [] : this.modObject.wikets
-                .filter(wiket => (wiket.period.event_id === this.currentEvent.id));
-        },
-        assignments() {
-            return this.displayedWikets.map(wiket => ({
-                icon : 'location_on',
-                title: (this.currentEvent.usePeriods) ?
-                    `Période ${wiket.period.name}` :
-                    undefined,
-                content: wiket.point.name
-            }));
         }
     }
 };

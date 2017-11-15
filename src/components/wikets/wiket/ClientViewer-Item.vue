@@ -4,9 +4,10 @@
         class="b-item"
         :class="{ 'b-item--selected': selected }">
         <div class="b-item__image">
-            <img draggable="false" height="100%" width="100%" />
+            <img :src="image" draggable="false" height="100%" width="100%" />
         </div>
         <div class="b-item__text" ref="name">{{ article.name }}</div>
+        <div class="b-item__grayfilter" v-if="gray">Pas de prix défini</div>
     </router-link>
 </template>
 
@@ -18,6 +19,12 @@ import textSize     from '../../../lib/textSize';
 export default {
     props: {
         article: Object
+    },
+
+    data() {
+        return {
+            image: null
+        };
     },
 
     computed: {
@@ -32,6 +39,9 @@ export default {
             return (this.selectedWiketItem.type) ?
                 (this.selectedWiketItem.id === this.article.id && this.selectedWiketItem.type === 'article') :
                 false;
+        },
+        gray() {
+            return this.article.prices.length === 0;
         },
         toLink() {
             if (!this.params.article && !this.params.promotion) {
@@ -60,10 +70,10 @@ export default {
 
         getImage(this.article.id)
             .then((image) => {
-                this.$el.querySelector('img').src = image.image;
+                this.image = image.image;
             })
             .catch(() => {
-                this.$el.querySelector('img').src = null;
+                this.image = null;
             });
     }
 };

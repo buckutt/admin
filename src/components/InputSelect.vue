@@ -1,8 +1,8 @@
 <template>
-    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select" ref="textfield">
+    <div class="b-inputselect mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select" ref="textfield">
         <input
             type="text"
-            class="mdl-textfield__input"
+            class="mdl-textfield__input b-inputselect__field"
             :id="id"
             v-model="content"
             @input="changeInput(content)"
@@ -161,13 +161,18 @@ export default {
 </script>
 
 <style>
-    .getmdl-select .mdl-icon-toggle__label {
+    .b-inputselect .mdl-icon-toggle__label {
         float: right;
         margin-top: -30px;
         color: rgba(0, 0, 0, 0.4);
     }
-    .getmdl-select.is-focused .mdl-icon-toggle__label {
+
+    .b-inputselect.is-focused .mdl-icon-toggle__label {
         color: #3f51b5;
+    }
+
+    .b-inputselect__field {
+        padding-right: 30px;
     }
 
     .b-completelist {
@@ -195,6 +200,7 @@ export default {
         cursor: pointer;
         font-size: 16px;
         padding: 0 16px;
+        overflow-y: hidden;
     }
 
     .b-completelist__item-active {

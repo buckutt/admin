@@ -1,6 +1,6 @@
 export default (a, b, order = 'ASC') => {
-    const aLow = a.toLowerCase();
-    const bLow = b.toLowerCase();
+    const aLow = (typeof a === 'string') ? a.toLowerCase() : a;
+    const bLow = (typeof b === 'string') ? b.toLowerCase() : b;
 
     if (aLow < bLow) {
         return (order !== 'DESC') ? -1 : 1;

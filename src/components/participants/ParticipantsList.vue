@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h5>Rechercher un participant</h5>
+        <h5>Rechercher un utilisateur</h5>
         <mdl-textfield floating-label="Nom/Prénom" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
 
         <b-table

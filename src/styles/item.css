@@ -12,16 +12,16 @@
     }
 
     & > .b-item__image {
-        & > img {
-            &:before {
-                background-image: url('../../../assets/placeholder.jpg');
-                content: ' ';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-            }
+        background-image: url('../../../assets/placeholder.jpg');
+        content: ' ';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        & > .b-item__promotion {
+            background: #FFF;
         }
     }
 
@@ -36,5 +36,19 @@
         white-space: nowrap;
         width: 100%;
         color: #000;
+    }
+
+    & > .b-item__grayfilter {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.55);
+        z-index: 100;
+        color: #FFF;
+        text-align: center;
+        padding-top: 20px;
+        font-weight: bold;
     }
 }

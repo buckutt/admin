@@ -8,16 +8,10 @@
             </div>
             <b-list :elements="elements" :columns="2" class="b-article-top__fill"></b-list>
         </div>
-
-        <template v-for="pricePerPoint in prices">
-            <h5>Prix de l'article sur le point {{ pricePerPoint.point }}</h5>
-            <b-list :elements="pricePerPoint.prices" :columns="3"></b-list>
-        </template>
     </div>
 </template>
 
 <script>
-import groupBy      from 'lodash.groupby';
 import { mapState } from 'vuex';
 import { getImage } from '../../../lib/fetchImages';
 
@@ -30,8 +24,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject   : state => state.app.modObject,
-            currentEvent: state => state.app.currentEvent
+            modObject: state => state.app.modObject
         }),
         elements() {
             return [
@@ -60,31 +53,6 @@ export default {
                         'Non définie'
                 }
             ];
-        },
-        filteredPrices() {
-            return (!this.modObject) ? [] : this.modObject.prices
-                .filter(price => (price.period.Event_id === this.currentEvent.id));
-        },
-        prices() {
-            const prices        = [];
-            const groupedPrices = groupBy(this.filteredPrices, 'point.id');
-
-            Object.keys(groupedPrices).forEach((key) => {
-                const pricePerPoint = { point: groupedPrices[key][0].point.name, prices: [] };
-
-                groupedPrices[key].forEach(price => pricePerPoint.prices.push({
-                    icon : 'attach_money',
-                    type : 'price',
-                    title: (this.currentEvent.config.hasPeriods) ?
-                        `Période ${price.period.name}` :
-                        undefined,
-                    content: price.amount
-                }));
-
-                prices.push(pricePerPoint);
-            });
-
-            return prices;
         }
     },
 

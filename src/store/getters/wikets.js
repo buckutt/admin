@@ -1,50 +1,92 @@
 import sortOrder from '../../lib/sortOrder';
 
-export const wikets = (state) => {
-    const now        = new Date();
-    const points     = state.objects.points;
-    const event      = state.app.currentEvent;
-    const wiketsList = [];
+export const pointsWikets = (state) => {
+    const now              = new Date();
+    const points           = state.objects.points;
+    const event            = state.app.currentEvent;
+    const pointsWiketsList = [];
 
     points.forEach((point) => {
         if (point.wikets) {
-            const devices = point.wikets
+            const lightWikets = point.wikets
                 .filter(wiket => (
                     wiket.period.event_id === event.id &&
                     new Date(wiket.period.end) >= now &&
                     wiket.device.id
                 ))
                 .map(wiket => ({
-                    ...wiket.device,
-                    period: wiket.period
+                    device: wiket.device,
+                    period: wiket.period,
+                    id    : wiket.id
                 }));
 
-            if (devices.length > 0) {
-                wiketsList.push({
-                    id: point.id,
-                    point,
-                    devices
+            if (lightWikets.length > 0) {
+                pointsWiketsList.push({
+                    ...point,
+                    wikets: lightWikets
                 });
             }
         }
     });
 
-    return wiketsList;
+    return pointsWiketsList
+        .sort((a, b) => sortOrder(a.name, b.name));
 };
 
-export const wiketCategories = (state) => {
+export const isWiketSelected = (state) => {
     const pathArray = state.route.path.split('/');
     const path      = pathArray[1];
-    const wiketId   = pathArray[2];
+    const wiketId   = state.route.params.id;
 
-    if (path !== 'wikets' || !wiketId) {
+    return (path === 'wikets' && wiketId);
+};
+
+export const addWiket = (state) => {
+    const pathArray = state.route.path.split('/');
+    const path      = pathArray[1];
+    const action    = pathArray[2];
+
+    return (path === 'wikets' && action === 'add');
+};
+
+export const wiketPromotions = (state, getters) => {
+    const promotions = state.objects.promotions;
+
+    if (!getters.isWiketSelected) {
         return [];
     }
 
-    const pointDetails = state.objects.points.find(point => point.id === wiketId);
+    const articles = getters.wiketCategories.reduce((a, b) => a.concat(b.articles), []);
 
-    return (pointDetails.categories) ?
-        pointDetails.categories.sort((a, b) => sortOrder(a.name, b.name))
+    return promotions.filter((promotion) => {
+        if (!promotion.sets) {
+            return false;
+        }
+
+        const toReduce = promotion.sets
+            .map((set) => {
+                let match = false;
+                set.articles.forEach((article) => {
+                    if (articles.some(a => a.id === article.id)) {
+                        match = true;
+                    }
+                });
+                return match;
+            });
+
+        return toReduce.reduce((a, b) => a && b, (toReduce.length > 0));
+    });
+};
+
+export const wiketCategories = (state, getters) => {
+    if (!getters.isWiketSelected) {
+        return [];
+    }
+
+    const point = state.app.modObject;
+
+    return (point && point.categories) ?
+        point.categories.sort((a, b) => sortOrder(a.name, b.name))
         : [];
 };
 
@@ -52,62 +94,47 @@ export const wiketTabsArticles = (state, getters) => {
     const now          = new Date();
     const event        = state.app.currentEvent;
     const pointId      = state.route.params.id;
-    const articles     = [];
-    const promotions   = [];
     const tabsArticles = Object.assign([], getters.wiketCategories);
-
-    state.objects.prices
+    const prices       = state.objects.prices
         .filter(price => (
             price.period.event_id === event.id &&
             price.point_id === pointId &&
             new Date(price.period.end) >= now
-        ))
-        .forEach((price) => {
-            if (price.article_id) {
-                const article    = price.article;
-                let articleIndex = articles.findIndex(a => article.id === a.id);
-
-                if (articleIndex === -1) {
-                    const newArticle  = Object.assign({}, article);
-                    newArticle.prices = [];
-                    newArticle.type   = 'article';
-                    articleIndex      = articles.push(newArticle) - 1;
-                }
-
-                articles[articleIndex].prices.push(price);
-            } else if (price.promotion_id) {
-                const promotion    = price.promotion;
-                let promotionIndex = promotions.findIndex(p => promotion.id === p.id);
-
-                if (promotionIndex === -1) {
-                    const newPromotion  = Object.assign({}, promotion);
-                    newPromotion.prices = [];
-                    newPromotion.type   = 'promotion';
-                    promotionIndex      = promotions.push(newPromotion) - 1;
-                }
-
-                promotions[promotionIndex].prices.push(price);
-            }
-        });
+        ));
 
     return tabsArticles.map((tab) => {
-        const matchReqCategory = category => category.id === tab.id;
+        const allArticles = tab.articles
+            .map((article) => {
+                const newArticle  = Object.assign({}, article);
+                newArticle.prices = prices.filter(price => price.article_id === article.id);
+                newArticle.type   = 'article';
+                return newArticle;
+            })
+            .sort((a, b) => sortOrder(a.name, b.name))
+            .sort((a, b) => sortOrder(a.prices.length > 0, b.prices.length > 0, 'DESC'));
+
+        const allPromotions = getters.wiketPromotions
+            .map((promotion) => {
+                const newPromotion  = Object.assign({}, promotion);
+                newPromotion.prices = prices.filter(price => price.promotion_id === promotion.id);
+                newPromotion.type   = 'promotion';
+                return newPromotion;
+            })
+            .sort((a, b) => sortOrder(a.name, b.name))
+            .sort((a, b) => sortOrder(a.prices.length > 0, b.prices.length > 0, 'DESC'));
 
         return {
-            id      : tab.id,
-            name    : tab.name,
-            articles: articles
-                .filter(article => (article.categories && article.categories.some(matchReqCategory)))
-                .sort((a, b) => sortOrder(a.name, b.name)),
-            promotions: promotions
-                .sort((a, b) => sortOrder(a.name, b.name))
+            id        : tab.id,
+            name      : tab.name,
+            articles  : allArticles,
+            promotions: allPromotions
         };
     });
 };
 
 export const wiketCurrentTab = (state, getters) => {
-    const tabId     = state.route.params.category;
-    const foundTab  = getters.wiketTabsArticles.find(tab => tab.id === tabId);
+    const tabId    = state.route.params.category;
+    const foundTab = getters.wiketTabsArticles.find(tab => tab.id === tabId);
 
     if (!foundTab) {
         return {};

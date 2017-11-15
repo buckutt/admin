@@ -6,7 +6,7 @@
                 :tabs="displayedTabs"
                 :inCard="true"
                 :goBack="true"
-                :level="2">
+                :level="3">
             </b-navbar>
 
             <b-clientviewer></b-clientviewer>
@@ -42,19 +42,20 @@ export default {
             return `Guichet ${this.modObject.name}`;
         },
         displayedTabs() {
-            return this.wiketCategories.map(category => ({
-                route: category.id,
-                name : category.name
-            }));
+            return this.wiketCategories
+                .map(category => ({
+                    route: category.id,
+                    name : category.name
+                }));
         }
     },
 
     mounted() {
-        this.fetchObjectsAndRelations({ route: 'points' });
         this.fetchObjectsAndRelations({ route: 'prices' });
+        this.fetchObjectsAndRelations({ route: 'promotions' });
 
         if (!this.params.category && this.displayedTabs[0]) {
-            this.$router.push(`${this.fullPath}/${this.displayedTabs[0].route}`);
+            this.$router.push(`${this.fullPath}/category/${this.displayedTabs[0].route}`);
         }
     }
 };

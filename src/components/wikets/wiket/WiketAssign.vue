@@ -1,21 +1,31 @@
 <template>
-    <div>
-        <h5>Assigner l'équipement</h5>
-        <form @submit.prevent="addPointToDevice(modObject, wiket)">
-            <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="wiket.point"></b-inputselect>
-            <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="wiket.period" v-if="currentEvent.usePeriods"></b-inputselect>
-            <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
-        </form>
-        <b-table
-            :headers="displayedColumns"
-            :data="displayedWikets"
-            :actions="[
-                { action: 'remove', text: 'Supprimer', type: 'confirm' }
-            ]"
-            route="wikets"
-            :paging="5"
-            @remove="removeObject">
-        </b-table>
+    <div class="b-wikets b-page">
+        <div class="mdl-card mdl-shadow--2dp">
+            <b-navbar
+                :title="title"
+                :tabs="[{ route: 'assign', name: 'Assigner des équipements' }]"
+                :inCard="true"
+                :goBack="true"
+                :level="2">
+            </b-navbar>
+
+            <h5>Équipements</h5>
+            <form @submit.prevent="createWiket(wiket)">
+                <b-inputselect label="Équipement" id="device-select" :options="deviceOptions" v-model="wiket.device"></b-inputselect>
+                <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="wiket.period" v-if="currentEvent.usePeriods"></b-inputselect>
+                <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
+            </form>
+            <b-table
+                :headers="displayedColumns"
+                :data="displayedWikets"
+                :actions="[
+                    { action: 'remove', text: 'Supprimer', type: 'confirm' }
+                ]"
+                route="wikets"
+                :paging="5"
+                @remove="removeObject">
+            </b-table>
+        </div>
     </div>
 </template>
 
@@ -24,8 +34,9 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 import { isPointUsedByEvent } from './isPointUsedByEvent';
 
 const wiketPattern = {
-    point : null,
-    period: null
+    device: null,
+    period: null,
+    point : null
 };
 
 export default {
@@ -42,19 +53,20 @@ export default {
             'notify',
             'notifyError'
         ]),
-        addPointToDevice(device, wiket) {
+        createWiket(wiket) {
+            wiket.point  = this.modObject;
             wiket.period = (this.currentEvent.usePeriods) ?
                 wiket.period : this.currentEvent.defaultPeriod;
 
             if (isPointUsedByEvent(this.modObject.wikets, wiket)) {
                 return this.notifyError({
-                    message: 'Le point est déjà utilisé par un autre événement pendant cette période'
+                    message: 'Le guichet est déjà utilisé par un autre événement pendant cette période'
                 });
             }
 
             const newWiket = {
                 point_id : wiket.point.id,
-                device_id: device.id
+                device_id: wiket.device.id
             };
 
             if (wiket.period) {
@@ -68,15 +80,14 @@ export default {
                 })
                 .then(() => {
                     this.wiket = Object.assign({}, wiketPattern);
-                    this.notify({ message: 'Le point a bien été lié à l\'équipement' });
+                    this.notify({ message: 'L\'équipement a bien été assigné au point' });
                 })
                 .catch(err => this.notifyError({
-                    message: 'Le point n\'a pas pu être lié à l\'équipement',
+                    message: 'L\'équipement n\'a pas pu être assigné au point',
                     full   : err
                 }));
         }
     },
-
     computed: {
         ...mapState({
             currentEvent: state => state.app.currentEvent,
@@ -85,10 +96,13 @@ export default {
         ...mapGetters([
             'periodOptions',
             'currentPeriodOptions',
-            'pointOptions'
+            'deviceOptions'
         ]),
+        title() {
+            return `Guichet ${this.modObject.name}`;
+        },
         displayedColumns() {
-            const columns = [{ title: 'Point', field: 'point.name' }];
+            const columns = [{ title: 'Équipement', field: 'device.name' }];
             if (this.currentEvent.usePeriods) {
                 columns.push({ title: 'Période', field: 'period.name' });
             }
@@ -108,7 +122,7 @@ export default {
                 });
         },
         disabledAdd() {
-            return (!this.wiket.period && this.currentEvent.usePeriods) || !this.wiket.point;
+            return (!this.wiket.period && this.currentEvent.usePeriods) || !this.wiket.device;
         }
     }
 };
