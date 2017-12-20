@@ -1,6 +1,11 @@
 <template>
     <div>
-        <h3>Listes des périodes de "{{ currentEvent.name }}"</h3>
+        <h5>Listes des périodes de "{{ currentEvent.name }}"</h5>
+        <div class="b-table-search">
+            <i class="material-icons">search</i>
+            <mdl-textfield floating-label="Nom de la période" v-model="name"></mdl-textfield>
+        </div>
+
         <b-table
             :headers="[
                 { title: 'Période', field: 'name', object: true },
@@ -8,6 +13,7 @@
                 { title: 'Fin', field: 'end', type: 'date'}
             ]"
             :data="displayedPeriods"
+            :filter="{ val: this.name, field: 'name' }"
             :sort="{ field: 'end', order: 'DESC' }"
             :actions="[
                 { action: 'edit', text: 'Modifier', raised: true, colored: true },
@@ -32,6 +38,7 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 export default {
     data() {
         return {
+            name           : '',
             displayOutdated: false
         };
     },

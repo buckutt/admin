@@ -1,7 +1,10 @@
 <template>
     <div>
-        <h5>Rechercher un utilisateur</h5>
-        <mdl-textfield floating-label="Nom/Prénom" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
+        <h5>Liste des utilisateurs</h5>
+        <div class="b-table-search">
+            <i class="material-icons">search</i>
+            <mdl-textfield floating-label="Nom ou Prénom de l'utilisateur" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
+        </div>
 
         <b-table
             :headers="[{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized', object: true }]"

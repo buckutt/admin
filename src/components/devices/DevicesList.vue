@@ -1,6 +1,11 @@
 <template>
     <div>
         <h5>Liste des équipements</h5>
+        <div class="b-table-search">
+            <i class="material-icons">search</i>
+            <mdl-textfield floating-label="Nom de l'équipement" v-model="name"></mdl-textfield>
+        </div>
+
         <b-table
             :headers="[
                 { title: 'Équipement', field: 'name', object: true },
@@ -9,6 +14,7 @@
                 { title: 'Images', field: 'showPicture', type: 'checkbox' }
             ]"
             :data="devices"
+            :filter="{ val: this.name, field: 'name' }"
             :sort="{ field: 'name', order: 'ASC' }"
             :actions="[
                 { action: 'edit', text: 'Modifier' },
@@ -26,6 +32,12 @@
 import { mapState, mapActions } from 'vuex';
 
 export default {
+    data() {
+        return {
+            name: ''
+        };
+    },
+
     methods: {
         ...mapActions([
             'removeObject'

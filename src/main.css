@@ -78,6 +78,15 @@ html, body, main {
     margin-right: 5px;
 }
 
+.b-table-search {
+    display: flex;
+    align-items: center;
+
+    & > i {
+        margin-right: 10px;
+    }
+}
+
 .b-responsive-table {
     overflow-x: auto;
     padding-bottom: 150px;

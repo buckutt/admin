@@ -55,12 +55,6 @@ import { mapState, mapGetters } from 'vuex';
 import { isEventConfigured }    from '../lib/isEventConfigured';
 
 export default {
-    data() {
-        return {
-            search: ''
-        };
-    },
-
     computed: {
         ...mapState({
             loggedUser  : state => state.app.loggedUser,
