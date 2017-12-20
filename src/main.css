@@ -83,7 +83,12 @@ html, body, main {
     align-items: center;
 
     & > i {
-        margin-right: 10px;
+        color: #34495E;
+    }
+
+    & > div {
+        margin-left: 10px;
+        margin-right: 5px;
     }
 }
 
