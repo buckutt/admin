@@ -78,6 +78,20 @@ html, body, main {
     margin-right: 5px;
 }
 
+.b-table-search {
+    display: flex;
+    align-items: center;
+
+    & > i {
+        color: #34495E;
+    }
+
+    & > div {
+        margin-left: 10px;
+        margin-right: 5px;
+    }
+}
+
 .b-responsive-table {
     overflow-x: auto;
     padding-bottom: 150px;

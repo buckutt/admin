@@ -1,7 +1,12 @@
 <template>
     <div>
-        <h5>Rechercher un utilisateur</h5>
-        <mdl-textfield floating-label="Nom/Prénom" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
+        <h5>Liste des utilisateurs</h5>
+        <div class="b-table-search">
+            <i class="material-icons">search</i>
+            <mdl-textfield floating-label="Nom ou Prénom de l'utilisateur" v-model="userName" @input="searchUsers(userName)"></mdl-textfield>
+            <i class="material-icons" id="usertip">info</i>
+            <mdl-tooltip target="usertip">En dessous de 2 caractères, seuls les 10 premiers résultats sont affichés.</mdl-tooltip>
+        </div>
 
         <b-table
             :headers="[{ title: 'Utilisateur', field: 'fullname', class: 'b--capitalized', object: true }]"
@@ -45,6 +50,7 @@ export default {
     },
 
     mounted() {
+        this.searchUsers('');
         const searchUsers = this.searchUsers;
         this.searchUsers  = debounce(name => searchUsers(name), 500);
     },

@@ -33,7 +33,13 @@ export function createUserWithMol({ dispatch, state }, user) {
 }
 
 export function searchUsers({ dispatch }, name) {
-    return get(`services/manager/searchuser?name=${name}`)
+    let limit = '';
+
+    if (name.length <= 2) {
+        limit = '&limit=10';
+    }
+
+    return get(`services/manager/searchuser?name=${name}${limit}`)
         .then((results) => {
             dispatch('clearObject', 'users');
             if (results.length > 0) {

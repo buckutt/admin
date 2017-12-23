@@ -1,7 +1,10 @@
 <template>
     <div>
-        <h5>Rechercher un article</h5>
-        <mdl-textfield floating-label="Nom" v-model="name"></mdl-textfield>
+        <h5>Liste des articles</h5>
+        <div class="b-table-search">
+            <i class="material-icons">search</i>
+            <mdl-textfield floating-label="Nom de l'article" v-model="name"></mdl-textfield>
+        </div>
 
         <b-table
             :headers="[{ title: 'Article', field: 'name', object: true }]"
@@ -13,7 +16,7 @@
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
             ]"
             route="articles"
-            :paging="5"
+            :paging="10"
             @edit="editArticle"
             @remove="removeObject">
         </b-table>

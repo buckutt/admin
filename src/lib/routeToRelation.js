@@ -13,6 +13,17 @@ export default (route) => {
             'defaultGroup',
             'defaultPeriod'
         ],
+        memberships: [
+            {
+                embed   : 'period',
+                filters : [['end', '>', now]],
+                required: true
+            },
+            {
+                embed   : 'group',
+                required: true
+            }
+        ],
         points: [
             'categories',
             'categories.articles',

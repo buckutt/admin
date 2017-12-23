@@ -7,11 +7,10 @@
             v-model="content"
             @input="changeInput(content)"
             @focus="displayInput = true"
-            @blur="displayInput = false"
+            @blur="hideInput()"
             @keydown.up.prevent.stop="up()"
             @keydown.down.prevent.stop="down()"
             @keydown.enter.prevent.stop="select(suggestions[activeIndex])"
-            @keydown.tab="displayMenu = false"
             ref="input"
             autocomplete="off" />
         <label :for="id">
@@ -23,16 +22,14 @@
                 :for="id"
                 class="b-completelist mdl-shadow--2dp"
                 ref="menu"
-                v-if="displayInput || displayMenu"
-                @mouseenter="displayMenu = true"
-                @mouseout="displayMenu = false">
+                v-if="displayInput">
                 <li
                     v-for="(suggestion, index) in suggestions"
-                    @click="select(suggestion)"
+                    @click="select(suggestion.original)"
                     @mouseover="activeIndex = index"
                     class="b-completelist__item"
-                    :class="{ 'b-completelist__item-active': (index === activeIndex) }">
-                    {{ suggestion.name }}
+                    :class="{ 'b-completelist__item-active': (index === activeIndex) }"
+                    v-html="suggestion.string">
                 </li>
             </ul>
         </transition>
@@ -69,7 +66,6 @@ export default {
         return {
             content         : '',
             displayInput    : false,
-            displayMenu     : false,
             activeIndex     : 0,
             ignoreNextUpdate: false
         };
@@ -79,9 +75,8 @@ export default {
         suggestions() {
             return (this.content) ?
                 fuzzy
-                    .filter(this.content, this.convertOptions(this.database), { extract: el => el.name })
-                    .map(d => d.original) :
-                this.convertOptions(this.options);
+                    .filter(this.content, this.convertOptions(this.database), { extract: el => el.name, pre: '<strong>', post: '</strong>' }) :
+                this.convertOptions(this.options).map(entry => ({ original: entry, string: entry.name }));
         },
         database() {
             return (this.fullOptions) ? this.fullOptions : this.options;
@@ -94,13 +89,13 @@ export default {
             this.$refs.textfield.MaterialTextfield.boundBlurHandler();
             this.$refs.input.blur();
             this.content          = suggestion.name;
-            this.displayMenu      = false;
+            this.displayInput     = false;
             this.ignoreNextUpdate = true;
             this.$emit('input', suggestion.value);
         },
         changeInput(content) {
-            if (this.suggestions.length === 1 && this.suggestions[0].name.toLowerCase() === content.toLowerCase()) {
-                return this.select(this.suggestions[0]);
+            if (this.suggestions.length === 1 && this.suggestions[0].original.name.toLowerCase() === content.toLowerCase()) {
+                return this.select(this.suggestions[0].original);
             }
 
             this.ignoreNextUpdate = true;
@@ -113,19 +108,36 @@ export default {
         },
         down() {
             if (this.activeIndex + 1 >= this.suggestions.length) {
-                this.activeIndex = 0;
                 return;
             }
 
             this.activeIndex += 1;
+
+            const menu                   = this.$refs.menu;
+            const activeItemBottomOffset = (this.activeIndex + 1) * menu.children[0].offsetHeight - menu.scrollTop;
+
+            if (activeItemBottomOffset > menu.offsetHeight) {
+                menu.scrollTop += menu.children[0].offsetHeight;
+            }
         },
         up() {
             if (this.activeIndex <= 0) {
-                this.activeIndex = this.suggestions.length - 1;
                 return;
             }
 
             this.activeIndex -= 1;
+
+            const menu                = this.$refs.menu;
+            const activeItemTopOffset = this.activeIndex * menu.children[0].offsetHeight - menu.scrollTop;
+
+            if (activeItemTopOffset < 0) {
+                menu.scrollTop -= menu.children[0].offsetHeight;
+            }
+        },
+        hideInput() {
+            setTimeout(() => {
+                this.displayInput = false;
+            }, 30);
         }
     },
 
@@ -134,7 +146,8 @@ export default {
 
         if (this.value) {
             const object = this.suggestions
-                .find(suggestion => (JSON.stringify(this.value) === JSON.stringify(suggestion.value)));
+                .find(suggestion => (JSON.stringify(this.value) === JSON.stringify(suggestion.original.value)))
+                .original;
             this.select(object);
         }
     },
@@ -147,7 +160,8 @@ export default {
             }
 
             const object = this.suggestions
-                .find(suggestion => (JSON.stringify(newValue) === JSON.stringify(suggestion.value)));
+                .find(suggestion => (JSON.stringify(newValue) === JSON.stringify(suggestion.original.value)))
+                .original;
 
             if (object) {
                 this.select(object);
@@ -179,13 +193,13 @@ export default {
         width: 100%;
         background: white;
         position: absolute;
-        z-index: 10;
+        z-index: 1000;
         margin-top: 0px;
         margin-bottom: 0px;
         list-style: none;
         padding: 0;
         color: black;
-        max-height: 300px;
+        max-height: 288px;
         overflow: auto;
         transition: .2s opacity ease-out,
                     .2s transform ease-out;
