@@ -21,7 +21,8 @@ export function updateBearer(token) {
  */
 export function get(url, opts_) {
     const opts = Object.assign({}, authData, {
-        method: 'GET'
+        method     : 'GET',
+        credentials: 'include'
     }, opts_);
 
     return fetch(`${config.api}/${url}`, opts)
@@ -43,8 +44,9 @@ export function get(url, opts_) {
  */
 export function post(url, data, opts_) {
     const opts = Object.assign({}, authData, {
-        method: 'POST',
-        body  : JSON.stringify(data)
+        method     : 'POST',
+        body       : JSON.stringify(data),
+        credentials: 'include'
     }, opts_);
 
     return fetch(`${config.api}/${url}`, opts)
@@ -66,8 +68,9 @@ export function post(url, data, opts_) {
  */
 export function put(url, data, opts_) {
     const opts = Object.assign({}, authData, {
-        method: 'PUT',
-        body  : JSON.stringify(data)
+        method     : 'PUT',
+        body       : JSON.stringify(data),
+        credentials: 'include'
     }, opts_);
 
     return fetch(`${config.api}/${url}`, opts)
@@ -88,7 +91,8 @@ export function put(url, data, opts_) {
  */
 export function del(url, opts_) {
     const opts = Object.assign({}, authData, {
-        method: 'DELETE'
+        method     : 'DELETE',
+        credentials: 'include'
     }, opts_);
 
     return fetch(`${config.api}/${url}`, opts)
@@ -109,7 +113,8 @@ export function del(url, opts_) {
  */
 export function download(url, opts_) {
     const opts = Object.assign({}, authData, {
-        method: 'GET'
+        method     : 'GET',
+        credentials: 'include'
     }, opts_);
 
     return fetch(`${config.api}/${url}`, opts)
