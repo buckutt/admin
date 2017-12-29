@@ -31,7 +31,7 @@ export function addArticleToStep({ dispatch }, data) {
     const articlesIds = step.set.articles.map(a => a.id);
 
     if (articlesIds.indexOf(article.id) !== -1) {
-        return Promise.reject({ statusText: 'The article is already in this set' });
+        return Promise.reject(new Error('The article is already in this set'));
     }
 
     return dispatch('addArticleToSet', { article, set: step.set });

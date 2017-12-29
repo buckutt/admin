@@ -94,6 +94,9 @@
         "import/no-extraneous-dependencies": 0,
 
         // Allow confirm
-        "no-alert": 0
+        "no-alert": 0,
+
+        // Disable destructuring
+        "prefer-destructuring": 0
     }
 }

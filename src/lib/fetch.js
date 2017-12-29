@@ -27,8 +27,8 @@ export function get(url, opts_) {
 
     return fetch(`${config.api}/${url}`, opts)
         .then((res) => {
-            if (res.status !== 200) {
-                return Promise.reject(res);
+            if (!res.ok) {
+                return Promise.reject(new Error(res.statusText));
             }
 
             return res.json();
@@ -51,8 +51,8 @@ export function post(url, data, opts_) {
 
     return fetch(`${config.api}/${url}`, opts)
         .then((res) => {
-            if (res.status !== 200) {
-                return Promise.reject(res);
+            if (!res.ok) {
+                return Promise.reject(new Error(res.statusText));
             }
 
             return res.json();
@@ -75,8 +75,8 @@ export function put(url, data, opts_) {
 
     return fetch(`${config.api}/${url}`, opts)
         .then((res) => {
-            if (res.status !== 200) {
-                return Promise.reject(res);
+            if (!res.ok) {
+                return Promise.reject(new Error(res.statusText));
             }
 
             return res.json();
@@ -97,8 +97,8 @@ export function del(url, opts_) {
 
     return fetch(`${config.api}/${url}`, opts)
         .then((res) => {
-            if (res.status !== 200) {
-                return Promise.reject(res);
+            if (!res.ok) {
+                return Promise.reject(new Error(res.statusText));
             }
 
             return res.json();
@@ -119,7 +119,7 @@ export function download(url, opts_) {
 
     return fetch(`${config.api}/${url}`, opts)
         .then((res) => {
-            if (res.status !== 200) {
+            if (!res.ok) {
                 return Promise.reject(new Error('Download failed'));
             }
 

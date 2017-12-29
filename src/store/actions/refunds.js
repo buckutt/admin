@@ -12,7 +12,7 @@ export function refundUser({ state, dispatch }, refundData) {
             refundedUser = user;
 
             if (refundData.refund.amount > refundedUser.credit) {
-                return Promise.reject({ statusText: 'The user doesn\'t have enough credit' });
+                return Promise.reject(new Error('The user doesn\'t have enough credit'));
             }
 
             const refund = {

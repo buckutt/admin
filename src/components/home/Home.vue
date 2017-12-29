@@ -47,7 +47,7 @@ export default {
             this.login({ meanOfLogin: 'etuMail', data: mail, password })
                 .catch((err) => {
                     let message;
-                    switch (err.statusText) {
+                    switch (err.message) {
                         case 'You are not administrator':
                             message = 'Vous n\'êtes pas administrateur';
                             break;
