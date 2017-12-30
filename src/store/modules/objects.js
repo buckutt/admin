@@ -17,6 +17,7 @@ const state = {
     meansofpayment: [],
     prices        : [],
     rights        : [],
+    webservices   : [],
     wikets        : []
 };
 

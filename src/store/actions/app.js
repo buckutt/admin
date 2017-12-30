@@ -81,7 +81,8 @@ export function load({ state, dispatch }) {
         'promotions',
         'sets',
         'events',
-        'meansofpayment'
+        'meansofpayment',
+        'webservices'
     ];
 
     dispatch('initSocket', sessionStorage.getItem('token'));

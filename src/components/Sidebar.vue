@@ -18,9 +18,13 @@
             </ul>
             <transition name="fade">
                 <ul v-if="isConfigured">
+                    <li class="b-sidebar__separator"></li>
                     <li class="b-sidebar__eventDisplayer">
-                        Événement<br />
-                        <strong>{{ currentEvent.name }}</strong>
+                        <i class="material-icons">cake</i>
+                        <span>
+                            Événement<br />
+                            <strong>{{ currentEvent.name }}</strong>
+                        </span>
                     </li>
                     <li>
                         <router-link to="/stats" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
@@ -54,6 +58,19 @@
                     </li>
                 </ul>
             </transition>
+            <ul>
+                <li class="b-sidebar__separator"></li>
+                <li class="b-sidebar__eventDisplayer">
+                    <i class="material-icons">settings</i>
+                    <span>Développeurs</span>
+                </li>
+                <li>
+                    <router-link to="/webservices" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                        <i class="material-icons">call_made</i>
+                        Webhooks
+                    </router-link>
+                </li>
+            </ul>
         </div>
     </transition>
 </template>
@@ -129,14 +146,35 @@ export default {
                 background-color: lighten(var(--sidebarBackground), 10%);
             }
 
+            & > .b-sidebar__separator {
+                background-color: rgba(255, 255, 255, 0.9);
+                height: 1px;
+                width: 100%;
+                width: calc(var(--sidebarWidth) - 80px);
+                margin: auto;
+            }
+
             & > .b-sidebar__eventDisplayer {
                 color: var(--sidebarColor) !important;
                 text-align: center;
-                padding-left: 5px;
-                padding-right: 5px;
+                padding: 10px 5px 10px 5px;
+                display: flex;
+                align-items: center;
 
-                & > strong {
-                    font-size: 18px;
+                & > i {
+                    margin-left: 3px;
+                    margin-right: 10px;
+                    font-size: 30px;
+                }
+
+                & > span {
+                    flex: 1;
+                    text-align: center;
+                    margin-left: -43px;
+
+                    & > strong {
+                        font-size: 18px;
+                    }
                 }
             }
         }
