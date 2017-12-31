@@ -1,7 +1,10 @@
 <template>
     <div>
         <transition name="fade">
-            <div>
+            <div class="b-table">
+                <div class="b-table__paging" v-if="paging">
+                    Afficher <select v-model="chosenPaging"><option v-for="option in pagingOptions">{{ option }}</option></select> entrées
+                </div>
                 <div class="b-responsive-table">
                     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" v-if="displayedData.length > 0">
                         <thead>
@@ -138,10 +141,10 @@ export default {
 
     data() {
         return {
-            page   : 1,
-            coordsX: 0,
-            coordsY: 0,
-            tableId: new Date().getTime().toString()
+            page         : 1,
+            tableId      : new Date().getTime().toString(),
+            pagingOptions: [5, 10, 25, 50, 100],
+            chosenPaging : this.paging
         };
     },
 
@@ -203,7 +206,7 @@ export default {
             }
 
             if (this.paging) {
-                transformedData = transformedData.slice(this.start, this.start + this.paging);
+                transformedData = transformedData.slice(this.start, this.start + this.chosenPaging);
             }
 
             return transformedData;
@@ -213,14 +216,14 @@ export default {
                 return 0;
             }
 
-            return (this.adjustedPage - 1) * this.paging;
+            return (this.adjustedPage - 1) * this.chosenPaging;
         },
         pagesNumber() {
             if (!this.paging) {
                 return 1;
             }
 
-            return Math.ceil(this.filteredData.length / this.paging);
+            return Math.ceil(this.filteredData.length / this.chosenPaging);
         },
         isPrevious() {
             if (this.adjustedPage - 1 > 0) {
@@ -245,6 +248,13 @@ export default {
 </script>
 
 <style>
+    .b-table__paging {
+        width: 100%;
+        text-align: right;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
     .b-actions-cell {
         width: 175px;
     }
