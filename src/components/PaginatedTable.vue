@@ -206,7 +206,7 @@ export default {
             }
 
             if (this.paging) {
-                transformedData = transformedData.slice(this.start, this.start + this.chosenPaging);
+                transformedData = transformedData.slice(this.start, this.start + parseInt(this.chosenPaging));
             }
 
             return transformedData;
