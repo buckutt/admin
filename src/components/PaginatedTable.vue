@@ -33,6 +33,9 @@
                                         {{ lodget(data, header.field) }}
                                     </router-link>
                                     <span v-else>{{ lodget(data, header.field) }}</span>
+                                    <ul v-if="header.list" class="b-table__list">
+                                        <li v-for="article in lodget(data, header.list)">{{ article }}</li>
+                                    </ul>
                                 </td>
                                 <td class="mdl-data-table__cell--non-numeric b-actions-cell" v-if="actions">
                                     <mdl-button :id="`b-table-${index}-${tableId}`" icon>
@@ -175,6 +178,8 @@ export default {
             const condition = action.condition;
             if (condition) {
                 switch (condition.statement) {
+                    case 'exists':
+                        return !object[condition.field];
                     case 'isIn':
                         return (condition.value.indexOf(object[condition.field]) > -1);
                     case 'isNotIn':
@@ -206,7 +211,7 @@ export default {
             }
 
             if (this.paging) {
-                transformedData = transformedData.slice(this.start, this.start + parseInt(this.chosenPaging));
+                transformedData = transformedData.slice(this.start, this.start + parseInt(this.chosenPaging, 10));
             }
 
             return transformedData;
@@ -257,6 +262,17 @@ export default {
 
     .b-actions-cell {
         width: 175px;
+    }
+
+    .b-table__list {
+        margin-top: 2px;
+        margin-bottom: 0px;
+        padding-left: 25px;
+        font-size: 12px;
+
+        & > li {
+            line-height: 1.2;
+        }
     }
 
     .b-table__warning {

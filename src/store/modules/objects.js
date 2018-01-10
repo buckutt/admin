@@ -18,7 +18,8 @@ const state = {
     prices        : [],
     rights        : [],
     webservices   : [],
-    wikets        : []
+    wikets        : [],
+    history       : []
 };
 
 // mutations
