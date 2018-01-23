@@ -44,7 +44,7 @@ export default {
                 .then(() => this.notify({ message: 'Le remboursement a bien été effectué' }))
                 .catch((err) => {
                     let message = 'Erreur inconnue';
-                    if (err.statusText === 'The user doesn\'t have enough credit') {
+                    if (err.message === 'The user doesn\'t have enough credit') {
                         message = 'Le solde de l\'utilisateur est inférieur au montant à rembourser';
                     }
 

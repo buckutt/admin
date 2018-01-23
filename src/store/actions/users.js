@@ -48,3 +48,31 @@ export function searchUsers({ dispatch }, name) {
             return [];
         });
 }
+
+export function loadCurrentUserHistory({ state, dispatch }) {
+    return get(`services/manager/history?buyer=${state.app.modObject.id}`)
+        .then((results) => {
+            dispatch('clearObject', 'history');
+            if (results.length > 0) {
+                dispatch('checkAndAddObjects', { route: 'history', objects: results });
+            }
+            return [];
+        });
+}
+
+export function cancelTransaction({ state, dispatch }, transaction) {
+    return post('services/cancelTransaction', transaction)
+        .then(() => {
+            const currentTransaction = state.objects.history
+                .find(h => h.id === transaction.id);
+
+            const canceledTransaction      = { ...currentTransaction };
+            canceledTransaction.isCanceled = true;
+            canceledTransaction.updated_at = new Date();
+
+            return dispatch('checkAndUpdateObjects', {
+                route  : 'history',
+                objects: [canceledTransaction]
+            });
+        });
+}

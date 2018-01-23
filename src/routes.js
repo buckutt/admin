@@ -15,6 +15,7 @@ import promotions   from './components/promotions/routes';
 import purchases    from './components/purchases/routes';
 import treasury     from './components/treasury/routes';
 import users        from './components/users/routes';
+import webservices  from './components/webservices/routes';
 import wikets       from './components/wikets/routes';
 
 export default [].concat(
@@ -35,5 +36,6 @@ export default [].concat(
     purchases,
     treasury,
     users,
+    webservices,
     wikets
 );

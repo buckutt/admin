@@ -73,9 +73,9 @@ export default {
 
     computed: {
         suggestions() {
+            const strongify = { extract: el => el.name, pre: '<strong>', post: '</strong>' };
             return (this.content) ?
-                fuzzy
-                    .filter(this.content, this.convertOptions(this.database), { extract: el => el.name, pre: '<strong>', post: '</strong>' }) :
+                fuzzy.filter(this.content, this.convertOptions(this.database), strongify) :
                 this.convertOptions(this.options).map(entry => ({ original: entry, string: entry.name }));
         },
         database() {
@@ -94,7 +94,8 @@ export default {
             this.$emit('input', suggestion.value);
         },
         changeInput(content) {
-            if (this.suggestions.length === 1 && this.suggestions[0].original.name.toLowerCase() === content.toLowerCase()) {
+            const firstName = this.suggestions[0].original.name.toLowerCase();
+            if (this.suggestions.length === 1 && firstName === content.toLowerCase()) {
                 return this.select(this.suggestions[0].original);
             }
 
@@ -114,7 +115,7 @@ export default {
             this.activeIndex += 1;
 
             const menu                   = this.$refs.menu;
-            const activeItemBottomOffset = (this.activeIndex + 1) * menu.children[0].offsetHeight - menu.scrollTop;
+            const activeItemBottomOffset = ((this.activeIndex + 1) * menu.children[0].offsetHeight) - menu.scrollTop;
 
             if (activeItemBottomOffset > menu.offsetHeight) {
                 menu.scrollTop += menu.children[0].offsetHeight;
@@ -128,7 +129,7 @@ export default {
             this.activeIndex -= 1;
 
             const menu                = this.$refs.menu;
-            const activeItemTopOffset = this.activeIndex * menu.children[0].offsetHeight - menu.scrollTop;
+            const activeItemTopOffset = (this.activeIndex * menu.children[0].offsetHeight) - menu.scrollTop;
 
             if (activeItemTopOffset < 0) {
                 menu.scrollTop -= menu.children[0].offsetHeight;

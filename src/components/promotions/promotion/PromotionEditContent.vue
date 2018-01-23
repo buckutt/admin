@@ -115,7 +115,7 @@ export default {
                 .then(() => this.notify({ message: 'L\'article a bien été ajouté à la promotion.' }))
                 .catch((err) => {
                     let message;
-                    switch (err.statusText) {
+                    switch (err.message) {
                         case 'The article is already in this set':
                             message = 'L\'article est déjà présent dans cet ensemble.';
                             break;

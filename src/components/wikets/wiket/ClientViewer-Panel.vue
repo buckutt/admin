@@ -146,9 +146,10 @@ export default {
             const priceToCreate = {
                 amount      : price.amount,
                 point_id    : this.modObject.id,
-                fundation_id: (this.currentEvent.useFundations) ? price.fundation.id : this.currentEvent.defaultFundation_id,
-                group_id    : (this.currentEvent.useGroups) ? price.group.id : this.currentEvent.defaultGroup_id,
-                period_id   : (this.currentEvent.usePeriods) ? price.period.id : this.currentEvent.defaultPeriod_id
+                fundation_id: this.currentEvent.useFundations ?
+                    price.fundation.id : this.currentEvent.defaultFundation_id,
+                group_id : this.currentEvent.useGroups ? price.group.id : this.currentEvent.defaultGroup_id,
+                period_id: this.currentEvent.usePeriods ? price.period.id : this.currentEvent.defaultPeriod_id
             };
 
             if (this.selectedWiketItem.type === 'article') {
