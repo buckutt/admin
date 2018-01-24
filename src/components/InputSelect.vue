@@ -10,7 +10,7 @@
             @blur="hideInput()"
             @keydown.up.prevent.stop="up()"
             @keydown.down.prevent.stop="down()"
-            @keydown.enter.prevent.stop="select(suggestions[activeIndex])"
+            @keydown.enter.prevent.stop="select(suggestions[activeIndex].original)"
             ref="input"
             autocomplete="off" />
         <label :for="id">
