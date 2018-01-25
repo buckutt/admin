@@ -6,6 +6,10 @@
             <b-inputselect label="Groupe par défaut" id="group-select" :options="groupOptions" :value="modObject.defaultGroup" @input="updateModObject({ field: 'defaultGroup', value: $event })"></b-inputselect>
 
             <h6>Options de l'équipement</h6>
+            <b-detailedswitch label="Équipement administrateur" icon="perm_device_information" :value="modObject.isUser" @input="updateModObject({ field: 'isUser', value: $event })">
+                Rend le certificat SSL généré pour cet équipement utilisable sur l'interface d'administration.
+            </b-detailedswitch>
+
             <b-detailedswitch label="Badgeage avant achat" icon="done_all" :value="modObject.doubleValidation" @input="updateModObject({ field: 'doubleValidation', value: $event })">
                 Oblige l'acheteur à badger une première fois, afin de permettre au vendeur de connaître les articles et tarifs disponibles pour celui-ci, ainsi que de connaître son solde ou vérifier son identité, avant de prendre sa commande. Si cette option n'est pas activée, il vous faut définir un groupe par défaut, dont les tarifs vont être utilisés. (si vous n'utilisez pas les groupes dans votre événement, sélectionnez le nom de l'événement).
 
@@ -42,7 +46,7 @@ export default {
         ]),
 
         updateDevice(device) {
-            const fields = ['id', 'name', 'defaultGroup_id', 'doubleValidation', 'alcohol', 'showPicture'];
+            const fields = ['id', 'name', 'defaultGroup_id', 'doubleValidation', 'alcohol', 'showPicture', 'isUser'];
             if (device.defaultGroup) {
                 device.defaultGroup_id = device.defaultGroup.id;
             }
