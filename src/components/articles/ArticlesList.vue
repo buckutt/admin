@@ -37,6 +37,7 @@ export default {
         ...mapActions([
             'removeObject'
         ]),
+
         editArticle(article) {
             this.$router.push(`/articles/${article.id}/edit`);
         }

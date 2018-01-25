@@ -20,6 +20,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updatePoint(point) {
             const fields = ['id', 'name'];
 

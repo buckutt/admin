@@ -20,6 +20,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updateGroup(group) {
             const fields = ['id', 'name'];
 

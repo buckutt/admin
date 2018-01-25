@@ -27,6 +27,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createFundation(fundation) {
             this.createObject({ route: 'fundations', value: fundation })
                 .then((createdFundation) => {

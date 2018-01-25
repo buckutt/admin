@@ -27,6 +27,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createCategory(category) {
             this.createObject({ route: 'categories', value: category })
                 .then((createdCategory) => {

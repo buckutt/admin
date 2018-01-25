@@ -20,6 +20,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updateFundation(fundation) {
             const fields = ['id', 'name'];
             this.updateObject({ route: 'fundations', value: pick(fundation, fields) })

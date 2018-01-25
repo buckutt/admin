@@ -43,6 +43,7 @@ export default {
             'login',
             'notifyError'
         ]),
+
         log(mail, password) {
             this.login({ meanOfLogin: 'etuMail', data: mail, password })
                 .catch((err) => {
@@ -70,6 +71,7 @@ export default {
         ...mapState({
             loggedUser: state => state.app.loggedUser
         }),
+
         ...mapGetters([
             'logged'
         ])

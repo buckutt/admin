@@ -47,22 +47,29 @@ export default {
         ...mapActions([
             'removeObject'
         ]),
+
         editPeriod(period) {
             this.$router.push(`/periods/${period.id}/edit`);
         }
     },
 
     computed: {
+
         ...mapState({
             currentEvent: state => state.app.currentEvent,
             periods     : state => state.objects.periods
         }),
+
         ...mapGetters([
             'protectedPeriodsIds',
             'currentPeriods'
         ]),
+
         displayedPeriods() {
-            const selectedPeriods = (this.displayOutdated) ? this.periods : this.currentPeriods;
+            const selectedPeriods = (this.displayOutdated)
+                ? this.periods
+                : this.currentPeriods;
+
             return selectedPeriods.filter(period => (period.event_id === this.currentEvent.id));
         }
     }

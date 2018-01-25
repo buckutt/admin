@@ -46,8 +46,11 @@ export default {
             'wiketCurrentTab',
             'selectedWiketItem'
         ]),
+
         displayPromotions() {
-            return (this.wiketCurrentTab.promotions) ? (this.wiketCurrentTab.promotions.length > 0) : false;
+            return (this.wiketCurrentTab.promotions)
+                ? (this.wiketCurrentTab.promotions.length > 0)
+                : false;
         }
     }
 };

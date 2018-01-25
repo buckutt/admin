@@ -26,6 +26,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createGroup(group) {
             this.createObject({ route: 'groups', value: group })
                 .then((createdGroup) => {

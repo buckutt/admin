@@ -74,6 +74,7 @@ export default {
             modObject   : state => state.app.modObject,
             currentEvent: state => state.app.currentEvent
         }),
+
         ...mapGetters([
             'selectedWiketItem',
             'groupOptions',
@@ -81,6 +82,7 @@ export default {
             'currentPeriodOptions',
             'fundationOptions'
         ]),
+
         disabledAdd() {
             return ((!this.newPrice.fundation && this.currentEvent.useFundations)
                 || (!this.newPrice.period && this.currentEvent.usePeriods)
@@ -95,6 +97,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updateItem() {
             const initialFontSize = 16;
 
@@ -108,6 +111,7 @@ export default {
             const maxSize = 130;
 
             $name.style.fontSize = `${initialFontSize}px`;
+
             if (size > maxSize) {
                 $name.style.fontSize = `${initialFontSize * (maxSize / size)}px`;
             }
@@ -122,6 +126,7 @@ export default {
                     });
             }
         },
+
         generateWarning(price) {
             let warning;
 
@@ -142,14 +147,20 @@ export default {
 
             return warning;
         },
+
         createPrice(price) {
             const priceToCreate = {
                 amount      : price.amount,
                 point_id    : this.modObject.id,
-                fundation_id: this.currentEvent.useFundations ?
-                    price.fundation.id : this.currentEvent.defaultFundation_id,
-                group_id : this.currentEvent.useGroups ? price.group.id : this.currentEvent.defaultGroup_id,
-                period_id: this.currentEvent.usePeriods ? price.period.id : this.currentEvent.defaultPeriod_id
+                fundation_id: (this.currentEvent.useFundations)
+                    ? price.fundation.id
+                    : this.currentEvent.defaultFundation_id,
+                group_id: (this.currentEvent.useGroups)
+                    ? price.group.id
+                    : this.currentEvent.defaultGroup_id,
+                period_id: (this.currentEvent.usePeriods)
+                    ? price.period.id
+                    : this.currentEvent.defaultPeriod_id
             };
 
             if (this.selectedWiketItem.type === 'article') {

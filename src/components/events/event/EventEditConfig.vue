@@ -55,6 +55,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updateEvent(event) {
             const steps     = [];
             const stepsName = [];

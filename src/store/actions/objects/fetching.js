@@ -3,6 +3,7 @@ import routeToRelation from '../../../lib/routeToRelation';
 
 export function expandObject({ commit, dispatch, state }, object) {
     let embed = '';
+
     if (routeToRelation(object.route)) {
         embed = `?embed=${routeToRelation(object.route)}`;
     }
@@ -16,9 +17,11 @@ export function expandObject({ commit, dispatch, state }, object) {
             }
 
             dispatch('checkAndUpdateObjects', { route: object.route, objects: [result] });
+
             if (result._data) {
                 delete result._data;
             }
+
             commit('UPDATEMODOBJECT', result);
 
             return result;

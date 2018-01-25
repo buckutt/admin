@@ -21,6 +21,7 @@ export default {
         ...mapState({
             modObject: state => state.app.modObject
         }),
+
         title() {
             return `Groupe ${this.modObject.name}`;
         }

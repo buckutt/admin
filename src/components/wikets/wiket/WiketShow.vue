@@ -35,12 +35,15 @@ export default {
             fullPath : state => state.route.fullPath,
             params   : state => state.route.params
         }),
+
         ...mapGetters([
             'wiketCategories'
         ]),
+
         title() {
             return `Guichet ${this.modObject.name}`;
         },
+
         displayedTabs() {
             return this.wiketCategories
                 .map(category => ({

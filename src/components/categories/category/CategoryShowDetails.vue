@@ -16,6 +16,7 @@ export default {
         ...mapState({
             modObject: state => state.app.modObject
         }),
+
         elements() {
             return [
                 {
@@ -25,6 +26,7 @@ export default {
                 }
             ];
         },
+
         articles() {
             return this.modObject.articles.map(article => ({
                 icon   : 'free_breakfast',

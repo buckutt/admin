@@ -1,19 +1,13 @@
 export const logged = state => !!state.app.loggedUser;
 
-export const protectedPeriodsIds = (state) => {
-    const periods = [];
-    state.objects.events.forEach(event => periods.push(event.defaultPeriod_id));
-    return periods;
-};
+export const protectedPeriodsIds = state => (
+    state.objects.events.map(event => event.defaultPeriod_id)
+);
 
-export const protectedGroupsIds = (state) => {
-    const groups = [];
-    state.objects.events.forEach(event => groups.push(event.defaultGroup_id));
-    return groups;
-};
+export const protectedGroupsIds = state => (
+    state.objects.events.map(event => event.defaultGroup_id)
+);
 
-export const protectedFundationsIds = (state) => {
-    const fundations = [];
-    state.objects.events.forEach(event => fundations.push(event.defaultFundation_id));
-    return fundations;
-};
+export const protectedFundationsIds = state => (
+    state.objects.events.map(event => event.defaultFundation_id)
+);

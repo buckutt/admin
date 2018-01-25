@@ -83,6 +83,7 @@ export function getTreasury({ commit, dispatch }, fields) {
         .join('&');
 
     let orQt = queryString(qt);
+
     if (orQt) {
         orQt = `&q=${orQt}`;
     }

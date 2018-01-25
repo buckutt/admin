@@ -42,6 +42,7 @@ export default {
         ...mapActions([
             'removeObject'
         ]),
+
         editDevice(device) {
             this.$router.push(`/devices/${device.id}/edit`);
         }

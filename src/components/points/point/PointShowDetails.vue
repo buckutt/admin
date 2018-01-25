@@ -16,6 +16,7 @@ export default {
         ...mapState({
             modObject: state => state.app.modObject
         }),
+
         elements() {
             return [
                 {
@@ -25,6 +26,7 @@ export default {
                 }
             ];
         },
+
         categories() {
             return this.modObject.categories.map(category => ({
                 icon   : 'format_list_numbered',

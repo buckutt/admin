@@ -44,9 +44,11 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         isInCurrentPoint(category) {
             return this.modObject.categories.some(c => (c.id === category.id));
         },
+
         addToPoint(point, category) {
             this
                 .createRelation({
@@ -65,6 +67,7 @@ export default {
                     full   : err
                 }));
         },
+
         removeFromPoint(point, category) {
             this
                 .removeRelation({
@@ -83,6 +86,7 @@ export default {
                     full   : err
                 }));
         },
+
         moveFromCurrentPoint(category) {
             if (this.isInCurrentPoint(category)) {
                 this.removeFromPoint(this.modObject, category);
@@ -97,6 +101,7 @@ export default {
             categories: state => state.objects.categories,
             modObject : state => state.app.modObject
         }),
+
         displayedCategories() {
             return this.categories.map((category) => {
                 category.inCurrentPoint = this.isInCurrentPoint(category);

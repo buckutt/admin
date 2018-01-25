@@ -42,9 +42,11 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         addGroupToUser(user, membership) {
-            membership.period = (this.currentEvent.usePeriods) ?
-                membership.period : this.currentEvent.defaultPeriod;
+            membership.period = (this.currentEvent.usePeriods)
+                ? membership.period
+                : this.currentEvent.defaultPeriod;
 
             const index = user.memberships.findIndex(m => (
                 m.group.id === membership.group.id && m.period.id === membership.period.id
@@ -80,11 +82,13 @@ export default {
             currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject
         }),
+
         ...mapGetters([
             'groupOptions',
             'currentPeriodOptions',
             'periodOptions'
         ]),
+
         displayedColumns() {
             const columns = [{ title: 'Groupe', field: 'group.name' }];
 
@@ -94,6 +98,7 @@ export default {
 
             return columns;
         },
+
         displayedMemberships() {
             return (!this.modObject) ? [] : this.modObject.memberships
                 .filter(membership => (membership.period.event_id === this.currentEvent.id))

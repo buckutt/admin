@@ -49,10 +49,13 @@ export default {
             if (!this.level) {
                 return relative;
             }
+
             const path = this.fullPath.split('/').slice(0, this.level + 1);
+
             if (relative) {
                 path.push(relative);
             }
+
             return path.join('/');
         }
     },

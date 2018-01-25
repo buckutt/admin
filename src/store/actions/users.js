@@ -42,9 +42,11 @@ export function searchUsers({ dispatch }, name) {
     return get(`services/manager/searchuser?name=${name}${limit}`)
         .then((results) => {
             dispatch('clearObject', 'users');
+
             if (results.length > 0) {
                 dispatch('checkAndAddObjects', { route: 'users', objects: results });
             }
+
             return [];
         });
 }

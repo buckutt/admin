@@ -15,6 +15,7 @@ export default {
         ...mapState({
             modObject: state => state.app.modObject
         }),
+
         elements() {
             return [
                 {

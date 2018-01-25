@@ -74,10 +74,14 @@ export default {
     computed: {
         suggestions() {
             const strongify = { extract: el => el.name, pre: '<strong>', post: '</strong>' };
-            return (this.content) ?
-                fuzzy.filter(this.content, this.convertOptions(this.database), strongify) :
-                this.convertOptions(this.options).map(entry => ({ original: entry, string: entry.name }));
+            const db        = this.convertOptions(this.database);
+            const opts      = this.convertOptions(this.options);
+
+            return (this.content)
+                ? fuzzy.filter(this.content, db, strongify)
+                : opts.map(entry => ({ original: entry, string: entry.name }));
         },
+
         database() {
             return (this.fullOptions) ? this.fullOptions : this.options;
         }
@@ -88,13 +92,17 @@ export default {
             this.$refs.textfield.MaterialTextfield.change(suggestion.name);
             this.$refs.textfield.MaterialTextfield.boundBlurHandler();
             this.$refs.input.blur();
+
             this.content          = suggestion.name;
             this.displayInput     = false;
             this.ignoreNextUpdate = true;
+
             this.$emit('input', suggestion.value);
         },
+
         changeInput(content) {
             const firstName = this.suggestions[0].original.name.toLowerCase();
+
             if (this.suggestions.length === 1 && firstName === content.toLowerCase()) {
                 return this.select(this.suggestions[0].original);
             }
@@ -102,11 +110,13 @@ export default {
             this.ignoreNextUpdate = true;
             this.$emit('input', undefined);
         },
+
         convertOptions(options) {
             return options.map(option => (
                 (!option.name && !option.value) ? { name: option, value: option } : option
             ));
         },
+
         down() {
             if (this.activeIndex + 1 >= this.suggestions.length) {
                 return;
@@ -121,6 +131,7 @@ export default {
                 menu.scrollTop += menu.children[0].offsetHeight;
             }
         },
+
         up() {
             if (this.activeIndex <= 0) {
                 return;
@@ -135,6 +146,7 @@ export default {
                 menu.scrollTop -= menu.children[0].offsetHeight;
             }
         },
+
         hideInput() {
             setTimeout(() => {
                 this.displayInput = false;

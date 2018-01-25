@@ -12,6 +12,7 @@
         this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
         this.checkValidity();
     };
+
     /**
      * Handle change.
      *
@@ -36,6 +37,7 @@
         }
         this.checkFocus();
     };
+
     /**
      * Enable text field.
      *
@@ -46,6 +48,7 @@
         this.updateClasses_();
         this.checkValidity();
     };
+
     MaterialTextfield.prototype['enable'] = MaterialTextfield.prototype.enable;
 
     /**

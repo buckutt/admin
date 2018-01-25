@@ -93,6 +93,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         addArticleToCurrentPromotion(article) {
             this
                 .addStepToPromotion({
@@ -105,6 +106,7 @@ export default {
                     full   : err
                 }));
         },
+
         addArticleToChosenStep(article) {
             this
                 .addArticleToStep({
@@ -126,6 +128,7 @@ export default {
                     this.notifyError({ message, full: err });
                 });
         },
+
         removeSelectedArticleFromStep(article, index) {
             this
                 .removeArticleFromStep({
@@ -139,15 +142,18 @@ export default {
                     full   : err
                 }));
         },
+
         createStep() {
             this.chooseArticle = !(this.chooseArticle && this.newStep);
             this.newStep       = true;
         },
+
         chooseIndex(index) {
             this.chooseArticle = !(this.chooseArticle && !this.newStep && this.chosenIndex === index);
             this.newStep       = false;
             this.chosenIndex   = index;
         },
+
         processArticle(article) {
             if (this.newStep) {
                 this.addArticleToCurrentPromotion(article);
@@ -162,13 +168,17 @@ export default {
             articles : state => state.objects.articles,
             modObject: state => state.app.modObject
         }),
+
         displayedPromotion() {
             return promotionDisplayer(this.modObject);
         },
+
         alreadyInArticles() {
             if (this.displayedPromotion.length > 0) {
                 if (!this.newStep) {
-                    return this.displayedPromotion[this.chosenIndex].articles.map(article => article.id);
+                    return this.displayedPromotion[this.chosenIndex]
+                        .articles
+                        .map(article => article.id);
                 }
             }
 

@@ -21,6 +21,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updateCategory(category) {
             const fields = ['id', 'name'];
 

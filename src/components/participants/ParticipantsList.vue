@@ -41,6 +41,7 @@ export default {
         ...mapState({
             users: state => state.objects.users
         }),
+
         displayedUsers() {
             return this.users.map((user) => {
                 user.fullname = `${user.firstname} ${user.lastname}`;

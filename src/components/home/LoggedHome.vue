@@ -40,6 +40,7 @@ export default {
             'updateCurrentEvent',
             'removeObject'
         ]),
+
         changeEvent(event) {
             if (this.currentEvent) {
                 if (event.id === this.currentEvent.id) {
@@ -56,15 +57,18 @@ export default {
                     }
                 });
         },
+
         editEvent(event) {
             this.$router.push(`/events/${event.id}/edit`);
         },
+
         deleteEvent(event) {
             this.removeObject({
                 route: 'events',
                 value: event
             });
         },
+
         createEvent() {
             this.$router.push('/events/create');
         }
@@ -76,10 +80,12 @@ export default {
             loggedUser  : state => state.app.loggedUser,
             events      : state => state.objects.events
         }),
+
         isConfigured() {
             if (this.currentEvent) {
                 return isEventConfigured(this.currentEvent);
             }
+
             return false;
         }
     }

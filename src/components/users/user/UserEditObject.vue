@@ -26,6 +26,8 @@ import bcrypt from 'bcryptjs';
 import { mapState, mapActions } from 'vuex';
 import { randString } from '../../../lib/randString';
 
+const randTen = () => Math.floor(Math.random() * 10);
+
 export default {
     data() {
         return {
@@ -42,23 +44,23 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         regenPin(user) {
-            const randTen = () => Math.floor(Math.random() * 10);
-            const pin     = `${randTen()}${randTen()}${randTen()}${randTen()}`;
-            this.newPin   = pin;
+            this.newPin = `${randTen()}${randTen()}${randTen()}${randTen()}`;
+
             const modUser = {
                 id : user.id,
-                pin: bcrypt.hashSync(pin, 10)
+                pin: bcrypt.hashSync(this.newPin, 10)
             };
 
             this.updateObject({ route: 'users', value: modUser });
         },
         regenPassword(user) {
-            const password   = randString(8);
-            this.newPassword = password;
+            this.newPassword = randString(8);
+
             const modUser    = {
                 id      : user.id,
-                password: bcrypt.hashSync(password, 10)
+                password: bcrypt.hashSync(this.newPassword, 10)
             };
 
             this.updateObject({ route: 'users', value: modUser });

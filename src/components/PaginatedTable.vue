@@ -161,19 +161,23 @@ export default {
                     this.$emit(action, arg);
             }
         },
+
         previous() {
             if (this.isPrevious) {
                 this.page = this.adjustedPage - 1;
             }
         },
+
         next() {
             if (this.isNext) {
                 this.page += 1;
             }
         },
+
         lodget(object, path) {
             return lodget(object, path);
         },
+
         displayAction(action, object) {
             const condition = action.condition;
             if (condition) {
@@ -202,6 +206,7 @@ export default {
 
             return this.data.slice();
         },
+
         displayedData() {
             let transformedData = this.filteredData.slice();
 
@@ -216,6 +221,7 @@ export default {
 
             return transformedData;
         },
+
         start() {
             if (!this.paging) {
                 return 0;
@@ -223,6 +229,7 @@ export default {
 
             return (this.adjustedPage - 1) * this.chosenPaging;
         },
+
         pagesNumber() {
             if (!this.paging) {
                 return 1;
@@ -230,21 +237,27 @@ export default {
 
             return Math.ceil(this.filteredData.length / this.chosenPaging);
         },
+
         isPrevious() {
             if (this.adjustedPage - 1 > 0) {
                 return true;
             }
+
             return false;
         },
+
         isNext() {
             if (this.adjustedPage + 1 <= this.pagesNumber) {
                 return true;
             }
+
             return false;
         },
+
         adjustedPage() {
             return Math.min(this.page, this.pagesNumber);
         },
+
         columnsNumber() {
             return (this.actions) ? this.headers.length + 1 : this.headers.length;
         }

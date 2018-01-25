@@ -23,6 +23,7 @@ export default {
             modObject   : state => state.app.modObject,
             creationData: state => state.app.creationData
         }),
+
         elements() {
             const baseElements = [
                 {

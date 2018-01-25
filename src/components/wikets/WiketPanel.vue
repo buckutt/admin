@@ -36,9 +36,11 @@ export default {
             'pointsWikets',
             'pointOptions'
         ]),
+
         remainingPoints() {
             return this.pointOptions
-                .filter(pointOption => !this.pointsWikets.some(point => point.id === pointOption.value.id));
+                .filter(pointOption =>
+                    !this.pointsWikets.some(point => point.id === pointOption.value.id));
         }
     }
 };

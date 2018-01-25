@@ -48,17 +48,26 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createPromotionPrice(promotion, price) {
-            price.fundation = (this.currentEvent.useFundations) ?
-                price.fundation : this.currentEvent.defaultFundation;
-            price.group     = (this.currentEvent.useGroups) ? price.group : this.currentEvent.defaultGroup;
-            price.period    = (this.currentEvent.usePeriods) ? price.period : this.currentEvent.defaultPeriod;
+            price.fundation = (this.currentEvent.useFundations)
+                ? price.fundation
+                : this.currentEvent.defaultFundation;
+
+            price.group = (this.currentEvent.useGroups)
+                ? price.group
+                : this.currentEvent.defaultGroup;
+
+            price.period = (this.currentEvent.usePeriods)
+                ? price.period
+                : this.currentEvent.defaultPeriod;
 
             price.fundation_id = price.fundation.id;
             price.group_id     = price.group.id;
             price.period_id    = price.period.id;
             price.point_id     = price.point.id;
             price.promotion_id = promotion.id;
+
             delete price.fundation;
             delete price.group;
             delete price.period;
@@ -85,6 +94,7 @@ export default {
             currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject
         }),
+
         ...mapGetters([
             'groupOptions',
             'periodOptions',
@@ -92,6 +102,7 @@ export default {
             'pointOptions',
             'fundationOptions'
         ]),
+
         displayedColumns() {
             const columns = [
                 { title: 'Montant TTC', field: 'amount', type: 'price' },
@@ -101,18 +112,21 @@ export default {
             if (this.currentEvent.useFundations) {
                 columns.push({ title: 'Fondation', field: 'fundation.name' });
             }
+
             if (this.currentEvent.useGroups) {
                 columns.push({ title: 'Groupe', field: 'group.name' });
             }
+
             if (this.currentEvent.usePeriods) {
                 columns.push({ title: 'Période', field: 'period.name' });
             }
 
             return columns;
         },
+
         displayedPrices() {
             return (!this.modObject) ? [] : this.modObject.prices
-                .filter(price => (price.period.event_id === this.currentEvent.id))
+                .filter(price => price.period.event_id === this.currentEvent.id)
                 .map((price) => {
                     if (price.fundation_id !== this.currentEvent.defaultFundation_id
                         && !this.currentEvent.useFundations) {
@@ -132,6 +146,7 @@ export default {
                     return price;
                 });
         },
+
         disabledAdd() {
             return ((!this.newPrice.fundation && this.currentEvent.useFundations)
                 || (!this.newPrice.period && this.currentEvent.usePeriods)

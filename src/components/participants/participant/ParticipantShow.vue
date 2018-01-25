@@ -22,6 +22,7 @@ export default {
             modObject   : state => state.app.modObject,
             currentEvent: state => state.app.currentEvent
         }),
+
         displayedTabs() {
             const tabs = [
                 { route: '', name: 'Détails', exact: true },
@@ -34,6 +35,7 @@ export default {
 
             return tabs;
         },
+
         title() {
             return `Participant ${this.modObject.firstname} ${this.modObject.lastname}`;
         }

@@ -23,6 +23,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updateEvent(event) {
             const fields = ['id', 'name', 'minReload', 'maxPerAccount', 'maxAlcohol'];
 

@@ -44,6 +44,7 @@ export default {
         ...mapState({
             modObject: state => state.app.modObject
         }),
+
         elements() {
             return [
                 {
@@ -53,6 +54,7 @@ export default {
                 }
             ];
         },
+
         displayedPromotion() {
             return promotionDisplayer(this.modObject);
         }

@@ -20,6 +20,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updatePromotion(promotion) {
             const fields = ['id', 'name'];
 

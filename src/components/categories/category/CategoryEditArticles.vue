@@ -44,10 +44,13 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         isInCurrentCategory(article) {
-            const index = this.modObject.articles.findIndex(a => (a.id === article.id));
+            const index = this.modObject.articles.findIndex(a => a.id === article.id);
+
             return (index !== -1);
         },
+
         addToCategory(category, article) {
             this
                 .createRelation({
@@ -66,6 +69,7 @@ export default {
                     full   : err
                 }));
         },
+
         removeFromCategory(category, article) {
             this.removeRelation({
                 obj1: {
@@ -83,6 +87,7 @@ export default {
                     full   : err
                 }));
         },
+
         moveFromCurrentCategory(article) {
             if (this.isInCurrentCategory(article)) {
                 this.removeFromCategory(this.modObject, article);
@@ -97,9 +102,11 @@ export default {
             articles : state => state.objects.articles,
             modObject: state => state.app.modObject
         }),
+
         displayedArticles() {
             return this.articles.map((article) => {
                 article.inCurrentCategory = this.isInCurrentCategory(article);
+
                 return article;
             });
         }

@@ -118,11 +118,13 @@ store.subscribe((mutation) => {
             vueApp.$root.$emit('snackfilter', {
                 message: `${mutation.payload.message}`
             });
+
             break;
         case 'UPDATENOTIFY':
             vueApp.$root.$emit('snackfilter', {
                 message: mutation.payload.message
             });
+
             break;
         default:
             break;

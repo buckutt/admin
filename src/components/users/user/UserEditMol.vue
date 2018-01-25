@@ -28,6 +28,7 @@ export default {
             'updateObject',
             'removeObject'
         ]),
+
         lockMol(meanOfLogin) {
             const modMol = {
                 id     : meanOfLogin.id,

@@ -90,45 +90,57 @@ export default {
             refunds       : state => state.objects.refunds,
             meansofpayment: state => state.objects.meansofpayment
         }),
+
         ...mapGetters([
             'pointOptions'
         ]),
+
         totalReload() {
             return this.reloads
                 .map(reload => parseInt(reload.credit, 10))
                 .reduce((a, b) => a + b, 0);
         },
+
         totalRefund() {
             return this.refunds
                 .map(refund => parseInt(refund.amount, 10))
                 .reduce((a, b) => a + b, 0);
         },
+
         totalTransfer() {
             return this.transfers
                 .map(transfer => parseInt(transfer.amount, 10))
                 .reduce((a, b) => a + b, 0);
         },
+
         pointOptionsAll() {
             const points = Object.assign([], this.pointOptions);
             points.unshift({ name: 'Tous', value: null });
+
             return points;
         },
+
         displayedReloads() {
             return this.reloads.map((reload) => {
                 reload.type = this.slugToName(reload.type);
+
                 return reload;
             });
         },
+
         displayedRefunds() {
             return this.refunds.map((refund) => {
                 refund.type = this.slugToName(refund.type);
+
                 return refund;
             });
         },
+
         displayedTransfers() {
             return this.transfers.map((transfer) => {
-                transfer.sender.fullname = `${transfer.sender.firstname} ${transfer.sender.lastname}`;
+                transfer.sender.fullname   = `${transfer.sender.firstname} ${transfer.sender.lastname}`;
                 transfer.reciever.fullname = `${transfer.reciever.firstname} ${transfer.reciever.lastname}`;
+
                 return transfer;
             });
         }
@@ -140,6 +152,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         filter() {
             const inputFields = JSON.parse(JSON.stringify(this.fields));
             let isFilled      = false;
@@ -163,9 +176,13 @@ export default {
                     full   : err
                 }));
         },
+
         slugToName(slug) {
             const index = this.meansofpayment.findIndex(mop => (mop.slug === slug));
-            return (index !== -1) ? this.meansofpayment[index].name : slug;
+
+            return (index !== -1)
+                ? this.meansofpayment[index].name
+                : slug;
         }
     }
 };

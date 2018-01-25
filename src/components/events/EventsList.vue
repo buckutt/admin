@@ -32,9 +32,11 @@ export default {
         ...mapActions([
             'removeObject'
         ]),
+
         editEvent(event) {
             this.$router.push(`/events/${event.id}/edit`);
         },
+
         configEvent(event) {
             this.$router.push(`/events/${event.id}/config`);
         }

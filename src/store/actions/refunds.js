@@ -4,6 +4,7 @@
 
 export function refundUser({ state, dispatch }, refundData) {
     let refundedUser = refundData.user;
+
     return dispatch('expandObject', {
         route: 'users',
         value: { id: refundedUser.id }

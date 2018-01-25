@@ -53,10 +53,12 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createWiket(wiket) {
             wiket.point  = this.modObject;
-            wiket.period = (this.currentEvent.usePeriods) ?
-                wiket.period : this.currentEvent.defaultPeriod;
+            wiket.period = (this.currentEvent.usePeriods)
+                ? wiket.period
+                : this.currentEvent.defaultPeriod;
 
             if (isPointUsedByEvent(this.modObject.wikets, wiket)) {
                 return this.notifyError({
@@ -93,22 +95,27 @@ export default {
             currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject
         }),
+
         ...mapGetters([
             'periodOptions',
             'currentPeriodOptions',
             'deviceOptions'
         ]),
+
         title() {
             return `Guichet ${this.modObject.name}`;
         },
+
         displayedColumns() {
             const columns = [{ title: 'Équipement', field: 'device.name' }];
+
             if (this.currentEvent.usePeriods) {
                 columns.push({ title: 'Période', field: 'period.name' });
             }
 
             return columns;
         },
+
         displayedWikets() {
             return (!this.modObject) ? [] : this.modObject.wikets
                 .filter(wiket => (wiket.period.event_id === this.currentEvent.id))
@@ -121,6 +128,7 @@ export default {
                     return wiket;
                 });
         },
+
         disabledAdd() {
             return (!this.wiket.period && this.currentEvent.usePeriods) || !this.wiket.device;
         }

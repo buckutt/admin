@@ -37,6 +37,7 @@ export default {
         ...mapActions([
             'removeObject'
         ]),
+
         editGroup(group) {
             this.$router.push(`/groups/${group.id}/edit`);
         }
@@ -46,6 +47,7 @@ export default {
         ...mapState({
             groups: state => state.objects.groups
         }),
+
         ...mapGetters([
             'protectedGroupsIds'
         ])

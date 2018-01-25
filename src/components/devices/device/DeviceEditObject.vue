@@ -40,6 +40,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updateDevice(device) {
             const fields = ['id', 'name', 'defaultGroup_id', 'doubleValidation', 'alcohol', 'showPicture'];
             if (device.defaultGroup) {
@@ -60,6 +61,7 @@ export default {
             modObject: state => state.app.modObject,
             groups   : state => state.objects.groups
         }),
+
         ...mapGetters([
             'groupOptions'
         ])

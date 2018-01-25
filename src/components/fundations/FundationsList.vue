@@ -37,6 +37,7 @@ export default {
         ...mapActions([
             'removeObject'
         ]),
+
         editFundation(fundation) {
             this.$router.push(`/fundations/${fundation.id}/edit`);
         }
@@ -46,6 +47,7 @@ export default {
         ...mapState({
             fundations: state => state.objects.fundations
         }),
+
         ...mapGetters([
             'protectedFundationsIds'
         ])

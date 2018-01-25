@@ -26,6 +26,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createPromotion(promotion) {
             this.createObject({ route: 'promotions', value: promotion })
                 .then((createdPromotion) => {

@@ -115,5 +115,7 @@ export default (route) => {
         ]
     };
 
-    return ((relations[route]) ? encodeURIComponent(JSON.stringify(relations[route])) : null);
+    return (relations[route])
+        ? encodeURIComponent(JSON.stringify(relations[route]))
+        : null;
 };

@@ -3,6 +3,7 @@ import { post, del }   from '../../../lib/fetch';
 
 export function createRelation({ dispatch, state }, relation) {
     const body = {};
+
     if (relation.through) {
         body[relation.through.field] = relation.through.value.id;
     }

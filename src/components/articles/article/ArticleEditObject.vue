@@ -34,6 +34,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updateArticle(article) {
             const fields = ['id', 'name', 'stock', 'alcohol', 'vat'];
 
@@ -44,6 +45,7 @@ export default {
                     full   : err
                 }));
         },
+
         imageUpdated(error) {
             if (error) {
                 return this.notifyError({ message: 'L\'image de l\'article a bien été modifiée', full: error });
@@ -57,6 +59,7 @@ export default {
         ...mapState({
             modObject: state => state.app.modObject
         }),
+
         displayedVat() {
             return +(this.modObject.vat * 100).toFixed(2);
         }

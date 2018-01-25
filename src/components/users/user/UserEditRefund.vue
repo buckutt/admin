@@ -39,6 +39,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         doRefund(user, refund) {
             this.refundUser({ user, refund })
                 .then(() => this.notify({ message: 'Le remboursement a bien été effectué' }))

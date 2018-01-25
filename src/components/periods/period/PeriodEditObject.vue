@@ -50,6 +50,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updatePeriod(period) {
             const fields = ['id', 'name', 'start', 'end'];
 
@@ -66,9 +67,11 @@ export default {
         ...mapState({
             modObject: state => state.app.modObject
         }),
+
         ...mapGetters([
             'protectedPeriodsIds'
         ]),
+
         isPeriodProtected() {
             return (this.protectedPeriodsIds.indexOf(this.modObject.id) > -1);
         }

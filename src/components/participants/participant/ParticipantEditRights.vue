@@ -45,8 +45,11 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createUserRight(user, right) {
-            right.period = (this.currentEvent.usePeriods) ? right.period : this.currentEvent.defaultPeriod;
+            right.period = (this.currentEvent.usePeriods)
+                ? right.period
+                : this.currentEvent.defaultPeriod;
 
             right.period_id = right.period.id;
             delete right.period;
@@ -54,6 +57,7 @@ export default {
             if (right.point) {
                 right.point_id = right.point.id;
             }
+
             delete right.point;
 
             right.user_id = user.id;
@@ -78,11 +82,13 @@ export default {
             currentEvent: state => state.app.currentEvent,
             modObject   : state => state.app.modObject
         }),
+
         ...mapGetters([
             'periodOptions',
             'currentPeriodOptions',
             'pointOptions'
         ]),
+
         displayedColumns() {
             const columns = [
                 { title: 'Droit', field: 'name' },
@@ -95,6 +101,7 @@ export default {
 
             return columns;
         },
+
         displayedRights() {
             return (!this.modObject) ? [] : this.modObject.rights
                 .filter(right => (right.period.event_id === this.currentEvent.id))
@@ -111,6 +118,7 @@ export default {
                     return right;
                 });
         },
+
         disabledAdd() {
             return (!this.userRight.name || (!this.userRight.period && this.currentEvent.usePeriods));
         }

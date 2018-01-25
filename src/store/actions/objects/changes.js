@@ -5,10 +5,12 @@ export function registerModels({ commit, state }, routes) {
 
     state.changes.socket.on('listening', (models) => {
         const modelsToRoutes = {};
+
         models.forEach((model, index) => {
             console.log(`Listen to ${model} changes`);
             modelsToRoutes[model] = routes[index];
         });
+
         commit('ADDMODELSTOROUTES', modelsToRoutes);
     });
 }

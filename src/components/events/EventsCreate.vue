@@ -32,6 +32,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createEvent(event) {
             this.createObject({ route: 'events', value: event })
                 .then((createdEvent) => {

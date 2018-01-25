@@ -43,9 +43,10 @@ export default {
             modObject   : state => state.app.modObject,
             currentEvent: state => state.app.currentEvent
         }),
+
         filteredRights() {
             return (!this.modObject) ? [] : this.modObject.rights
-                .filter(right => (right.period.event_id === this.currentEvent.id))
+                .filter(right => right.period.event_id === this.currentEvent.id)
                 .map((right) => {
                     if (!right.point) {
                         right.point = { id: '0', name: 'Aucun' };
@@ -53,6 +54,7 @@ export default {
                     return right;
                 });
         },
+
         rights() {
             const rights        = [];
             const groupedRights = groupBy(this.filteredRights, 'point.id');
@@ -62,9 +64,9 @@ export default {
 
                 groupedRights[key].forEach(right => rightPerPoint.rights.push({
                     icon : 'assignment_turned_in',
-                    title: (this.currentEvent.usePeriods) ?
-                        `Période ${right.period.name}` :
-                        undefined,
+                    title: this.currentEvent.usePeriods
+                        ? `Période ${right.period.name}`
+                        : undefined,
                     content: right.name
                 }));
 
@@ -73,17 +75,19 @@ export default {
 
             return rights;
         },
+
         groups() {
             return (!this.modObject) ? [] : this.modObject.memberships
                 .filter(membership => (membership.period.event_id === this.currentEvent.id))
                 .map(membership => ({
                     icon : 'group',
-                    title: (this.currentEvent.usePeriods) ?
-                        `Période ${membership.period.name}` :
-                        undefined,
+                    title: this.currentEvent.usePeriods
+                        ? `Période ${membership.period.name}`
+                        : undefined,
                     content: membership.group.name
                 }));
         },
+
         isInDefaultGroup() {
             const group  = this.currentEvent.defaultGroup;
             const period = this.currentEvent.defaultPeriod;
@@ -99,6 +103,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         addUserToGroup(user, group, period) {
             const newMembership = {
                 user_id  : user.id,

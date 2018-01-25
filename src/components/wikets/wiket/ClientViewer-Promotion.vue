@@ -21,17 +21,21 @@ export default {
             fullPath: state => state.route.fullPath,
             params  : state => state.route.params
         }),
+
         ...mapGetters([
             'selectedWiketItem'
         ]),
+
         selected() {
-            return (this.selectedWiketItem.type) ?
-                (this.selectedWiketItem.id === this.promotion.id && this.selectedWiketItem.type === 'promotion') :
-                false;
+            return (this.selectedWiketItem.type)
+                ? (this.selectedWiketItem.id === this.promotion.id && this.selectedWiketItem.type === 'promotion')
+                : false;
         },
+
         gray() {
             return this.promotion.prices.length === 0;
         },
+
         toLink() {
             if (!this.params.article && !this.params.promotion) {
                 return `${this.fullPath}/promotion/${this.promotion.id}`;

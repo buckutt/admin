@@ -66,11 +66,13 @@ export const wiketPromotions = (state, getters) => {
         const toReduce = promotion.sets
             .map((set) => {
                 let match = false;
+
                 set.articles.forEach((article) => {
                     if (articles.some(a => a.id === article.id)) {
                         match = true;
                     }
                 });
+
                 return match;
             });
 
@@ -85,8 +87,8 @@ export const wiketCategories = (state, getters) => {
 
     const point = state.app.modObject;
 
-    return (point && point.categories) ?
-        point.categories.sort((a, b) => sortOrder(a.name, b.name))
+    return (point && point.categories)
+        ? point.categories.sort((a, b) => sortOrder(a.name, b.name))
         : [];
 };
 
@@ -95,7 +97,8 @@ export const wiketTabsArticles = (state, getters) => {
     const event        = state.app.currentEvent;
     const pointId      = state.route.params.id;
     const tabsArticles = Object.assign([], getters.wiketCategories);
-    const prices       = state.objects.prices
+
+    const prices = state.objects.prices
         .filter(price => (
             price.period.event_id === event.id &&
             price.point_id === pointId &&
@@ -108,6 +111,7 @@ export const wiketTabsArticles = (state, getters) => {
                 const newArticle  = Object.assign({}, article);
                 newArticle.prices = prices.filter(price => price.article_id === article.id);
                 newArticle.type   = 'article';
+
                 return newArticle;
             })
             .sort((a, b) => sortOrder(a.name, b.name))
@@ -118,6 +122,7 @@ export const wiketTabsArticles = (state, getters) => {
                 const newPromotion  = Object.assign({}, promotion);
                 newPromotion.prices = prices.filter(price => price.promotion_id === promotion.id);
                 newPromotion.type   = 'promotion';
+
                 return newPromotion;
             })
             .sort((a, b) => sortOrder(a.name, b.name))
@@ -136,11 +141,7 @@ export const wiketCurrentTab = (state, getters) => {
     const tabId    = state.route.params.category;
     const foundTab = getters.wiketTabsArticles.find(tab => tab.id === tabId);
 
-    if (!foundTab) {
-        return {};
-    }
-
-    return foundTab;
+    return foundTab || {};
 };
 
 export const selectedWiketItem = (state, getters) => {
@@ -154,14 +155,9 @@ export const selectedWiketItem = (state, getters) => {
         itemId = promotionId;
     }
 
+    const foundItem = (bank)
+        ? bank.find(item => item.id === itemId)
+        : false;
 
-    const foundItem = (bank) ?
-        bank.find(item => item.id === itemId) :
-        false;
-
-    if (!foundItem) {
-        return {};
-    }
-
-    return foundItem;
+    return foundItem || {};
 };

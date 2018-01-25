@@ -13,7 +13,8 @@ export function clearModObject({ commit }) {
 
 export function updateModObject({ commit, state }, payload) {
     if (payload.relation) {
-        const index = lodget(state.app.modObject, payload.relation).findIndex(o => (o.id === payload.value.id));
+        const index = lodget(state.app.modObject, payload.relation)
+            .findIndex(o => o.id === payload.value.id);
 
         if (index !== -1) {
             commit('UPDATEMODOBJECTRELATION', payload);
@@ -87,10 +88,7 @@ export function load({ state, dispatch }) {
 
     dispatch('initSocket', sessionStorage.getItem('token'));
 
-    const objectsToFetch = [];
-    routes.forEach((route) => {
-        objectsToFetch.push(dispatch('fetchObjects', { route }));
-    });
+    const objectsToFetch = routes.map(route => dispatch('fetchObjects', { route }));
 
     Promise.all(objectsToFetch)
         .then(() => {
