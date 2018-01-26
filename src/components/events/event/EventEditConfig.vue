@@ -36,6 +36,12 @@
                     </div>
             </b-detailedswitch>
 
+            <b-detailedswitch label="Mode dégradé" icon="signal_wifi_off" :value="modObject.useCardData" @input="updateModObject({ field: 'useCardData', value: $event })">
+                    Le mode autonome permet à votre événement de pouvoir continuer à utiliser la solution lors d'une perte de réseau, en écrivant sur les cartes ou bracelets de vos utilisateurs. Lors du retour de la connectivité, le système repasse automatiquement en mode normal.<br />
+                    <strong>Note 1:</strong> Certaines fonctionnalités, comme les tarifs adaptés aux périodes ou aux groupes, ne seront plus disponible en mode dégradé.<br />
+                    <strong>Note 2:</strong> Il vous faut impérativement avoir les droits d'écriture sur les cartes ou bracelets de votre événement.
+            </b-detailedswitch>
+
             <mdl-button colored raised>Configurer</mdl-button>
         </form>
     </div>
@@ -91,6 +97,7 @@ export default {
                         'useFundations',
                         'usePeriods',
                         'useGroups',
+                        'useCardData',
                         'defaultFundation_id',
                         'defaultGroup_id',
                         'defaultPeriod_id'
