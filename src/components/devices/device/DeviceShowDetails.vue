@@ -34,21 +34,23 @@ export default {
             ];
 
             if (!this.modObject.isUser) {
-                elements.push({
-                    icon   : 'done_all',
-                    title  : 'Badgeage avant achat',
-                    content: (this.modObject.doubleValidation) ? 'Activé' : 'Désactivé'
-                },
-                {
-                    icon   : 'local_drink',
-                    title  : 'Avertissement alcool',
-                    content: (this.modObject.alcohol) ? 'Activé' : 'Désactivé'
-                },
-                {
-                    icon   : 'person',
-                    title  : 'Afficher l\'image utilisateur',
-                    content: (this.modObject.showPicture) ? 'Activé' : 'Désactivé'
-                });
+                elements.push(
+                    {
+                        icon   : 'done_all',
+                        title  : 'Badgeage avant achat',
+                        content: (this.modObject.doubleValidation) ? 'Activé' : 'Désactivé'
+                    },
+                    {
+                        icon   : 'local_drink',
+                        title  : 'Avertissement alcool',
+                        content: (this.modObject.alcohol) ? 'Activé' : 'Désactivé'
+                    },
+                    {
+                        icon   : 'person',
+                        title  : 'Afficher l\'image utilisateur',
+                        content: (this.modObject.showPicture) ? 'Activé' : 'Désactivé'
+                    }
+                );
             }
 
             return elements;
