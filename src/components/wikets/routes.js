@@ -1,5 +1,8 @@
-import Wikets      from './Wikets.vue';
-import WiketAssign from './wiket/WiketAssign.vue';
+import Wikets                 from './Wikets.vue';
+import WiketAssign            from './assignments/WiketAssign.vue';
+import WiketAssignList        from './assignments/WiketAssignList.vue';
+import WiketAssignPreferences from './assignments/WiketAssignPreferences.vue';
+
 import WiketShow   from './wiket/WiketShow.vue';
 
 export default [
@@ -15,7 +18,11 @@ export default [
     },
     {
         path     : '/wikets/:id/assign',
-        component: WiketAssign
+        component: WiketAssign,
+        children : [
+            { path: '', component: WiketAssignList },
+            { path: 'preferences', component: WiketAssignPreferences }
+        ]
     },
     {
         path     : '/wikets/:id',

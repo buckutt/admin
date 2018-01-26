@@ -5,9 +5,6 @@ export default (route) => {
         categories: [
             'articles'
         ],
-        devices: [
-            'defaultGroup'
-        ],
         events: [
             'defaultFundation',
             'defaultGroup',
@@ -27,6 +24,7 @@ export default (route) => {
         points: [
             'categories',
             'categories.articles',
+            'defaultGroup',
             'wikets',
             {
                 embed   : 'wikets.device',
@@ -40,7 +38,8 @@ export default (route) => {
             {
                 embed   : 'wikets.period.event',
                 required: true
-            }
+            },
+            'wikets.defaultGroup'
         ],
         prices: [
             {
@@ -111,7 +110,8 @@ export default (route) => {
                 filters : [['end', '>', now]],
                 required: true
             },
-            'point'
+            'point',
+            'defaultGroup'
         ]
     };
 
