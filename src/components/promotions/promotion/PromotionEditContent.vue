@@ -18,7 +18,7 @@
                                 </td>
                                 <td class="mdl-data-table__cell--non-numeric">
                                     <transition-group name="fade">
-                                        <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="(article, indexA) in set.articles" :key="index+'_'+indexA">
+                                        <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="(article, indexA) in set.articles" :key="`${index}_${indexA}`">
                                             <span class="mdl-chip__text">{{ article.name }}</span>
                                             <b-confirm @confirm="removeSelectedArticleFromStep(article, index)" class="b--inline">
                                                 <button class="mdl-chip__action"><i class="material-icons">cancel</i></button>
@@ -97,7 +97,7 @@ export default {
         addArticleToCurrentPromotion(article) {
             this
                 .addStepToPromotion({
-                    promotion: this.modObject,
+                    promotion: this.focusedPromotion,
                     articles : [article]
                 })
                 .then(() => this.notify({ message: 'L\'article a bien été ajouté à la promotion.' }))
@@ -112,7 +112,7 @@ export default {
                 .addArticleToStep({
                     article,
                     step     : this.displayedPromotion[this.chosenIndex],
-                    promotion: this.modObject
+                    promotion: this.focusedPromotion
                 })
                 .then(() => this.notify({ message: 'L\'article a bien été ajouté à la promotion.' }))
                 .catch((err) => {
@@ -134,7 +134,7 @@ export default {
                 .removeArticleFromStep({
                     article,
                     step     : this.displayedPromotion[index],
-                    promotion: this.modObject
+                    promotion: this.focusedPromotion
                 })
                 .then(() => this.notify({ message: 'L\'article a bien été supprimé de la promotion.' }))
                 .catch(err => this.notifyError({
@@ -165,12 +165,12 @@ export default {
 
     computed: {
         ...mapState({
-            articles : state => state.objects.articles,
-            modObject: state => state.app.modObject
+            articles        : state => state.objects.articles,
+            focusedPromotion: state => state.app.focusedElements[0]
         }),
 
         displayedPromotion() {
-            return promotionDisplayer(this.modObject);
+            return promotionDisplayer(this.focusedPromotion);
         },
 
         alreadyInArticles() {

@@ -2,6 +2,10 @@ export const articleOptions = state => (
     state.objects.articles.map(article => ({ name: article.name, value: article }))
 );
 
+export const categoryOptions = state => (
+    state.objects.categories.map(category => ({ name: category.name, value: category }))
+);
+
 export const deviceOptions = state => (
     state.objects.devices.map(device => ({ name: device.name, value: device }))
 );

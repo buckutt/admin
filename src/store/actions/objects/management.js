@@ -85,14 +85,16 @@ export function createObject({ dispatch, state }, object) {
                 dispatch('checkAndAddObjects', { route: object.route, objects: [result] });
             }
 
-            if (state.app.modObject) {
-                if (state.app.modObject[object.route]) {
-                    dispatch('updateModObject', {
-                        newRelation: object.route,
-                        value      : result
-                    });
-                }
-            }
+            state.app.focusedElements
+                .forEach((element, depth) => {
+                    if (element[object.route]) {
+                        dispatch('updateFocusedElement', {
+                            depth,
+                            newRelation: object.route,
+                            value      : result
+                        });
+                    }
+                });
 
             return result;
         });
@@ -109,32 +111,37 @@ export function updateObject({ dispatch, state }, object) {
         .then((result) => {
             dispatch('checkAndUpdateObjects', { route: object.route, objects: [result] });
 
-            if (state.app.modObject) {
-                if (state.app.modObject[object.route]) {
-                    dispatch('updateModObject', {
-                        relation: object.route,
-                        value   : result
-                    });
-                }
-            }
+            state.app.focusedElements
+                .forEach((element, depth) => {
+                    if (element[object.route]) {
+                        dispatch('updateFocusedElement', {
+                            depth,
+                            relation: object.route,
+                            value   : result
+                        });
+                    }
+                });
 
             return result;
         });
 }
 
 export function removeObject({ dispatch, state }, object) {
-    return del(`${object.route.toLowerCase()}/${object.value.id}`).then(() => {
-        dispatch('checkAndDeleteObjects', { route: object.route, objects: [object.value] });
+    return del(`${object.route.toLowerCase()}/${object.value.id}`)
+        .then(() => {
+            dispatch('checkAndDeleteObjects', { route: object.route, objects: [object.value] });
 
-        if (state.app.modObject) {
-            if (state.app.modObject[object.route]) {
-                dispatch('removeModObjectRelation', {
-                    relation: object.route,
-                    value   : object.value
+            state.app.focusedElements
+                .forEach((element, depth) => {
+                    if (element[object.route]) {
+                        dispatch('updateFocusedElement', {
+                            depth,
+                            delRelation: object.route,
+                            value      : object.value
+                        });
+                    }
                 });
-            }
-        }
 
-        return { deleted: true };
-    });
+            return { deleted: true };
+        });
 }

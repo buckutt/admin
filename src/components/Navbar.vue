@@ -13,7 +13,8 @@
                 <router-link :to="generateAbsoluteLink(tab.route)" :exact="tab.exact" :key="tab.route"
                     class="mdl-tabs__tab" active-class="is-active" :class="{ 'b--unclickable': tab.clickable === false }"
                     v-for="tab in tabs">
-                    {{ tab.name }}
+                    <span v-if="tab.name">{{ tab.name }}</span>
+                    <i class="material-icons mdl-color-text--pink" v-else>{{ tab.icon }}</i>
                 </router-link>
             </div>
         </div>

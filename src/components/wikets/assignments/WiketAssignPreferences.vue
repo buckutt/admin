@@ -1,9 +1,9 @@
 <template>
     <div class="b-wikets-preferences">
         <h5>Préférences</h5>
-        <form @submit.prevent="updatePoint(modObject)">
+        <form @submit.prevent="updatePoint(focusedPoint)">
             <div>
-                <b-inputselect label="Groupe par défaut préféré" id="group-select" :options="groupOptions" :value="modObject.defaultGroup" @input="updateModObject({ field: 'defaultGroup', value: $event })"></b-inputselect>
+                <b-inputselect label="Groupe par défaut préféré" id="group-select" :options="groupOptions" :value="focusedPoint.defaultGroup" @input="updateDeepestFocusedElement({ field: 'defaultGroup', value: $event })"></b-inputselect>
                 <i class="material-icons" id="grouptip">info</i>
                 <mdl-tooltip target="grouptip">Groupe qui sera pré-rempli par défaut lors de l'assignement des équipements.</mdl-tooltip>
             </div>
@@ -20,7 +20,7 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject',
+            'updateDeepestFocusedElement',
             'notify',
             'notifyError'
         ]),
@@ -30,7 +30,7 @@ export default {
                 id: point.id
             };
 
-            if (this.modObject.defaultGroup) {
+            if (this.focusedPoint.defaultGroup) {
                 newPoint.defaultGroup_id = point.defaultGroup.id;
             }
 
@@ -47,7 +47,7 @@ export default {
     computed: {
         ...mapState({
             currentEvent: state => state.app.currentEvent,
-            modObject   : state => state.app.modObject
+            focusedPoint: state => state.app.focusedElements[0]
         }),
 
         ...mapGetters([

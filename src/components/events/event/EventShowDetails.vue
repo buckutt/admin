@@ -11,7 +11,7 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedEvent: state => state.app.focusedElements[0]
         }),
 
         elements() {
@@ -19,26 +19,26 @@ export default {
                 {
                     icon   : 'keyboard_arrow_right',
                     title  : 'Nom',
-                    content: this.modObject.name
+                    content: this.focusedEvent.name
                 },
                 {
                     icon   : 'local_drink',
                     title  : 'Unités alcool maximales par participant',
-                    content: (this.modObject.maxAlcohol > 0) ?
-                        this.modObject.maxAlcohol :
+                    content: (this.focusedEvent.maxAlcohol > 0) ?
+                        this.focusedEvent.maxAlcohol :
                         'Pas de limite'
                 },
                 {
                     icon   : 'attach_money',
                     type   : 'price',
                     title  : 'Rechargement minimal',
-                    content: this.modObject.minReload
+                    content: this.focusedEvent.minReload
                 },
                 {
                     icon   : 'attach_money',
                     type   : 'price',
                     title  : 'Solde maximal',
-                    content: this.modObject.maxPerAccount
+                    content: this.focusedEvent.maxPerAccount
                 }
             ];
         }

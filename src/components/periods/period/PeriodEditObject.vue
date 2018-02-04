@@ -1,13 +1,13 @@
 <template>
     <div>
         <h5>Modifier la période</h5>
-        <form @submit.prevent="updatePeriod(modObject)">
-            <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+        <form @submit.prevent="updatePeriod(focusedPeriod)">
+            <mdl-textfield floating-label="Nom" :value="focusedPeriod.name" @input="updateDeepestFocusedElement({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
             <span v-if="isPeriodProtected">Il n'est pas possible de modifier le début ainsi que la fin de la période par défaut de l'événement.</span>
             <b-datetime-picker
-                :value="new Date(modObject.start)"
-                @input="updateModObject({ field: 'start', value: $event })"
+                :value="new Date(focusedPeriod.start)"
+                @input="updateDeepestFocusedElement({ field: 'start', value: $event })"
                 locale="fr"
                 header-format="DD MMM"
                 cancel="Annuler"
@@ -20,8 +20,8 @@
                 v-if="!isPeriodProtected"></b-datetime-picker>
             <br />
             <b-datetime-picker
-                :value="new Date(modObject.end)"
-                @input="updateModObject({ field: 'end', value: $event })"
+                :value="new Date(focusedPeriod.end)"
+                @input="updateDeepestFocusedElement({ field: 'end', value: $event })"
                 locale="fr"
                 header-format="DD MMM"
                 cancel="Annuler"
@@ -46,7 +46,7 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject',
+            'updateDeepestFocusedElement',
             'notify',
             'notifyError'
         ]),
@@ -65,7 +65,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedPeriod: state => state.app.focusedElements[0]
         }),
 
         ...mapGetters([
@@ -73,7 +73,7 @@ export default {
         ]),
 
         isPeriodProtected() {
-            return (this.protectedPeriodsIds.indexOf(this.modObject.id) > -1);
+            return (this.protectedPeriodsIds.indexOf(this.focusedPeriod.id) > -1);
         }
     }
 };

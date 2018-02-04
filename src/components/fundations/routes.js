@@ -16,7 +16,7 @@ export default [
         ]
     },
     {
-        path     : '/fundations/:id',
+        path     : '/fundations/:fundation',
         component: FundationShow,
         children : [
             { path: '', component: FundationShowDetails },

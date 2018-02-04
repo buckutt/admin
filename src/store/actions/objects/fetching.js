@@ -1,28 +1,26 @@
 import { get }         from '../../../lib/fetch';
 import routeToRelation from '../../../lib/routeToRelation';
 
-export function expandObject({ commit, dispatch, state }, object) {
+export function retrieveObject({ dispatch, state }, payload) {
     let embed = '';
 
-    if (routeToRelation(object.route)) {
-        embed = `?embed=${routeToRelation(object.route)}`;
+    if (routeToRelation(payload.route)) {
+        embed = `?embed=${routeToRelation(payload.route)}`;
     }
 
-    return get(`${object.route}/${object.value.id}${embed}`)
+    return get(`${payload.route}/${payload.id}${embed}`)
         .then((result) => {
-            if (object.route === 'events' && state.app.currentEvent) {
-                if (state.app.currentEvent.id === object.value.id) {
+            if (payload.route === 'events' && state.app.currentEvent) {
+                if (state.app.currentEvent.id === payload.value.id) {
                     dispatch('updateCurrentEvent', result);
                 }
             }
 
-            dispatch('checkAndUpdateObjects', { route: object.route, objects: [result] });
+            dispatch('checkAndUpdateObjects', { route: payload.route, objects: [result], forceUpdate: true });
 
             if (result._data) {
                 delete result._data;
             }
-
-            commit('UPDATEMODOBJECT', result);
 
             return result;
         });

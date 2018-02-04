@@ -20,11 +20,11 @@ export default {
     computed: {
         ...mapState({
             currentEvent: state => state.app.currentEvent,
-            modObject   : state => state.app.modObject
+            focusedPoint: state => state.app.focusedElements[0]
         }),
 
         title() {
-            return `Guichet ${this.modObject.name}`;
+            return `Guichet ${this.focusedPoint.name}`;
         },
 
         displayedTabs() {

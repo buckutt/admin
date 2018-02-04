@@ -17,7 +17,7 @@ export default [
         ]
     },
     {
-        path     : '/devices/:id',
+        path     : '/devices/:device',
         component: DeviceShow,
         children : [
             { path: '', component: DeviceShowDetails },

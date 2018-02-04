@@ -19,10 +19,10 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedWebservice: state => state.app.focusedElements[0]
         }),
         title() {
-            return `Webhook ${this.modObject.url}`;
+            return `Webhook ${this.focusedWebservice.url}`;
         }
     }
 };

@@ -1,9 +1,15 @@
 import Wikets                 from './Wikets.vue';
+import WiketPanel             from './WiketPanel.vue';
 import WiketAssign            from './assignments/WiketAssign.vue';
 import WiketAssignList        from './assignments/WiketAssignList.vue';
 import WiketAssignPreferences from './assignments/WiketAssignPreferences.vue';
 
-import WiketShow   from './wiket/WiketShow.vue';
+import ClientViewer     from './wiket/ClientViewer';
+import ClientAddArticle from './wiket/ClientViewer-AddArticle';
+import ClientPanel      from './wiket/ClientViewer-Panel';
+import WiketAddCategory from './wiket/WiketAddCategory';
+
+import WiketShow from './wiket/WiketShow.vue';
 
 export default [
     {
@@ -12,12 +18,12 @@ export default [
         children : [
             {
                 path     : 'add',
-                component: Wikets
+                component: WiketPanel
             }
         ]
     },
     {
-        path     : '/wikets/:id/assign',
+        path     : '/wikets/:wiket/assign',
         component: WiketAssign,
         children : [
             { path: '', component: WiketAssignList },
@@ -25,20 +31,28 @@ export default [
         ]
     },
     {
-        path     : '/wikets/:id',
+        path     : '/wikets/:wiket',
         component: WiketShow,
         children : [
             {
+                path     : 'category/add',
+                component: WiketAddCategory
+            },
+            {
                 path     : 'category/:category',
-                component: WiketShow,
+                component: ClientViewer,
                 children : [
                     {
+                        path     : 'article/add',
+                        component: ClientAddArticle
+                    },
+                    {
                         path     : 'article/:article',
-                        component: WiketShow
+                        component: ClientPanel
                     },
                     {
                         path     : 'promotion/:promotion',
-                        component: WiketShow
+                        component: ClientPanel
                     }
                 ]
             }

@@ -27,7 +27,6 @@ import PaginatedTable from './components/PaginatedTable.vue';
 
 import './lib/textfield.js';
 import { isEventConfigured } from './lib/isEventConfigured';
-import pathToRoute           from './lib/pathToRoute';
 
 moment.locale('fr');
 
@@ -56,32 +55,20 @@ router.beforeEach((route, from, next) => {
             if ((path !== '' && !store.getters.logged)
                 || (withoutEventRoutes.indexOf(path) === -1 && !store.state.app.currentEvent)) {
                 // The administrator isn't logged, redirection to the login
-                store.dispatch('clearModObject');
+                store.dispatch('clearFocusedElements');
                 next('/');
             } else if (!isEventConfigured(store.state.app.currentEvent)
                 && withoutEventRoutes.indexOf(path) === -1) {
                 // The event isn't configured, redirection to the configurator
                 next(`/events/${store.state.app.currentEvent.id}/config`);
-            } else if (route.params.id && (route.params.id === from.params.id)) {
-                // We are inside the same modObject, we can display while loading
-                // store.dispatch('expandObject', {
-                //     route: pathToRoute(path),
-                //     value: { id: route.params.id }
-                // });
-
-                next();
-            } else if (route.params.id) {
-                // We need to wait for the object to be loaded (first load)
+            } else if (Object.keys(route.params).length > 0) {
                 store
-                    .dispatch('expandObject', {
-                        route: pathToRoute(path),
-                        value: { id: route.params.id }
-                    })
+                    .dispatch('loadFocusedElements', route.params)
                     .then(() => next())
                     .catch(() => next(from.path));
             } else {
                 // Simple page change
-                store.dispatch('clearModObject');
+                store.dispatch('clearFocusedElements');
                 next();
             }
         })

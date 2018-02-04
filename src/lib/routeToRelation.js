@@ -2,8 +2,46 @@ export default (route) => {
     const now = new Date();
 
     const relations = {
+        articles: [
+            'prices',
+            {
+                embed   : 'prices.fundation',
+                required: true
+            },
+            {
+                embed   : 'prices.group',
+                required: true
+            },
+            {
+                embed   : 'prices.period',
+                filters : [['end', '>', now]],
+                required: true
+            },
+            {
+                embed   : 'prices.point',
+                required: true
+            }
+        ],
         categories: [
-            'articles'
+            'articles',
+            'articles.prices',
+            {
+                embed   : 'articles.prices.fundation',
+                required: true
+            },
+            {
+                embed   : 'articles.prices.group',
+                required: true
+            },
+            {
+                embed   : 'articles.prices.period',
+                filters : [['end', '>', now]],
+                required: true
+            },
+            {
+                embed   : 'articles.prices.point',
+                required: true
+            }
         ],
         events: [
             'defaultFundation',
@@ -24,6 +62,16 @@ export default (route) => {
         points: [
             'categories',
             'categories.articles',
+            'categories.articles.prices',
+            {
+                embed   : 'categories.articles.prices.period',
+                filters : [['end', '>', now]],
+                required: true
+            },
+            {
+                embed   : 'categories.articles.prices.point',
+                required: true
+            },
             'defaultGroup',
             'wikets',
             {
@@ -62,7 +110,25 @@ export default (route) => {
         ],
         promotions: [
             'sets',
-            'sets.articles'
+            'sets.articles',
+            'prices',
+            {
+                embed   : 'prices.fundation',
+                required: true
+            },
+            {
+                embed   : 'prices.group',
+                required: true
+            },
+            {
+                embed   : 'prices.period',
+                filters : [['end', '>', now]],
+                required: true
+            },
+            {
+                embed   : 'prices.point',
+                required: true
+            }
         ],
         rights: [
             {
@@ -110,7 +176,10 @@ export default (route) => {
                 filters : [['end', '>', now]],
                 required: true
             },
-            'point',
+            {
+                embed   : 'period.event',
+                required: true
+            },
             'defaultGroup'
         ]
     };

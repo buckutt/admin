@@ -3,7 +3,7 @@
         <div class="mdl-card mdl-shadow--2dp">
             <b-navbar
                 :title="title"
-                :tabs="[{ route: '', name: 'Détails', exact: true }, { route: 'edit', name: 'Édition' }, { route: 'articles', name: 'Articles' }]"
+                :tabs="[{ route: '', name: 'Détails', exact: true }, { route: 'edit', name: 'Édition' }]"
                 :inCard="true"
                 :goBack="true"
                 :level="2">
@@ -19,11 +19,11 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedCategory: state => state.app.focusedElements[0]
         }),
 
         title() {
-            return `Catégorie ${this.modObject.name}`;
+            return `Catégorie ${this.focusedCategory.name}`;
         }
     }
 };

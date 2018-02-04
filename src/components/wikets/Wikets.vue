@@ -13,7 +13,7 @@
                 </mdl-button>
             </router-link>
             <div class="b-wikets__panel" v-if="addWiket">
-                <b-wiketpanel></b-wiketpanel>
+                <router-view></router-view>
             </div>
             <div class="b-wikets__container" v-if="pointsWikets.length > 0">
                 <b-wiket :point="point" v-for="point in pointsWikets" :key="point.id"></b-wiket>
@@ -24,14 +24,13 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import WiketTile from './WiketTile.vue';
-import WiketPanel from './WiketPanel.vue';
+import sortOrder from '../../lib/sortOrder';
 
 export default {
     components: {
-        'b-wiket'     : WiketTile,
-        'b-wiketpanel': WiketPanel
+        'b-wiket': WiketTile
     },
 
     methods: {
@@ -41,10 +40,46 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'pointsWikets',
-            'addWiket'
-        ])
+        ...mapState({
+            fullPath    : state => state.route.fullPath,
+            points      : state => state.objects.points,
+            currentEvent: state => state.app.currentEvent
+        }),
+
+        pointsWikets() {
+            const now              = new Date();
+            const pointsWiketsList = [];
+
+            this.points.forEach((point) => {
+                if (point.wikets) {
+                    const lightWikets = point.wikets
+                        .filter(wiket => (
+                            wiket.period.event_id === this.currentEvent.id &&
+                            new Date(wiket.period.end) >= now &&
+                            wiket.device.id
+                        ))
+                        .map(wiket => ({
+                            device: wiket.device,
+                            period: wiket.period,
+                            id    : wiket.id
+                        }));
+
+                    if (lightWikets.length > 0) {
+                        pointsWiketsList.push({
+                            ...point,
+                            wikets: lightWikets
+                        });
+                    }
+                }
+            });
+
+            return pointsWiketsList
+                .sort((a, b) => sortOrder(a.name, b.name));
+        },
+
+        addWiket() {
+            return this.fullPath === '/wikets/add';
+        }
     },
 
     mounted() {

@@ -1,8 +1,8 @@
 <template>
     <div>
-        <h5>Modifier la formule {{ modObject.name }}:</h5>
-        <form @submit.prevent="updatePromotion(modObject)">
-            <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
+        <h5>Modifier la formule {{ focusedPromotion.name }}:</h5>
+        <form @submit.prevent="updatePromotion(focusedPromotion)">
+            <mdl-textfield floating-label="Nom" :value="focusedPromotion.name" @input="updateDeepestFocusedElement({ field:'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
             <mdl-button colored raised>Modifier</mdl-button>
         </form>
     </div>
@@ -16,7 +16,7 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject',
+            'updateDeepestFocusedElement',
             'notify',
             'notifyError'
         ]),
@@ -35,7 +35,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedPromotion: state => state.app.focusedElements[0]
         })
     }
 };

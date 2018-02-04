@@ -6,7 +6,7 @@
                 { title: 'Type', field: 'type' },
                 { title: 'Contenu', field: 'data'}
             ]"
-            :data="modObject.meansOfLogin"
+            :data="focusedUser.meansOfLogin"
             :actions="[
                 { action: 'lock', text1: 'Bloquer', text2: 'Débloquer', field: 'blocked', type: 'reversible' },
                 { action: 'remove', text: 'Supprimer', type: 'confirm' }
@@ -44,7 +44,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedUser: state => state.app.focusedElements[0]
         })
     }
 };

@@ -16,7 +16,7 @@ export default [
         ]
     },
     {
-        path     : '/webservices/:id',
+        path     : '/webservices/:webservice',
         component: WebserviceShow,
         children : [
             { path: '', component: WebserviceShowDetails },

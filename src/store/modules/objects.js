@@ -15,10 +15,8 @@ const state = {
     refunds       : [],
     purchases     : [],
     meansofpayment: [],
-    prices        : [],
     rights        : [],
     webservices   : [],
-    wikets        : [],
     history       : []
 };
 

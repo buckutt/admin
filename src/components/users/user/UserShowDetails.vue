@@ -20,7 +20,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject   : state => state.app.modObject,
+            focusedUser : state => state.app.focusedElements[0],
             creationData: state => state.app.creationData
         }),
 
@@ -29,28 +29,28 @@ export default {
                 {
                     icon   : 'person',
                     title  : 'Nom',
-                    content: this.modObject.lastname
+                    content: this.focusedUser.lastname
                 },
                 {
                     icon   : 'person',
                     title  : 'Prénom',
-                    content: this.modObject.firstname
+                    content: this.focusedUser.firstname
                 },
                 {
                     icon   : 'person',
                     title  : 'Surnom',
-                    content: this.modObject.nickname
+                    content: this.focusedUser.nickname
                 },
                 {
                     icon   : 'email',
                     title  : 'Adresse mail',
-                    content: this.modObject.mail
+                    content: this.focusedUser.mail
                 },
                 {
                     icon   : 'attach_money',
                     type   : 'price',
                     title  : 'Solde',
-                    content: this.modObject.credit
+                    content: this.focusedUser.credit
                 }
             ];
 

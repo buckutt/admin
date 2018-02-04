@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Groupes</h5>
-        <form @submit.prevent="addGroupToUser(modObject, membership)">
+        <form @submit.prevent="addGroupToUser(focusedParticipant, membership)">
             <b-inputselect label="Groupe" id="group-select" :options="groupOptions" v-model="membership.group"></b-inputselect>
             <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="membership.period" v-if="currentEvent.usePeriods"></b-inputselect><br />
             <mdl-button colored raised :disabled="disabledAdd">Ajouter</mdl-button>
@@ -79,8 +79,8 @@ export default {
 
     computed: {
         ...mapState({
-            currentEvent: state => state.app.currentEvent,
-            modObject   : state => state.app.modObject
+            currentEvent      : state => state.app.currentEvent,
+            focusedParticipant: state => state.app.focusedElements[0]
         }),
 
         ...mapGetters([
@@ -100,7 +100,7 @@ export default {
         },
 
         displayedMemberships() {
-            return (!this.modObject) ? [] : this.modObject.memberships
+            return (this.focusedParticipant.memberships || [])
                 .filter(membership => (membership.period.event_id === this.currentEvent.id))
                 .map((membership) => {
                     if (membership.period.id !== this.currentEvent.defaultPeriod_id
@@ -111,6 +111,7 @@ export default {
                     return membership;
                 });
         },
+
         disabledAdd() {
             return (!this.membership.group || (!this.membership.period && this.currentEvent.usePeriods));
         }

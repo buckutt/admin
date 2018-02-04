@@ -16,7 +16,7 @@ export default [
         ]
     },
     {
-        path     : '/periods/:id',
+        path     : '/periods/:period',
         component: PeriodShow,
         children : [
             { path: '', component: PeriodShowDetails },

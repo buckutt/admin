@@ -11,7 +11,7 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedDevice: state => state.app.focusedElements[0]
         }),
 
         elements() {
@@ -19,36 +19,36 @@ export default {
                 {
                     icon   : 'keyboard_arrow_right',
                     title  : 'Nom',
-                    content: this.modObject.name
+                    content: this.focusedDevice.name
                 },
                 {
                     icon   : 'perm_device_information',
                     title  : 'Équipement administrateur',
-                    content: (this.modObject.isUser) ? 'Oui' : 'Non'
+                    content: (this.focusedDevice.isUser) ? 'Oui' : 'Non'
                 },
                 {
                     icon   : 'security',
                     title  : 'Certificat SSL actif',
-                    content: (this.modObject.fingerprint) ? 'Oui' : 'Non'
+                    content: (this.focusedDevice.fingerprint) ? 'Oui' : 'Non'
                 }
             ];
 
-            if (!this.modObject.isUser) {
+            if (!this.focusedDevice.isUser) {
                 elements.push(
                     {
                         icon   : 'done_all',
                         title  : 'Badgeage avant achat',
-                        content: (this.modObject.doubleValidation) ? 'Activé' : 'Désactivé'
+                        content: (this.focusedDevice.doubleValidation) ? 'Activé' : 'Désactivé'
                     },
                     {
                         icon   : 'local_drink',
                         title  : 'Avertissement alcool',
-                        content: (this.modObject.alcohol) ? 'Activé' : 'Désactivé'
+                        content: (this.focusedDevice.alcohol) ? 'Activé' : 'Désactivé'
                     },
                     {
                         icon   : 'person',
                         title  : 'Afficher l\'image utilisateur',
-                        content: (this.modObject.showPicture) ? 'Activé' : 'Désactivé'
+                        content: (this.focusedDevice.showPicture) ? 'Activé' : 'Désactivé'
                     }
                 );
             }

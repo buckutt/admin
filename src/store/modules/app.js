@@ -1,48 +1,27 @@
-import lodset from 'lodash.set';
-import lodget from 'lodash.get';
-
 const state = {
-    modObject   : null,
-    currentEvent: null,
-    loggedUser  : null,
-    firstLoad   : false,
-    creationData: {}
+    focusedElements: [],
+    currentEvent   : null,
+    loggedUser     : null,
+    firstLoad      : false,
+    creationData   : {}
 };
 
 const mutations = {
-    UPDATEMODOBJECT(state_, modObject) {
-        state_.modObject = modObject;
-    },
-
-    UPDATEMODOBJECTFIELD(state_, payload) {
-        lodset(state_.modObject, payload.field, payload.value);
-    },
-
-    ADDMODOBJECTRELATION(state_, payload) {
-        lodget(state_.modObject, payload.newRelation).push(payload.value);
-    },
-
-    UPDATEMODOBJECTRELATION(state_, payload) {
-        const relations = lodget(state_.modObject, payload.relation).slice(0);
-        const i         = relations.findIndex(o => o.id === payload.value.id);
-
-        if (i > -1) {
-            relations[i] = payload.value;
-            lodset(state_.modObject, payload.relation, relations);
+    UPDATEFOCUSEDELEMENT(state_, payload) {
+        if (state_.focusedElements[payload.depth]) {
+            state_.focusedElements.splice(payload.depth, 1, payload.value);
+        } else {
+            state_.focusedElements[payload.depth] = payload.value;
         }
     },
 
-    REMOVEMODOBJECTRELATION(state_, payload) {
-        const i = lodget(state_.modObject, payload.relation)
-            .findIndex(o => o.id === payload.value.id);
-
-        if (i > -1) {
-            lodget(state_.modObject, payload.relation).splice(i, 1);
-        }
+    CLEARFOCUSEDELEMENTS(state_) {
+        state_.focusedElements = [];
     },
 
-    CLEARMODOBJECT(state_) {
-        state_.modObject = null;
+    TRIMFOCUSEDELEMENTS(state_, keepLength) {
+        state_.focusedElements = state_.focusedElements
+            .filter((_, index) => index < keepLength);
     },
 
     UPDATECURRENTEVENT(state_, currentEvent) {

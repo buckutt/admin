@@ -12,7 +12,7 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedFundation: state => state.app.focusedElements[0]
         }),
 
         elements() {
@@ -20,7 +20,7 @@ export default {
                 {
                     icon   : 'keyboard_arrow_right',
                     title  : 'Nom',
-                    content: this.modObject.name
+                    content: this.focusedFundation.name
                 }
             ];
         }

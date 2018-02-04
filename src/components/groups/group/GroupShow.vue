@@ -19,11 +19,11 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedGroup: state => state.app.focusedElements[0]
         }),
 
         title() {
-            return `Groupe ${this.modObject.name}`;
+            return `Groupe ${this.focusedGroup.name}`;
         }
     }
 };

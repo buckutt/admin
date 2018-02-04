@@ -17,7 +17,7 @@ export default [
         ]
     },
     {
-        path     : '/events/:id',
+        path     : '/events/:event',
         component: EventShow,
         children : [
             { path: '', component: EventShowDetails },

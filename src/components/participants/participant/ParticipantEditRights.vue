@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Droits</h5>
-        <form @submit.prevent="createUserRight(modObject, userRight)">
+        <form @submit.prevent="createUserRight(focusedParticipant, userRight)">
             <b-inputselect label="Droit" id="right-select" :options="rightsList" v-model="userRight.name"></b-inputselect>
             <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="userRight.point"></b-inputselect>
             <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="userRight.period" v-if="currentEvent.usePeriods"></b-inputselect><br />
@@ -79,8 +79,8 @@ export default {
 
     computed: {
         ...mapState({
-            currentEvent: state => state.app.currentEvent,
-            modObject   : state => state.app.modObject
+            currentEvent      : state => state.app.currentEvent,
+            focusedParticipant: state => state.app.focusedElements[0]
         }),
 
         ...mapGetters([
@@ -103,7 +103,7 @@ export default {
         },
 
         displayedRights() {
-            return (!this.modObject) ? [] : this.modObject.rights
+            return (this.focusedParticipant.rights || [])
                 .filter(right => (right.period.event_id === this.currentEvent.id))
                 .map((right) => {
                     if (!right.point) {

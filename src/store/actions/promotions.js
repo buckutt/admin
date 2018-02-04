@@ -1,3 +1,5 @@
+import { post } from '../../lib/fetch';
+
 /**
  * Promotions actions
  */
@@ -34,7 +36,11 @@ export function addArticleToStep({ dispatch }, data) {
         return Promise.reject(new Error('The article is already in this set'));
     }
 
-    return dispatch('addArticleToSet', { article, set: step.set });
+    return dispatch('addArticleToSet', {
+        article,
+        set      : step.set,
+        promotion: data.promotion
+    });
 }
 
 export function removeArticleFromStep({ dispatch }, data) {
@@ -43,9 +49,86 @@ export function removeArticleFromStep({ dispatch }, data) {
     const step      = data.step;
 
     if (step.set.articles.length > 1) {
-        return dispatch('removeArticleFromSet', { article, set: step.set });
+        return dispatch('removeArticleFromSet', {
+            article,
+            set      : step.set,
+            promotion: data.promotion
+        });
     }
 
     return dispatch('removeArticleFromSet', { article, set: step.set })
         .then(() => dispatch('removeSetFromPromotion', { promotion, set: step.set }));
+}
+
+/**
+ * Sets actions
+ * TODO: Don't use deepest focused element but determine which one is the promotion
+ */
+
+export function createSetWithArticles({ commit, dispatch }, payload) {
+    const set       = payload.set;
+    const articles  = payload.articles;
+    const promotion = payload.promotion;
+
+    return post('sets', set)
+        .then((result) => {
+            dispatch('checkAndAddObjects', { route: 'sets', objects: [result] });
+
+            post(`sets/${result.id}/promotions/${promotion.id}`)
+                .catch((err) => {
+                    commit('UPDATEAPIERROR', err);
+                });
+
+            articles.forEach((article) => {
+                post(`sets/${result.id}/articles/${article.id}`);
+            });
+
+            return dispatch('updateDeepestFocusedElement', {
+                newRelation: 'sets',
+                value      : {
+                    id: result.id,
+                    articles
+                }
+            });
+        });
+}
+
+export function addArticleToSet({ dispatch }, payload) {
+    const index = payload.promotion.sets.findIndex(s => s.id === payload.set.id);
+
+    dispatch('updateDeepestFocusedElement', {
+        newRelation: `sets[${index}].articles`,
+        value      : payload.article
+    });
+
+    return dispatch('createRelation', {
+        obj1: {
+            route: 'sets',
+            value: payload.set
+        },
+        obj2: {
+            route: 'articles',
+            value: payload.article
+        }
+    });
+}
+
+export function removeArticleFromSet({ dispatch }, payload) {
+    const index = payload.promotion.sets.findIndex(s => (s.id === payload.set.id));
+
+    dispatch('updateDeepestFocusedElement', {
+        delRelation: `sets[${index}].articles`,
+        value      : payload.article
+    });
+
+    return dispatch('removeRelation', {
+        obj1: {
+            route: 'sets',
+            value: payload.set
+        },
+        obj2: {
+            route: 'articles',
+            value: payload.article
+        }
+    });
 }

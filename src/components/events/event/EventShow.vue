@@ -19,11 +19,11 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedEvent: state => state.app.focusedElements[0]
         }),
 
         title() {
-            return `Évenement ${this.modObject.name}`;
+            return `Évenement ${this.focusedEvent.name}`;
         }
     }
 };

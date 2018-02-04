@@ -1,8 +1,8 @@
 <template>
     <div>
         <h5>Modifier la fondation</h5>
-        <form @submit.prevent="updateFundation(modObject)">
-            <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
+        <form @submit.prevent="updateFundation(focusedFundation)">
+            <mdl-textfield floating-label="Nom" :value="focusedFundation.name" @input="updateDeepestFocusedElement({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
             <mdl-button colored raised>Modifier</mdl-button>
         </form>
     </div>
@@ -16,7 +16,7 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject',
+            'updateDeepestFocusedElement',
             'notify',
             'notifyError'
         ]),
@@ -34,7 +34,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedFundation: state => state.app.focusedElements[0]
         })
     }
 };

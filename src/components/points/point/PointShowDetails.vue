@@ -2,9 +2,6 @@
     <div>
         <h5>Détails du guichet</h5>
         <b-list :elements="elements"></b-list>
-
-        <h5 v-if="categories.length > 0">Catégories liées au guichet</h5>
-        <b-list :elements="categories" :columns="3"></b-list>
     </div>
 </template>
 
@@ -14,7 +11,7 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedPoint: state => state.app.focusedElements[0]
         }),
 
         elements() {
@@ -22,16 +19,9 @@ export default {
                 {
                     icon   : 'keyboard_arrow_right',
                     title  : 'Nom',
-                    content: this.modObject.name
+                    content: this.focusedPoint.name
                 }
             ];
-        },
-
-        categories() {
-            return this.modObject.categories.map(category => ({
-                icon   : 'format_list_numbered',
-                content: category.name
-            }));
         }
     }
 };

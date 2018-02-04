@@ -1,36 +1,5 @@
-import lodget          from 'lodash.get';
-import Promise         from 'bluebird';
 import { get }         from '../../lib/fetch';
 import routeToRelation from '../../lib/routeToRelation';
-
-/**
- * ModObject actions
- */
-
-export function clearModObject({ commit }) {
-    commit('CLEARMODOBJECT');
-}
-
-export function updateModObject({ commit, state }, payload) {
-    if (payload.relation) {
-        const index = lodget(state.app.modObject, payload.relation)
-            .findIndex(o => o.id === payload.value.id);
-
-        if (index !== -1) {
-            commit('UPDATEMODOBJECTRELATION', payload);
-        }
-    } else if (payload.newRelation) {
-        commit('ADDMODOBJECTRELATION', payload);
-    } else {
-        commit('UPDATEMODOBJECTFIELD', payload);
-    }
-
-    return Promise.resolve();
-}
-
-export function removeModObjectRelation({ commit }, payload) {
-    commit('REMOVEMODOBJECTRELATION', payload);
-}
 
 /**
  * Global actions
@@ -101,27 +70,25 @@ export function load({ state, dispatch }) {
 }
 
 export function checkAndCreateNeededRouterData({ state, commit, dispatch }) {
-    return new Promise((resolve, reject) => {
-        if (state.app.firstLoad) {
-            resolve();
-        } else {
-            const actions = [];
+    if (state.app.firstLoad) {
+        return Promise.resolve();
+    }
 
-            if (sessionStorage.hasOwnProperty('token')) {
-                commit('UPDATELOGGEDUSER', JSON.parse(sessionStorage.getItem('user')));
-                dispatch('load');
-            }
+    const actions = [];
 
-            if (sessionStorage.hasOwnProperty('event')) {
-                actions.push(dispatch('updateCurrentEvent', JSON.parse(sessionStorage.getItem('event'))));
-            }
+    if (sessionStorage.hasOwnProperty('token')) {
+        commit('UPDATELOGGEDUSER', JSON.parse(sessionStorage.getItem('user')));
+        dispatch('load');
+    }
 
-            Promise.all(actions)
-                .then(() => {
-                    commit('UPDATEFIRSTLOAD', true);
-                    resolve();
-                })
-                .catch(() => reject());
-        }
-    });
+    if (sessionStorage.hasOwnProperty('event')) {
+        actions.push(dispatch('updateCurrentEvent', JSON.parse(sessionStorage.getItem('event'))));
+    }
+
+    return Promise.all(actions)
+        .then(() => {
+            commit('UPDATEFIRSTLOAD', true);
+            return Promise.resolve();
+        })
+        .catch(() => Promise.reject());
 }

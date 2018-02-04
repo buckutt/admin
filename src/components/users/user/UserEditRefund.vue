@@ -2,7 +2,7 @@
     <div>
         <h5>Remboursement</h5>
 
-        <form @submit.prevent="doRefund(modObject, refund)">
+        <form @submit.prevent="doRefund(focusedUser, refund)">
             <mdl-textfield floating-label="Montant (centimes)" v-model="refund.amount" required="required" pattern="[0-9]+" error="Le montant doit être un entier"></mdl-textfield>
             <mdl-textfield floating-label="Raison" v-model="refund.trace" required="required" error="Le raison doit contenir au moins un caractère"></mdl-textfield>
             <mdl-select label="Type de remboursement" id="type-select" v-model="refund.type" :options="typeOptions"></mdl-select><br />
@@ -58,7 +58,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedUser: state => state.app.focusedElements[0]
         })
     }
 };

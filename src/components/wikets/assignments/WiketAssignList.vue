@@ -47,7 +47,7 @@ export default {
         ]),
 
         createWiket(wiket) {
-            wiket.point  = this.modObject;
+            wiket.point  = this.focusedPoint;
             wiket.period = this.currentEvent.usePeriods
                 ? wiket.period
                 : this.currentEvent.defaultPeriod;
@@ -55,7 +55,7 @@ export default {
                 ? wiket.defaultGroup
                 : this.currentEvent.defaultGroup;
 
-            if (isPointUsedByEvent(this.modObject.wikets, wiket)) {
+            if (isPointUsedByEvent(this.focusedPoint.wikets, wiket)) {
                 return this.notifyError({
                     message: 'Le guichet est déjà utilisé par un autre événement pendant cette période'
                 });
@@ -86,7 +86,7 @@ export default {
     computed: {
         ...mapState({
             currentEvent: state => state.app.currentEvent,
-            modObject   : state => state.app.modObject
+            focusedPoint: state => state.app.focusedElements[0]
         }),
 
         ...mapGetters([
@@ -111,7 +111,7 @@ export default {
         },
 
         displayedWikets() {
-            return (!this.modObject) ? [] : this.modObject.wikets
+            return (this.focusedPoint.wikets || [])
                 .filter(wiket => (wiket.period.event_id === this.currentEvent.id))
                 .map((wiket) => {
                     if (wiket.period.id !== this.currentEvent.defaultPeriod_id
@@ -136,8 +136,8 @@ export default {
     },
 
     mounted() {
-        if (this.modObject.defaultGroup) {
-            this.wiket.defaultGroup = this.modObject.defaultGroup;
+        if (this.focusedPoint.defaultGroup) {
+            this.wiket.defaultGroup = this.focusedPoint.defaultGroup;
         }
     }
 };

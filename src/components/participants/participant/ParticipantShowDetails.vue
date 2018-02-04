@@ -8,7 +8,7 @@
             </p>
             <p v-else>
                 Cet utilisateur ne participe pas à l'événement sélectionné.<br />
-                <mdl-button @click.native="addUserToGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod)">Accorder l'accès</mdl-button>
+                <mdl-button @click.native="addUserToGroup(focusedParticipant, currentEvent.defaultGroup, currentEvent.defaultPeriod)">Accorder l'accès</mdl-button>
             </p>
         </template>
         <template v-else>
@@ -19,7 +19,7 @@
             </template>
             <p v-else>
                 Cet utilsateur n'appartient à aucun groupe de l'événement, il ne participe donc pas à l'événement.<br />
-                <mdl-button @click.native="addUserToGroup(modObject, currentEvent.defaultGroup, currentEvent.defaultPeriod)">Ajouter au groupe</mdl-button>
+                <mdl-button @click.native="addUserToGroup(focusedParticipant, currentEvent.defaultGroup, currentEvent.defaultPeriod)">Ajouter au groupe</mdl-button>
             </p>
         </template>
 
@@ -40,12 +40,12 @@ import { isUserInGroup }        from './isUserInGroup';
 export default {
     computed: {
         ...mapState({
-            modObject   : state => state.app.modObject,
-            currentEvent: state => state.app.currentEvent
+            focusedParticipant: state => state.app.focusedElements[0],
+            currentEvent      : state => state.app.currentEvent
         }),
 
         filteredRights() {
-            return (!this.modObject) ? [] : this.modObject.rights
+            return (this.focusedParticipant.rights || [])
                 .filter(right => right.period.event_id === this.currentEvent.id)
                 .map((right) => {
                     if (!right.point) {
@@ -77,7 +77,7 @@ export default {
         },
 
         groups() {
-            return (!this.modObject) ? [] : this.modObject.memberships
+            return (this.focusedParticipant.memberships || [])
                 .filter(membership => (membership.period.event_id === this.currentEvent.id))
                 .map(membership => ({
                     icon : 'group',
@@ -92,7 +92,7 @@ export default {
             const group  = this.currentEvent.defaultGroup;
             const period = this.currentEvent.defaultPeriod;
 
-            return isUserInGroup(this.modObject, group, period);
+            return isUserInGroup(this.focusedParticipant, group, period);
         }
     },
 
