@@ -7,7 +7,7 @@
             v-model="content"
             @input="changeInput(content)"
             @focus="displayInput = true"
-            @blur="hideInput()"
+            @blur="displayInput = false"
             @keydown.up.prevent.stop="up()"
             @keydown.down.prevent.stop="down()"
             @keydown.enter.prevent.stop="select(suggestions[activeIndex].original)"
@@ -25,7 +25,7 @@
                 v-if="displayInput">
                 <li
                     v-for="(suggestion, index) in suggestions"
-                    @click="select(suggestion.original)"
+                    @mousedown="select(suggestion.original)"
                     @mouseover="activeIndex = index"
                     class="b-completelist__item"
                     :class="{ 'b-completelist__item-active': (index === activeIndex) }"
@@ -145,12 +145,6 @@ export default {
             if (activeItemTopOffset < 0) {
                 menu.scrollTop -= menu.children[0].offsetHeight;
             }
-        },
-
-        hideInput() {
-            setTimeout(() => {
-                this.displayInput = false;
-            }, 30);
         }
     },
 
@@ -159,9 +153,11 @@ export default {
 
         if (this.value) {
             const object = this.suggestions
-                .find(suggestion => (JSON.stringify(this.value) === JSON.stringify(suggestion.original.value)))
-                .original;
-            this.select(object);
+                .find(suggestion => (JSON.stringify(this.value) === JSON.stringify(suggestion.original.value)));
+
+            if (object) {
+                this.select(object.original);
+            }
         }
     },
 
@@ -173,11 +169,10 @@ export default {
             }
 
             const object = this.suggestions
-                .find(suggestion => (JSON.stringify(newValue) === JSON.stringify(suggestion.original.value)))
-                .original;
+                .find(suggestion => (JSON.stringify(newValue) === JSON.stringify(suggestion.original.value)));
 
             if (object) {
-                this.select(object);
+                this.select(object.original);
             } else {
                 this.content = newValue;
                 this.$refs.textfield.MaterialTextfield.change(newValue);
