@@ -27,6 +27,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createPoint(point) {
             this.createObject({ route: 'points', value: point })
                 .then((createdPoint) => {

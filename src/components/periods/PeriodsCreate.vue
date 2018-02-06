@@ -53,8 +53,10 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createPeriod(period) {
             period.event_id = this.currentEvent.id;
+
             this.createObject({ route: 'periods', value: period })
                 .then((createdPeriod) => {
                     this.notify({ message: 'La période a bien été créée' });

@@ -19,7 +19,8 @@ export function promotionDisplayer(promotion) {
             });
     }
 
-    promotionContent = promotionContent.sort((a, b) => sortOrder(a.articles[0].name, b.articles[0].name));
+    promotionContent = promotionContent
+        .sort((a, b) => sortOrder(a.articles[0].name, b.articles[0].name));
 
     return promotionContent;
 }

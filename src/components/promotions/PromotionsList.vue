@@ -37,6 +37,7 @@ export default {
         ...mapActions([
             'removeObject'
         ]),
+
         editPromotion(promotion) {
             this.$router.push(`/promotions/${promotion.id}/edit`);
         }

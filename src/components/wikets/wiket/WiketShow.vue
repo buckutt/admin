@@ -9,20 +9,16 @@
                 :level="3">
             </b-navbar>
 
-            <b-clientviewer></b-clientviewer>
+            <router-view></router-view>
         </div>
     </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
-import ClientViewer from './ClientViewer';
+import { mapState, mapActions } from 'vuex';
+import sortOrder from '../../../lib/sortOrder';
 
 export default {
-    components: {
-        'b-clientviewer': ClientViewer
-    },
-
     methods: {
         ...mapActions([
             'fetchObjectsAndRelations'
@@ -31,31 +27,37 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject,
-            fullPath : state => state.route.fullPath,
-            params   : state => state.route.params
+            focusedPoint: state => state.app.focusedElements[0],
+            fullPath    : state => state.route.fullPath,
+            params      : state => state.route.params
         }),
-        ...mapGetters([
-            'wiketCategories'
-        ]),
+
         title() {
-            return `Guichet ${this.modObject.name}`;
+            return `Guichet ${this.focusedPoint.name}`;
         },
+
         displayedTabs() {
-            return this.wiketCategories
+            const tabs = (this.focusedPoint.categories || [])
+                .sort((a, b) => sortOrder(a.name, b.name))
                 .map(category => ({
                     route: category.id,
                     name : category.name
                 }));
+
+            tabs.push({ route: 'add', icon: 'add_circle_outline' });
+
+            return tabs;
         }
     },
 
-    mounted() {
-        this.fetchObjectsAndRelations({ route: 'prices' });
+    created() {
         this.fetchObjectsAndRelations({ route: 'promotions' });
 
-        if (!this.params.category && this.displayedTabs[0]) {
-            this.$router.push(`${this.fullPath}/category/${this.displayedTabs[0].route}`);
+        if (!this.params.category && this.fullPath.split('/').length < 5) {
+            if (this.displayedTabs[0]) {
+                return this.$router.push(`${this.fullPath}/category/${this.displayedTabs[0].route}`);
+            }
+            return this.$router.push(`${this.fullPath}/category/add`);
         }
     }
 };

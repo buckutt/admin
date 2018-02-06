@@ -13,24 +13,25 @@ import { parseDate } from '../../../lib/date';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedPeriod: state => state.app.focusedElements[0]
         }),
+
         elements() {
             return [
                 {
                     icon   : 'keyboard_arrow_right',
                     title  : 'Nom',
-                    content: this.modObject.name
+                    content: this.focusedPeriod.name
                 },
                 {
                     icon   : 'date_range',
                     title  : 'Début',
-                    content: parseDate(this.modObject.start)
+                    content: parseDate(this.focusedPeriod.start)
                 },
                 {
                     icon   : 'date_range',
                     title  : 'Fin',
-                    content: parseDate(this.modObject.end)
+                    content: parseDate(this.focusedPeriod.end)
                 }
             ];
         }

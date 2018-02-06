@@ -19,9 +19,10 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject   : state => state.app.modObject,
-            currentEvent: state => state.app.currentEvent
+            focusedParticipant: state => state.app.focusedElements[0],
+            currentEvent      : state => state.app.currentEvent
         }),
+
         displayedTabs() {
             const tabs = [
                 { route: '', name: 'Détails', exact: true },
@@ -34,8 +35,9 @@ export default {
 
             return tabs;
         },
+
         title() {
-            return `Participant ${this.modObject.firstname} ${this.modObject.lastname}`;
+            return `Participant ${this.focusedParticipant.firstname} ${this.focusedParticipant.lastname}`;
         }
     }
 };

@@ -11,6 +11,8 @@ install:
   - npm install
 
 script:
+  - cp config/profiles/production.json.example config/profiles/production.json
+  - cp config/profiles/development.json.example config/profiles/development.json
   - npm run build
   - npm run lint
 

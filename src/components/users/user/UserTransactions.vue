@@ -26,6 +26,7 @@ import { mapState, mapActions } from 'vuex';
 export default {
     computed: {
         ...mapState({
+            focusedUser   : state => state.app.focusedElements[0],
             history       : state => state.objects.history,
             meansofpayment: state => state.objects.meansofpayment
         }),
@@ -77,7 +78,7 @@ export default {
 
     methods: {
         ...mapActions([
-            'loadCurrentUserHistory',
+            'loadUserHistory',
             'cancelTransaction',
             'notify',
             'notifyError'
@@ -97,7 +98,10 @@ export default {
             return this.meansofpayment.find(m => m.slug === mop).name;
         },
         cancel(transaction) {
-            this.cancelTransaction(transaction)
+            this.cancelTransaction({
+                transaction,
+                user: this.focusedUser
+            })
                 .then(() => this.notify({ message: 'La transaction a bien été annulée' }))
                 .catch((err) => {
                     let message;
@@ -115,7 +119,7 @@ export default {
     },
 
     mounted() {
-        this.loadCurrentUserHistory();
+        this.loadUserHistory(this.focusedUser);
     }
 };
 </script>

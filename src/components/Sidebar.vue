@@ -84,12 +84,15 @@ export default {
         ...mapState({
             currentEvent: state => state.app.currentEvent
         }),
+
         ...mapGetters([
             'logged'
         ]),
+
         isConfigured() {
             return (this.currentEvent) ? isEventConfigured(this.currentEvent) : false;
         },
+
         barName() {
             return config.name;
         }

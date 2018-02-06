@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Droits</h5>
-        <form @submit.prevent="createUserRight(modObject, userRight)">
+        <form @submit.prevent="createUserRight(focusedParticipant, userRight)">
             <b-inputselect label="Droit" id="right-select" :options="rightsList" v-model="userRight.name"></b-inputselect>
             <b-inputselect label="Point" id="point-select" :options="pointOptions" v-model="userRight.point"></b-inputselect>
             <b-inputselect label="Période" id="period-select" :options="currentPeriodOptions" :fullOptions="periodOptions" v-model="userRight.period" v-if="currentEvent.usePeriods"></b-inputselect><br />
@@ -45,8 +45,11 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createUserRight(user, right) {
-            right.period = (this.currentEvent.usePeriods) ? right.period : this.currentEvent.defaultPeriod;
+            right.period = (this.currentEvent.usePeriods)
+                ? right.period
+                : this.currentEvent.defaultPeriod;
 
             right.period_id = right.period.id;
             delete right.period;
@@ -54,6 +57,7 @@ export default {
             if (right.point) {
                 right.point_id = right.point.id;
             }
+
             delete right.point;
 
             right.user_id = user.id;
@@ -75,14 +79,16 @@ export default {
 
     computed: {
         ...mapState({
-            currentEvent: state => state.app.currentEvent,
-            modObject   : state => state.app.modObject
+            currentEvent      : state => state.app.currentEvent,
+            focusedParticipant: state => state.app.focusedElements[0]
         }),
+
         ...mapGetters([
             'periodOptions',
             'currentPeriodOptions',
             'pointOptions'
         ]),
+
         displayedColumns() {
             const columns = [
                 { title: 'Droit', field: 'name' },
@@ -95,8 +101,9 @@ export default {
 
             return columns;
         },
+
         displayedRights() {
-            return (!this.modObject) ? [] : this.modObject.rights
+            return (this.focusedParticipant.rights || [])
                 .filter(right => (right.period.event_id === this.currentEvent.id))
                 .map((right) => {
                     if (!right.point) {
@@ -111,6 +118,7 @@ export default {
                     return right;
                 });
         },
+
         disabledAdd() {
             return (!this.userRight.name || (!this.userRight.period && this.currentEvent.usePeriods));
         }

@@ -17,7 +17,7 @@ export default [
         ]
     },
     {
-        path     : '/promotions/:id',
+        path     : '/promotions/:promotion',
         component: PromotionShow,
         children : [
             { path: '', component: PromotionShowDetails },

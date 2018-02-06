@@ -1,18 +1,18 @@
 <template>
     <div class="b-articles-container">
         <div>
-            <h5>Modifier l'article {{ modObject.name }}</h5>
-            <form @submit.prevent="updateArticle(modObject)">
-                <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field: 'name', value: $event })"  required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
-                <mdl-textfield floating-label="Stock" :value="modObject.stock" @input="updateModObject({ field: 'stock', value: $event })"></mdl-textfield><br />
-                <mdl-textfield floating-label="Alcool" :value="modObject.alcohol" @input="updateModObject({ field: 'alcohol', value: $event })"></mdl-textfield>
-                <mdl-textfield floating-label="TVA (%, ex: 5.5)" :value="displayedVat" @input="updateModObject({ field: 'vat', value: $event / 100 })"></mdl-textfield><br />
+            <h5>Modifier l'article {{ focusedArticle.name }}</h5>
+            <form @submit.prevent="updateArticle(focusedArticle)">
+                <mdl-textfield floating-label="Nom" :value="focusedArticle.name" @input="updateDeepestFocusedElement({ field: 'name', value: $event })"  required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+                <mdl-textfield floating-label="Stock" :value="focusedArticle.stock" @input="updateDeepestFocusedElement({ field: 'stock', value: $event })"></mdl-textfield><br />
+                <mdl-textfield floating-label="Alcool" :value="focusedArticle.alcohol" @input="updateDeepestFocusedElement({ field: 'alcohol', value: $event })"></mdl-textfield>
+                <mdl-textfield floating-label="TVA (%, ex: 5.5)" :value="displayedVat" @input="updateDeepestFocusedElement({ field: 'vat', value: $event / 100 })"></mdl-textfield><br />
                 <mdl-button colored raised>Modifier</mdl-button>
             </form>
         </div>
         <div>
             <h5>Image</h5>
-            <b-uploader :id="modObject.id" :name="modObject.name" @change="imageUpdated"></b-uploader>
+            <b-uploader :id="focusedArticle.id" :name="focusedArticle.name" @change="imageUpdated"></b-uploader>
         </div>
     </div>
 </template>
@@ -30,10 +30,11 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject',
+            'updateDeepestFocusedElement',
             'notify',
             'notifyError'
         ]),
+
         updateArticle(article) {
             const fields = ['id', 'name', 'stock', 'alcohol', 'vat'];
 
@@ -44,6 +45,7 @@ export default {
                     full   : err
                 }));
         },
+
         imageUpdated(error) {
             if (error) {
                 return this.notifyError({ message: 'L\'image de l\'article a bien été modifiée', full: error });
@@ -55,10 +57,11 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedArticle: state => state.app.focusedElements[0]
         }),
+
         displayedVat() {
-            return +(this.modObject.vat * 100).toFixed(2);
+            return +(this.focusedArticle.vat * 100).toFixed(2);
         }
     }
 };

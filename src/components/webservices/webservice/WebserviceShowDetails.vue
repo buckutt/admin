@@ -12,14 +12,14 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedWebservice: state => state.app.focusedElements[0]
         }),
         elements() {
             return [
                 {
                     icon   : 'link',
                     title  : 'url',
-                    content: this.modObject.url
+                    content: this.focusedWebservice.url
                 }
             ];
         }

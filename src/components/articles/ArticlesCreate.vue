@@ -29,6 +29,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createArticle(article) {
             this.createObject({ route: 'articles', value: article })
                 .then((createdArticle) => {

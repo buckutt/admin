@@ -3,7 +3,7 @@
         <h5>Détails de l'article</h5>
         <div class="b-article-top">
             <div class="b-article-preview">
-                <img :src="image" :alt="modObject.name" v-show="image" class="b-article-preview__image" />
+                <img :src="image" :alt="focusedArticle.name" v-show="image" class="b-article-preview__image" />
                 <div class="b-article-preview__image" v-show="!image"></div>
             </div>
             <b-list :elements="elements" :columns="2" class="b-article-top__fill"></b-list>
@@ -24,32 +24,33 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedArticle: state => state.app.focusedElements[0]
         }),
+
         elements() {
             return [
                 {
                     icon   : 'keyboard_arrow_right',
                     title  : 'Nom',
-                    content: this.modObject.name
+                    content: this.focusedArticle.name
                 },
                 {
                     icon   : 'local_drink',
                     title  : 'Unités alcool',
-                    content: (this.modObject.alcohol > 0) ?
-                        this.modObject.alcohol :
+                    content: (this.focusedArticle.alcohol > 0) ?
+                        this.focusedArticle.alcohol :
                         'Non définie'
                 },
                 {
                     icon   : 'inbox',
                     title  : 'Stock',
-                    content: this.modObject.stock
+                    content: this.focusedArticle.stock
                 },
                 {
                     icon   : 'account_balance',
                     title  : 'TVA',
-                    content: (this.modObject.vat > 0) ?
-                        this.modObject.vat :
+                    content: (this.focusedArticle.vat > 0) ?
+                        this.focusedArticle.vat :
                         'Non définie'
                 }
             ];
@@ -57,7 +58,7 @@ export default {
     },
 
     mounted() {
-        getImage(this.modObject.id)
+        getImage(this.focusedArticle.id)
             .then((result) => {
                 this.image = result.image;
             })

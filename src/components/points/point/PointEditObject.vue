@@ -1,8 +1,8 @@
 <template>
     <div>
-        <h5>Modifier le guichet {{ modObject.name }}:</h5>
-        <form @submit.prevent="updatePoint(modObject)">
-            <mdl-textfield floating-label="Nom" :value="modObject.name" @input="updateModObject({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
+        <h5>Modifier le guichet {{ focusedPoint.name }}:</h5>
+        <form @submit.prevent="updatePoint(focusedPoint)">
+            <mdl-textfield floating-label="Nom" :value="focusedPoint.name" @input="updateDeepestFocusedElement({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield><br />
             <mdl-button colored raised>Modifier</mdl-button>
         </form>
     </div>
@@ -16,10 +16,11 @@ export default {
     methods: {
         ...mapActions([
             'updateObject',
-            'updateModObject',
+            'updateDeepestFocusedElement',
             'notify',
             'notifyError'
         ]),
+
         updatePoint(point) {
             const fields = ['id', 'name'];
 
@@ -34,7 +35,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedPoint: state => state.app.focusedElements[0]
         })
     }
 };

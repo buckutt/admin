@@ -2,15 +2,15 @@
     <div class="b-panel">
         <div class="b-panel__item b-item">
             <div class="b-item__image">
-                <img :src="image" draggable="false" height="100%" width="100%" v-if="selectedWiketItem.type === 'article'" />
+                <img :src="image" draggable="false" height="100%" width="100%" v-if="isArticle" />
                 <i class="material-icons b-item__promotion" v-else>stars</i>
             </div>
-            <div class="b-item__text" ref="name">{{ selectedWiketItem.name }}</div>
+            <div class="b-item__text" ref="name">{{ focusedItem.name }}</div>
         </div>
         <div class="b-panel__prices">
             <h4>Tarifs</h4>
-            <span v-if="selectedWiketItem.prices.length === 0">Aucun prix n'est encore défini pour cet article.</span>
-            <div v-for="price in selectedWiketItem.prices">
+            <span v-if="displayedPrices.length === 0">Aucun prix n'est encore défini pour cet article.</span>
+            <div v-for="price in displayedPrices">
                 <span>
                     <i class="material-icons">attach_money</i> {{ price.amount | price(true) }} TTC
                 </span>
@@ -71,16 +71,24 @@ export default {
 
     computed: {
         ...mapState({
-            modObject   : state => state.app.modObject,
-            currentEvent: state => state.app.currentEvent
+            focusedPoint: state => state.app.focusedElements[0],
+            focusedItem : state => state.app.focusedElements[2],
+            currentEvent: state => state.app.currentEvent,
+            isArticle   : state => !!state.route.params.article
         }),
+
         ...mapGetters([
-            'selectedWiketItem',
             'groupOptions',
             'periodOptions',
             'currentPeriodOptions',
             'fundationOptions'
         ]),
+
+        displayedPrices() {
+            return (this.focusedItem.prices || [])
+                .filter(price => price.point_id === this.focusedPoint.id);
+        },
+
         disabledAdd() {
             return ((!this.newPrice.fundation && this.currentEvent.useFundations)
                 || (!this.newPrice.period && this.currentEvent.usePeriods)
@@ -95,6 +103,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         updateItem() {
             const initialFontSize = 16;
 
@@ -104,16 +113,17 @@ export default {
                 return;
             }
 
-            const size    = textSize(this.selectedWiketItem.name);
+            const size    = textSize(this.focusedItem.name);
             const maxSize = 130;
 
             $name.style.fontSize = `${initialFontSize}px`;
+
             if (size > maxSize) {
                 $name.style.fontSize = `${initialFontSize * (maxSize / size)}px`;
             }
 
-            if (this.selectedWiketItem.type === 'article') {
-                getImage(this.selectedWiketItem.id)
+            if (this.isArticle) {
+                getImage(this.focusedItem.id)
                     .then((image) => {
                         this.image = image.image;
                     })
@@ -122,6 +132,7 @@ export default {
                     });
             }
         },
+
         generateWarning(price) {
             let warning;
 
@@ -142,20 +153,26 @@ export default {
 
             return warning;
         },
+
         createPrice(price) {
             const priceToCreate = {
                 amount      : price.amount,
-                point_id    : this.modObject.id,
-                fundation_id: this.currentEvent.useFundations ?
-                    price.fundation.id : this.currentEvent.defaultFundation_id,
-                group_id : this.currentEvent.useGroups ? price.group.id : this.currentEvent.defaultGroup_id,
-                period_id: this.currentEvent.usePeriods ? price.period.id : this.currentEvent.defaultPeriod_id
+                point_id    : this.focusedPoint.id,
+                fundation_id: (this.currentEvent.useFundations)
+                    ? price.fundation.id
+                    : this.currentEvent.defaultFundation_id,
+                group_id: (this.currentEvent.useGroups)
+                    ? price.group.id
+                    : this.currentEvent.defaultGroup_id,
+                period_id: (this.currentEvent.usePeriods)
+                    ? price.period.id
+                    : this.currentEvent.defaultPeriod_id
             };
 
-            if (this.selectedWiketItem.type === 'article') {
-                priceToCreate.article_id = this.selectedWiketItem.id;
+            if (this.isArticle) {
+                priceToCreate.article_id = this.focusedItem.id;
             } else {
-                priceToCreate.promotion_id = this.selectedWiketItem.id;
+                priceToCreate.promotion_id = this.focusedItem.id;
             }
 
             this

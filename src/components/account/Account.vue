@@ -30,6 +30,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         changePassword(user, newPassword, confirmation) {
             if (newPassword !== confirmation) {
                 return this.notifyError({

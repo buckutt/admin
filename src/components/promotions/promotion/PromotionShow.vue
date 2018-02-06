@@ -19,10 +19,11 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedPromotion: state => state.app.focusedElements[0]
         }),
+
         title() {
-            return `Formule ${this.modObject.name}`;
+            return `Formule ${this.focusedPromotion.name}`;
         }
     }
 };

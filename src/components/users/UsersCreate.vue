@@ -15,6 +15,8 @@ import bcrypt         from 'bcryptjs';
 import { mapActions } from 'vuex';
 import { randString } from '../../lib/randString';
 
+const randTen = () => Math.floor(Math.random() * 10);
+
 export default {
     data() {
         return {
@@ -35,8 +37,8 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createUser(user) {
-            const randTen     = () => Math.floor(Math.random() * 10);
             const newPin      = `${randTen()}${randTen()}${randTen()}${randTen()}`;
             const newPassword = randString(8);
 

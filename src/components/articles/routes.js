@@ -16,7 +16,7 @@ export default [
         ]
     },
     {
-        path     : '/articles/:id',
+        path     : '/articles/:article',
         component: ArticleShow,
         children : [
             { path: '', component: ArticleShowDetails },

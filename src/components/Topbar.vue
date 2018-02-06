@@ -60,11 +60,15 @@ export default {
             loggedUser  : state => state.app.loggedUser,
             currentEvent: state => state.app.currentEvent
         }),
+
         ...mapGetters([
             'logged'
         ]),
+
         isConfigured() {
-            return (this.currentEvent) ? isEventConfigured(this.currentEvent) : false;
+            return (this.currentEvent)
+                ? isEventConfigured(this.currentEvent)
+                : false;
         }
     }
 };

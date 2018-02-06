@@ -19,10 +19,11 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedPeriod: state => state.app.focusedElements[0]
         }),
+
         title() {
-            return `Période ${this.modObject.name}`;
+            return `Période ${this.focusedPeriod.name}`;
         }
     }
 };

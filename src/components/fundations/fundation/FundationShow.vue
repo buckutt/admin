@@ -19,10 +19,11 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedFundation: state => state.app.focusedElements[0]
         }),
+
         title() {
-            return `Fondation ${this.modObject.name}`;
+            return `Fondation ${this.focusedFundation.name}`;
         }
     }
 };

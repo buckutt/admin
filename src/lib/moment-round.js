@@ -12,12 +12,15 @@ moment.fn.round = function (precision, key, direction = 'round') {
     if (key.indexOf('s', key.length - 1) === -1) {
         key += 's';
     }
+
     let value = 0;
     let rounded = false;
     let subRatio = 1;
     let maxValue;
+
     for (let i = 0; i < keys.length; ++i) {
         const k = keys[i];
+
         if (k === key) {
             value = this._d[`get${key}`]();
             maxValue = maxValues[i];

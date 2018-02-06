@@ -22,6 +22,7 @@ export const staff = (state) => {
             }
 
             let userPoint = right.point;
+
             if (!userPoint) {
                 userPoint = { name: 'Aucun' };
             }
@@ -36,6 +37,5 @@ export const staff = (state) => {
                 .sort((a, b) => sortOrder(a.name, b.name));
         });
 
-    return staffList
-        .sort((a, b) => sortOrder(a.firstname, b.firstname));
+    return staffList.sort((a, b) => sortOrder(a.firstname, b.firstname));
 };

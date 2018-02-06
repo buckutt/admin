@@ -1,16 +1,16 @@
 <template>
     <div>
-        <h5 class="b--capitalized">Modifier {{ modObject.firstname }} {{ modObject.lastname }}</h5>
-        <form @submit.prevent="updateUser(modObject)">
-            <mdl-textfield floating-label="Nom" :value="modObject.lastname" @input="updateModObject({ field: 'lastname', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
-            <mdl-textfield floating-label="Prénom" :value="modObject.firstname" @input="updateModObject({ field: 'firstname', value: $event })" required="required" error="Le prénom doit contenir au moins un caractère"></mdl-textfield><br />
-            <mdl-textfield floating-label="Surnom" :value="modObject.nickname" @input="updateModObject({ field: 'nickname', value: $event })"></mdl-textfield><br />
-            <mdl-textfield floating-label="Mail" :value="modObject.mail" @input="updateModObject({ field: 'mail', value: $event })" required="required" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" error="L'adresse mail n'a pas le bon format"></mdl-textfield><br />
+        <h5 class="b--capitalized">Modifier {{ focusedUser.firstname }} {{ focusedUser.lastname }}</h5>
+        <form @submit.prevent="updateUser(focusedUser)">
+            <mdl-textfield floating-label="Nom" :value="focusedUser.lastname" @input="updateDeepestFocusedElement({ field: 'lastname', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
+            <mdl-textfield floating-label="Prénom" :value="focusedUser.firstname" @input="updateDeepestFocusedElement({ field: 'firstname', value: $event })" required="required" error="Le prénom doit contenir au moins un caractère"></mdl-textfield><br />
+            <mdl-textfield floating-label="Surnom" :value="focusedUser.nickname" @input="updateDeepestFocusedElement({ field: 'nickname', value: $event })"></mdl-textfield><br />
+            <mdl-textfield floating-label="Mail" :value="focusedUser.mail" @input="updateDeepestFocusedElement({ field: 'mail', value: $event })" required="required" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" error="L'adresse mail n'a pas le bon format"></mdl-textfield><br />
             <mdl-button colored raised>Modifier</mdl-button>
         </form>
         <h5>Sécurité</h5>
-        <mdl-button @click.native="regenPin(modObject)">Regénérer le code PIN</mdl-button>
-        <mdl-button @click.native="regenPassword(modObject)">Regénérer le mot de passe</mdl-button>
+        <mdl-button @click.native="regenPin(focusedUser)">Regénérer le code PIN</mdl-button>
+        <mdl-button @click.native="regenPassword(focusedUser)">Regénérer le mot de passe</mdl-button>
         <transition name="fade">
             <p v-show="newPin">Le nouveau code PIN généré est <strong>{{ newPin }}</strong></p>
         </transition>
@@ -26,6 +26,8 @@ import bcrypt from 'bcryptjs';
 import { mapState, mapActions } from 'vuex';
 import { randString } from '../../../lib/randString';
 
+const randTen = () => Math.floor(Math.random() * 10);
+
 export default {
     data() {
         return {
@@ -38,27 +40,27 @@ export default {
         ...mapActions([
             'createObject',
             'updateObject',
-            'updateModObject',
+            'updateDeepestFocusedElement',
             'notify',
             'notifyError'
         ]),
+
         regenPin(user) {
-            const randTen = () => Math.floor(Math.random() * 10);
-            const pin     = `${randTen()}${randTen()}${randTen()}${randTen()}`;
-            this.newPin   = pin;
+            this.newPin = `${randTen()}${randTen()}${randTen()}${randTen()}`;
+
             const modUser = {
                 id : user.id,
-                pin: bcrypt.hashSync(pin, 10)
+                pin: bcrypt.hashSync(this.newPin, 10)
             };
 
             this.updateObject({ route: 'users', value: modUser });
         },
         regenPassword(user) {
-            const password   = randString(8);
-            this.newPassword = password;
+            this.newPassword = randString(8);
+
             const modUser    = {
                 id      : user.id,
-                password: bcrypt.hashSync(password, 10)
+                password: bcrypt.hashSync(this.newPassword, 10)
             };
 
             this.updateObject({ route: 'users', value: modUser });
@@ -98,7 +100,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedUser: state => state.app.focusedElements[0]
         })
     }
 };

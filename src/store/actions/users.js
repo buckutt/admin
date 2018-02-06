@@ -33,7 +33,7 @@ export function createUserWithMol({ dispatch, state }, user) {
 }
 
 export function searchUsers({ dispatch }, name) {
-    let limit = '';
+    let limit = '&limit=1000';
 
     if (name.length <= 2) {
         limit = '&limit=10';
@@ -42,33 +42,44 @@ export function searchUsers({ dispatch }, name) {
     return get(`services/manager/searchuser?name=${name}${limit}`)
         .then((results) => {
             dispatch('clearObject', 'users');
+
             if (results.length > 0) {
                 dispatch('checkAndAddObjects', { route: 'users', objects: results });
             }
+
             return [];
         });
 }
 
-export function loadCurrentUserHistory({ state, dispatch }) {
-    return get(`services/manager/history?buyer=${state.app.modObject.id}`)
+export function loadUserHistory({ state, dispatch }, user) {
+    return get(`services/manager/history?buyer=${user.id}`)
         .then((results) => {
             dispatch('clearObject', 'history');
             if (results.history.length > 0) {
-                dispatch('updateModObject', { field: 'credit', value: results.credit });
+                const depth = state.app.focusedElements
+                    .findIndex(element => user.id === element.id);
+
+                dispatch('updateFocusedElement', { depth, field: 'credit', value: results.credit });
                 dispatch('checkAndAddObjects', { route: 'history', objects: results.history });
             }
             return [];
         });
 }
 
-export function cancelTransaction({ state, dispatch }, transaction) {
+export function cancelTransaction({ state, dispatch }, payload) {
+    const transaction = payload.transaction;
+    const user        = payload.user;
+
     return post('services/cancelTransaction', transaction)
         .then(() => {
             const currentTransaction = state.objects.history
                 .find(h => h.id === transaction.id);
 
-            const newUserCredit = state.app.modObject.credit - currentTransaction.amount;
-            dispatch('updateModObject', { field: 'credit', value: newUserCredit });
+            const newUserCredit = user.credit - currentTransaction.amount;
+            const depth         = state.app.focusedElements
+                .findIndex(element => user.id === element.id);
+
+            dispatch('updateFocusedElement', { depth, field: 'credit', value: newUserCredit });
 
             const canceledTransaction      = { ...currentTransaction };
             canceledTransaction.isCanceled = true;

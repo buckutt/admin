@@ -77,36 +77,45 @@ export default {
             purchases   : state => state.objects.purchases,
             currentEvent: state => state.app.currentEvent
         }),
+
         ...mapGetters([
             'periodOptions',
             'currentPeriodOptions',
             'pointOptions',
             'fundationOptions'
         ]),
+
         displayedPurchases() {
             return this.purchases.map((purchase) => {
                 purchase.totalWT = purchase.totalTI - purchase.totalVAT;
+
                 return purchase;
             });
         },
+
         totalSell() {
             return this.displayedPurchases
                 .map(purchase => parseInt(purchase.totalTI, 10))
                 .reduce((a, b) => a + b, 0);
         },
+
         totalSellWT() {
             return this.displayedPurchases
                 .map(purchase => parseInt(purchase.totalWT, 10))
                 .reduce((a, b) => a + b, 0);
         },
+
         pointOptionsAll() {
             const points = Object.assign([], this.pointOptions);
             points.unshift({ name: 'Tous', value: null });
+
             return points;
         },
+
         fundationOptionsAll() {
             const fundations = Object.assign([], this.fundationOptions);
             fundations.unshift({ name: 'Toutes', value: null });
+
             return fundations;
         }
     },
@@ -117,6 +126,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         filter() {
             const inputFields = JSON.parse(JSON.stringify(this.fields));
             let isFilled      = false;
@@ -142,6 +152,7 @@ export default {
                     full   : err
                 }));
         },
+
         fillDates(period) {
             if (period) {
                 this.fields.dateIn  = new Date(period.start);

@@ -1,53 +1,182 @@
 <template>
     <div class="b-clientviewer">
-        <div class="b-clientviewer__panel" v-if="selectedWiketItem.name">
-            <b-clientpanel></b-clientpanel>
+        <div class="b-clientviewer__panel" v-if="splitedPath.length > 5">
+            <router-view></router-view>
         </div>
         <div class="b-clientviewer__items">
-            <p v-if="!wiketCurrentTab.articles || wiketCurrentTab.articles.length === 0">Aucun article à afficher ici.</p>
             <div class="b-clientviewer__articles">
+                <router-link
+                    :to="addArticleLink"
+                    class="b-item"
+                    :class="{ 'b-item--selected': addSelected }">
+                    <div class="b-item__add">
+                        <i class="material-icons">add_circle_outline</i>
+                    </div>
+                </router-link>
                 <b-clientitem
-                    v-for="article in wiketCurrentTab.articles"
+                    v-for="article in tabArticles"
                     :article="article"
                     :key="article.id">
                 </b-clientitem>
             </div>
-            <div class="b-clientviewer__promotions" v-if="displayPromotions">
-                <div>
-                    <strong>Formules</strong>
-                    <i class="material-icons" id="promotitle">info</i>
-                    <mdl-tooltip target="promotitle">Seules les formules dont les items sont en vente dans le guichet apparaissent.</mdl-tooltip>
+            <div class="b-clientviewer__sidebar">
+                <b-confirm @confirm="unlinkCategory()">
+                    <mdl-button class="mdl-js-ripple-effect" accent>Enlever la catégorie du guichet</mdl-button>
+                </b-confirm>
+                <div class="b-clientviewer__promotions" v-if="tabPromotions.length > 0">
+                    <div>
+                        <strong>Formules</strong>
+                        <i class="material-icons" id="promotitle">info</i>
+                        <mdl-tooltip target="promotitle">Seules les formules dont les items sont en vente dans le guichet apparaissent.</mdl-tooltip>
+                    </div>
+                    <b-clientpromotion
+                        v-for="promotion in tabPromotions"
+                        :promotion="promotion"
+                        :key="promotion.id">
+                    </b-clientpromotion>
                 </div>
-                <b-clientpromotion
-                    v-for="promotion in wiketCurrentTab.promotions"
-                    :promotion="promotion"
-                    :key="promotion.id">
-                </b-clientpromotion>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { mapGetters }  from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import ClientItem      from './ClientViewer-Item';
-import ClientPanel     from './ClientViewer-Panel';
 import ClientPromotion from './ClientViewer-Promotion';
+import sortOrder       from '../../../lib/sortOrder';
 
 export default {
     components: {
         'b-clientitem'     : ClientItem,
-        'b-clientpanel'    : ClientPanel,
         'b-clientpromotion': ClientPromotion
     },
 
-    computed: {
-        ...mapGetters([
-            'wiketCurrentTab',
-            'selectedWiketItem'
+    methods: {
+        ...mapActions([
+            'removeRelation',
+            'notify',
+            'notifyError'
         ]),
-        displayPromotions() {
-            return (this.wiketCurrentTab.promotions) ? (this.wiketCurrentTab.promotions.length > 0) : false;
+
+        unlinkCategory() {
+            this
+                .removeRelation({
+                    obj1: {
+                        route: 'categories',
+                        value: this.focusedCategory
+                    },
+                    obj2: {
+                        route: 'points',
+                        value: this.focusedPoint
+                    }
+                })
+                .then(() => {
+                    this.notify({ message: 'La catégorie a bien été supprimée du guichet' });
+                    this.$router.push(this.addPath);
+                })
+                .catch(err => this.notifyError({
+                    message: 'La catégorie n\'a pas pu être supprimée du guichet',
+                    full   : err
+                }));
+        }
+    },
+
+    computed: {
+        ...mapState({
+            focusedPoint   : state => state.app.focusedElements[0],
+            focusedCategory: state => state.app.focusedElements[1],
+            promotions     : state => state.objects.promotions,
+            fullPath       : state => state.route.fullPath
+        }),
+
+        tabArticles() {
+            const category = this.focusedCategory;
+
+            if (!category.articles) {
+                return [];
+            }
+
+            const fullArticles = category.articles
+                .map(article => ({
+                    ...article,
+                    prices: (article.prices || []).filter(price => price.point_id === this.focusedPoint.id)
+                }));
+
+            return [].concat(
+                fullArticles
+                    .filter(article => article.prices.length > 0)
+                    .sort((a, b) => sortOrder(a.name, b.name)),
+                fullArticles
+                    .filter(article => article.prices.length === 0)
+                    .sort((a, b) => sortOrder(a.name, b.name))
+            );
+        },
+
+        tabPromotions() {
+            const pointArticles = (this.focusedPoint.categories || [])
+                .reduce((a, b) => a.concat(b.articles), []);
+
+            const fullPromotions = this.promotions
+                .filter((promotion) => {
+                    if (!promotion.sets) {
+                        return true;
+                    }
+
+                    const toReduce = promotion.sets
+                        .map((set) => {
+                            let match = false;
+
+                            set.articles.forEach((article) => {
+                                if (pointArticles.some(a => a.id === article.id)) {
+                                    match = true;
+                                }
+                            });
+
+                            return match;
+                        });
+
+                    return toReduce.reduce((a, b) => a && b, (toReduce.length > 0));
+                })
+                .map(promotion => ({
+                    ...promotion,
+                    prices: (promotion.prices || []).filter(price => price.point_id === this.focusedPoint.id)
+                }));
+
+            return [].concat(
+                fullPromotions
+                    .filter(promotion => promotion.prices.length > 0)
+                    .sort((a, b) => sortOrder(a.name, b.name)),
+                fullPromotions
+                    .filter(promotion => promotion.prices.length === 0)
+                    .sort((a, b) => sortOrder(a.name, b.name))
+            );
+        },
+
+        splitedPath() {
+            return this.fullPath.split('/');
+        },
+
+        addPath() {
+            const wiketPath = this.splitedPath
+                .slice(0, 3)
+                .join('/');
+
+            return `${wiketPath}/category/add`;
+        },
+
+        categoryPath() {
+            return this.splitedPath
+                .slice(0, 5)
+                .join('/');
+        },
+
+        addArticleLink() {
+            return `${this.categoryPath}/article/add`;
+        },
+
+        addSelected() {
+            return this.fullPath === this.addArticleLink;
         }
     }
 };
@@ -76,22 +205,33 @@ export default {
                 flex: 1;
             }
 
-            & > .b-clientviewer__promotions {
+            & > .b-clientviewer__sidebar {
                 border-left: 1px solid #E0E0E0;
                 display: flex;
                 flex-direction: column;
                 overflow-y: auto;
                 width: 20%;
-                margin: -10px 0px -20px 0px;
-                padding: 20px 0px 0px 20px;
+                margin: -10px -20px -20px 0px;
+                padding: 20px 0px 0px 0px;
 
                 & > div:first-child {
-                    display: flex;
-                    align-items: center;
+                    width: 100%;
+                    text-align: center;
+                }
 
-                    & > i {
-                        margin-left: 5px;
-                        margin-bottom: 2px;
+                & > .b-clientviewer__promotions {
+                    border-top: 1px solid #E0E0E0;
+                    margin: 10px 0px 0px -20px;
+                    padding: 10px 0px 10px 40px;
+
+                    & > div:first-child {
+                        display: flex;
+                        align-items: center;
+
+                        & > i {
+                            margin-left: 5px;
+                            margin-bottom: 2px;
+                        }
                     }
                 }
             }

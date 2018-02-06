@@ -25,6 +25,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         generateCert(device, password) {
             download(`services/certificate?deviceId=${device.id}&password=${password}`)
                 .then((result) => {

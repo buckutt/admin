@@ -26,6 +26,7 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         createDevice(device) {
             this.createObject({ route: 'devices', value: device })
                 .then((createdDevice) => {

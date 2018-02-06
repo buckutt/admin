@@ -18,7 +18,7 @@
                                 </td>
                                 <td class="mdl-data-table__cell--non-numeric">
                                     <transition-group name="fade">
-                                        <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="(article, indexA) in set.articles" :key="index+'_'+indexA">
+                                        <span class="mdl-chip mdl-chip--deletable b--spaces" v-for="(article, indexA) in set.articles" :key="`${index}_${indexA}`">
                                             <span class="mdl-chip__text">{{ article.name }}</span>
                                             <b-confirm @confirm="removeSelectedArticleFromStep(article, index)" class="b--inline">
                                                 <button class="mdl-chip__action"><i class="material-icons">cancel</i></button>
@@ -93,10 +93,11 @@ export default {
             'notify',
             'notifyError'
         ]),
+
         addArticleToCurrentPromotion(article) {
             this
                 .addStepToPromotion({
-                    promotion: this.modObject,
+                    promotion: this.focusedPromotion,
                     articles : [article]
                 })
                 .then(() => this.notify({ message: 'L\'article a bien été ajouté à la promotion.' }))
@@ -105,12 +106,13 @@ export default {
                     full   : err
                 }));
         },
+
         addArticleToChosenStep(article) {
             this
                 .addArticleToStep({
                     article,
                     step     : this.displayedPromotion[this.chosenIndex],
-                    promotion: this.modObject
+                    promotion: this.focusedPromotion
                 })
                 .then(() => this.notify({ message: 'L\'article a bien été ajouté à la promotion.' }))
                 .catch((err) => {
@@ -126,12 +128,13 @@ export default {
                     this.notifyError({ message, full: err });
                 });
         },
+
         removeSelectedArticleFromStep(article, index) {
             this
                 .removeArticleFromStep({
                     article,
                     step     : this.displayedPromotion[index],
-                    promotion: this.modObject
+                    promotion: this.focusedPromotion
                 })
                 .then(() => this.notify({ message: 'L\'article a bien été supprimé de la promotion.' }))
                 .catch(err => this.notifyError({
@@ -139,15 +142,18 @@ export default {
                     full   : err
                 }));
         },
+
         createStep() {
             this.chooseArticle = !(this.chooseArticle && this.newStep);
             this.newStep       = true;
         },
+
         chooseIndex(index) {
             this.chooseArticle = !(this.chooseArticle && !this.newStep && this.chosenIndex === index);
             this.newStep       = false;
             this.chosenIndex   = index;
         },
+
         processArticle(article) {
             if (this.newStep) {
                 this.addArticleToCurrentPromotion(article);
@@ -159,16 +165,20 @@ export default {
 
     computed: {
         ...mapState({
-            articles : state => state.objects.articles,
-            modObject: state => state.app.modObject
+            articles        : state => state.objects.articles,
+            focusedPromotion: state => state.app.focusedElements[0]
         }),
+
         displayedPromotion() {
-            return promotionDisplayer(this.modObject);
+            return promotionDisplayer(this.focusedPromotion);
         },
+
         alreadyInArticles() {
             if (this.displayedPromotion.length > 0) {
                 if (!this.newStep) {
-                    return this.displayedPromotion[this.chosenIndex].articles.map(article => article.id);
+                    return this.displayedPromotion[this.chosenIndex]
+                        .articles
+                        .map(article => article.id);
                 }
             }
 

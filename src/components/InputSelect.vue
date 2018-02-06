@@ -7,7 +7,7 @@
             v-model="content"
             @input="changeInput(content)"
             @focus="displayInput = true"
-            @blur="hideInput()"
+            @blur="displayInput = false"
             @keydown.up.prevent.stop="up()"
             @keydown.down.prevent.stop="down()"
             @keydown.enter.prevent.stop="select(suggestions[activeIndex].original)"
@@ -25,7 +25,7 @@
                 v-if="displayInput">
                 <li
                     v-for="(suggestion, index) in suggestions"
-                    @click="select(suggestion.original)"
+                    @mousedown="select(suggestion.original)"
                     @mouseover="activeIndex = index"
                     class="b-completelist__item"
                     :class="{ 'b-completelist__item-active': (index === activeIndex) }"
@@ -74,10 +74,14 @@ export default {
     computed: {
         suggestions() {
             const strongify = { extract: el => el.name, pre: '<strong>', post: '</strong>' };
-            return (this.content) ?
-                fuzzy.filter(this.content, this.convertOptions(this.database), strongify) :
-                this.convertOptions(this.options).map(entry => ({ original: entry, string: entry.name }));
+            const db        = this.convertOptions(this.database);
+            const opts      = this.convertOptions(this.options);
+
+            return (this.content)
+                ? fuzzy.filter(this.content, db, strongify)
+                : opts.map(entry => ({ original: entry, string: entry.name }));
         },
+
         database() {
             return (this.fullOptions) ? this.fullOptions : this.options;
         }
@@ -88,13 +92,17 @@ export default {
             this.$refs.textfield.MaterialTextfield.change(suggestion.name);
             this.$refs.textfield.MaterialTextfield.boundBlurHandler();
             this.$refs.input.blur();
+
             this.content          = suggestion.name;
             this.displayInput     = false;
             this.ignoreNextUpdate = true;
+
             this.$emit('input', suggestion.value);
         },
+
         changeInput(content) {
             const firstName = this.suggestions[0].original.name.toLowerCase();
+
             if (this.suggestions.length === 1 && firstName === content.toLowerCase()) {
                 return this.select(this.suggestions[0].original);
             }
@@ -102,11 +110,13 @@ export default {
             this.ignoreNextUpdate = true;
             this.$emit('input', undefined);
         },
+
         convertOptions(options) {
             return options.map(option => (
                 (!option.name && !option.value) ? { name: option, value: option } : option
             ));
         },
+
         down() {
             if (this.activeIndex + 1 >= this.suggestions.length) {
                 return;
@@ -121,6 +131,7 @@ export default {
                 menu.scrollTop += menu.children[0].offsetHeight;
             }
         },
+
         up() {
             if (this.activeIndex <= 0) {
                 return;
@@ -134,11 +145,6 @@ export default {
             if (activeItemTopOffset < 0) {
                 menu.scrollTop -= menu.children[0].offsetHeight;
             }
-        },
-        hideInput() {
-            setTimeout(() => {
-                this.displayInput = false;
-            }, 30);
         }
     },
 
@@ -147,9 +153,11 @@ export default {
 
         if (this.value) {
             const object = this.suggestions
-                .find(suggestion => (JSON.stringify(this.value) === JSON.stringify(suggestion.original.value)))
-                .original;
-            this.select(object);
+                .find(suggestion => (JSON.stringify(this.value) === JSON.stringify(suggestion.original.value)));
+
+            if (object) {
+                this.select(object.original);
+            }
         }
     },
 
@@ -161,11 +169,10 @@ export default {
             }
 
             const object = this.suggestions
-                .find(suggestion => (JSON.stringify(newValue) === JSON.stringify(suggestion.original.value)))
-                .original;
+                .find(suggestion => (JSON.stringify(newValue) === JSON.stringify(suggestion.original.value)));
 
             if (object) {
-                this.select(object);
+                this.select(object.original);
             } else {
                 this.content = newValue;
                 this.$refs.textfield.MaterialTextfield.change(newValue);

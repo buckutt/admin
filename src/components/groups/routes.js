@@ -16,7 +16,7 @@ export default [
         ]
     },
     {
-        path     : '/groups/:id',
+        path     : '/groups/:group',
         component: GroupShow,
         children : [
             { path: '', component: GroupShowDetails },

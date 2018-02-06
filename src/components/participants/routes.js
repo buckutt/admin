@@ -17,7 +17,7 @@ export default [
         ]
     },
     {
-        path     : '/participants/:id',
+        path     : '/participants/:participant',
         component: ParticipantShow,
         children : [
             { path: '', component: ParticipantShowDetails },

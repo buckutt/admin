@@ -153,30 +153,39 @@ export default {
             curves      : state => state.stats.curves,
             timeseries  : state => state.stats.timeseries
         }),
+
         ...mapGetters([
             'articleOptions',
             'promotionOptions',
             'pointOptions',
             'fundationOptions'
         ]),
+
         articleOptionsAll() {
             const articles = Object.assign([], this.articleOptions);
             articles.unshift({ name: 'Tous', value: null });
+
             return articles;
         },
+
         promotionOptionsAll() {
             const promotions = Object.assign([], this.promotionOptions);
             promotions.unshift({ name: 'Toutes', value: null });
+
             return promotions;
         },
+
         pointOptionsAll() {
             const points = Object.assign([], this.pointOptions);
             points.unshift({ name: 'Tous', value: null });
+
             return points;
         },
+
         fundationOptionsAll() {
             const fundations = Object.assign([], this.fundationOptions);
             fundations.unshift({ name: 'Toutes', value: null });
+
             return fundations;
         }
     },
@@ -188,6 +197,7 @@ export default {
             'addCurve',
             'removeCurve'
         ]),
+
         updateData() {
             if (this.realtime) {
                 this.timefilter.dateOut       = new Date();
@@ -211,10 +221,12 @@ export default {
                     this.nextUpdateRef = setTimeout(this.updateData, 10000);
                 });
         },
+
         filter() {
             this.activeTimefilter = Object.assign({}, this.timefilter);
             this.updateData();
         },
+
         createCurve() {
             if (this.typeField === 'article') {
                 this.fields.promotion = null;
@@ -226,9 +238,11 @@ export default {
             this.updateData();
             this.fields = Object.assign({}, fieldsPattern);
         },
+
         deleteCurve(curveIndex) {
             const lastCurve = this.curves.length;
             this.removeCurve(curveIndex);
+
             // Unrender the last curve, and recalculate by shifting ids
             this.removeTimeserie(`Courbe ${lastCurve}`);
             this.chart.unload({

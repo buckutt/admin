@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 
 export default {
     props: {
@@ -18,28 +18,22 @@ export default {
 
     computed: {
         ...mapState({
-            fullPath: state => state.route.fullPath,
-            params  : state => state.route.params
+            focusedPromotion: state => (state.app.focusedElements[2] || {}),
+            fullPath        : state => state.route.fullPath
         }),
-        ...mapGetters([
-            'selectedWiketItem'
-        ]),
+
         selected() {
-            return (this.selectedWiketItem.type) ?
-                (this.selectedWiketItem.id === this.promotion.id && this.selectedWiketItem.type === 'promotion') :
-                false;
+            return this.focusedPromotion.id === this.promotion.id;
         },
+
         gray() {
             return this.promotion.prices.length === 0;
         },
-        toLink() {
-            if (!this.params.article && !this.params.promotion) {
-                return `${this.fullPath}/promotion/${this.promotion.id}`;
-            }
 
+        toLink() {
             const basePath = this.fullPath
                 .split('/')
-                .slice(0, -2)
+                .slice(0, 5)
                 .join('/');
 
             return `${basePath}/promotion/${this.promotion.id}`;

@@ -19,10 +19,11 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedUser: state => state.app.focusedElements[0]
         }),
+
         title() {
-            return `Utilisateur ${this.modObject.firstname} ${this.modObject.lastname}`;
+            return `Utilisateur ${this.focusedUser.firstname} ${this.focusedUser.lastname}`;
         }
     }
 };

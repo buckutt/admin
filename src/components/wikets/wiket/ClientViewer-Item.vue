@@ -6,13 +6,16 @@
         <div class="b-item__image">
             <img :src="image" draggable="false" height="100%" width="100%" />
         </div>
+        <div class="b-item__delete">
+            <b-confirm @confirm="unlinkArticle()">&times;</b-confirm>
+        </div>
         <div class="b-item__text" ref="name">{{ article.name }}</div>
         <div class="b-item__grayfilter" v-if="gray">Pas de prix défini</div>
     </router-link>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { getImage } from '../../../lib/fetchImages';
 import textSize     from '../../../lib/textSize';
 
@@ -27,33 +30,62 @@ export default {
         };
     },
 
+    methods: {
+        ...mapActions([
+            'removeRelation',
+            'notify',
+            'notifyError'
+        ]),
+
+        unlinkArticle() {
+            this
+                .removeRelation({
+                    obj1: {
+                        route: 'categories',
+                        value: this.focusedCategory
+                    },
+                    obj2: {
+                        route: 'articles',
+                        value: this.article
+                    }
+                })
+                .then(() => {
+                    this.notify({ message: 'L\'article a bien été supprimé de la catégorie' });
+                    this.$router.push(this.categoryPath);
+                })
+                .catch(err => this.notifyError({
+                    message: 'L\'article n\'a pas pu être supprimé de la catégorie',
+                    full   : err
+                }));
+        }
+    },
+
     computed: {
         ...mapState({
-            fullPath: state => state.route.fullPath,
-            params  : state => state.route.params
+            focusedCategory: state => state.app.focusedElements[1],
+            focusedArticle : state => (state.app.focusedElements[2] || {}),
+            fullPath       : state => state.route.fullPath
         }),
-        ...mapGetters([
-            'selectedWiketItem'
-        ]),
+
         selected() {
-            return (this.selectedWiketItem.type) ?
-                (this.selectedWiketItem.id === this.article.id && this.selectedWiketItem.type === 'article') :
-                false;
+            return this.focusedArticle.id === this.article.id;
         },
+
         gray() {
             return this.article.prices.length === 0;
         },
-        toLink() {
-            if (!this.params.article && !this.params.promotion) {
-                return `${this.fullPath}/article/${this.article.id}`;
-            }
 
+        categoryPath() {
             const basePath = this.fullPath
                 .split('/')
-                .slice(0, -2)
+                .slice(0, 5)
                 .join('/');
 
-            return `${basePath}/article/${this.article.id}`;
+            return basePath;
+        },
+
+        toLink() {
+            return `${this.categoryPath}/article/${this.article.id}`;
         }
     },
 

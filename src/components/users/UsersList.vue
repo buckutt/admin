@@ -41,6 +41,7 @@ export default {
             'clearObject',
             'removeObject'
         ]),
+
         editUser(user) {
             this.$router.push(`/users/${user.id}/edit`);
         }
@@ -50,6 +51,7 @@ export default {
         ...mapState({
             users: state => state.objects.users
         }),
+
         displayedUsers() {
             return this.users.map((user) => {
                 user.fullname = `${user.firstname} ${user.lastname}`;
@@ -60,6 +62,7 @@ export default {
 
     mounted() {
         this.searchUsers('');
+
         const searchUsers = this.searchUsers;
         this.searchUsers  = debounce(name => searchUsers(name), 500);
     },

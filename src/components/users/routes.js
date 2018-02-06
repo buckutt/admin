@@ -19,7 +19,7 @@ export default [
         ]
     },
     {
-        path     : '/users/:id',
+        path     : '/users/:user',
         component: UserShow,
         children : [
             { path: '', component: UserShowDetails },
