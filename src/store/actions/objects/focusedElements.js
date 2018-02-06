@@ -104,24 +104,29 @@ export function syncFocusedElement({ dispatch, commit }, payload) {
 }
 
 export function loadFocusedElement({ state, dispatch, commit }, payload) {
+    const alreadyFocusedElement = state.app.focusedElements
+        .find(element => payload.id === element.id);
+
     const storedElement = state.objects[payload.route]
         .find(object => payload.id === object.id);
 
-    if (storedElement) {
+    const foundElement = alreadyFocusedElement || storedElement;
+
+    if (foundElement) {
         commit('UPDATEFOCUSEDELEMENT', {
             depth: payload.depth,
-            value: cloneDeep(storedElement)
+            value: cloneDeep(foundElement)
         });
 
         dispatch('syncFocusedElement', payload);
-        return Promise.resolve(storedElement);
+        return Promise.resolve(foundElement);
     }
 
     return dispatch('syncFocusedElement', payload);
 }
 
 export function loadFocusedElements({ dispatch, commit }, params) {
-    commit('TRIMFOCUSEDELEMENTS', params.length);
+    commit('TRIMFOCUSEDELEMENTS', Object.keys(params).length);
 
     const loadPromises = Object.keys(params)
         .map((key, index) =>
