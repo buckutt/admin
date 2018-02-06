@@ -33,7 +33,7 @@ export function createUserWithMol({ dispatch, state }, user) {
 }
 
 export function searchUsers({ dispatch }, name) {
-    let limit = '';
+    let limit = '&limit=1000';
 
     if (name.length <= 2) {
         limit = '&limit=10';
