@@ -1,4 +1,5 @@
 import account      from './components/account/routes';
+import alerts       from './components/alerts/routes';
 import articles     from './components/articles/routes';
 import categories   from './components/categories/routes';
 import dashboard    from './components/dashboard/routes';
@@ -20,6 +21,7 @@ import wikets       from './components/wikets/routes';
 
 export default [].concat(
     account,
+    alerts,
     articles,
     categories,
     dashboard,
