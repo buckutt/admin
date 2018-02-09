@@ -33,7 +33,7 @@ const userRightPattern = {
 export default {
     data() {
         return {
-            rightsList: ['admin', 'seller', 'reloader'],
+            rightsList: ['admin', 'seller', 'reloader', 'assigner'],
             userRight : Object.assign({}, userRightPattern)
         };
     },
