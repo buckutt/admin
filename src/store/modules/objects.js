@@ -17,7 +17,8 @@ const state = {
     meansofpayment: [],
     rights        : [],
     webservices   : [],
-    history       : []
+    history       : [],
+    alerts        : []
 };
 
 const mutations = {

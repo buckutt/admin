@@ -1,9 +1,9 @@
 <template>
-    <div class="b-treasury b-page">
+    <div class="b-webhooks b-page">
         <div class="mdl-card mdl-shadow--2dp">
             <b-navbar
-                title="Trésorerie"
-                :tabs="[{ route: '/treasury', name: 'Afficher', exact: true }, { route: '/treasury/export', name: 'Exporter' }]"
+                title="Alertes"
+                :tabs="[{ route: '/alerts', name: 'Historique', exact: true }, { route: '/alerts/create', name: 'Nouvelle' }]"
                 :inCard="true">
             </b-navbar>
             <router-view></router-view>

@@ -54,7 +54,6 @@ export default {
     },
 
     computed: {
-
         ...mapState({
             currentEvent: state => state.app.currentEvent,
             periods     : state => state.objects.periods

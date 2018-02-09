@@ -56,6 +56,12 @@
                             Participants
                         </router-link>
                     </li>
+                    <li>
+                        <router-link to="/alerts" class="mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect">
+                            <i class="material-icons">add_alert</i>
+                            Alertes
+                        </router-link>
+                    </li>
                 </ul>
             </transition>
             <ul>

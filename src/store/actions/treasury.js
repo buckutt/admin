@@ -1,38 +1,14 @@
-import { get }         from '../../lib/fetch';
-import queryString     from '../../lib/queryString';
-import routeToRelation from '../../lib/routeToRelation';
+import { get }             from '../../lib/fetch';
+import queryString         from '../../lib/queryString';
+import treasuryQueryString from '../../lib/treasuryQueryString';
+import routeToRelation     from '../../lib/routeToRelation';
 
 /**
  * Purchases actions
  */
 
 export function getPurchases({ commit, dispatch }, fields) {
-    const q = [];
-
-    q.push(`event=${fields.event.id}`);
-
-    if (fields.point) {
-        q.push(`point=${fields.point.id}`);
-    }
-
-    if (fields.fundation) {
-        q.push(`fundation=${fields.fundation.id}`);
-    }
-
-    if (fields.period) {
-        q.push(`period=${fields.period.id}`);
-    } else {
-        if (fields.dateIn) {
-            q.push(`dateIn=${fields.dateIn}`);
-        }
-
-        if (fields.dateOut) {
-            q.push(`dateOut=${fields.dateOut}`);
-        }
-    }
-
-    const qString = q
-        .join('&');
+    const qString = treasuryQueryString(fields);
 
     return get(`services/treasury/purchases?${qString}`)
         .then((purchases) => {
@@ -52,16 +28,9 @@ export function getPurchases({ commit, dispatch }, fields) {
  */
 
 export function getTreasury({ commit, dispatch }, fields) {
-    const q  = [];
     const qt = [];
 
-    if (fields.point) {
-        q.push(`point=${fields.point.id}`);
-    }
-
     if (fields.dateIn) {
-        q.push(`dateIn=${fields.dateIn}`);
-
         qt.push({
             field: 'created_at',
             ge   : fields.dateIn,
@@ -70,8 +39,6 @@ export function getTreasury({ commit, dispatch }, fields) {
     }
 
     if (fields.dateOut) {
-        q.push(`dateOut=${fields.dateOut}`);
-
         qt.push({
             field: 'created_at',
             le   : fields.dateOut,
@@ -79,10 +46,8 @@ export function getTreasury({ commit, dispatch }, fields) {
         });
     }
 
-    const qString = q
-        .join('&');
-
-    let orQt = queryString(qt);
+    const qString = treasuryQueryString(fields);
+    let orQt      = queryString(qt);
 
     if (orQt) {
         orQt = `&q=${orQt}`;
