@@ -21,7 +21,6 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import { isEventConfigured }    from '../../lib/isEventConfigured';
 import EventTile                from '../events/home/EventTile.vue';
 
 export default {
@@ -49,13 +48,7 @@ export default {
             }
 
             this.updateCurrentEvent(event)
-                .then(() => {
-                    if (this.isConfigured) {
-                        this.$router.push('/stats');
-                    } else {
-                        this.$router.push(`/events/${event.id}/config`);
-                    }
-                });
+                .then(() => this.$router.push(`/events/${event.id}/config`));
         },
 
         editEvent(event) {
@@ -79,15 +72,7 @@ export default {
             currentEvent: state => state.app.currentEvent,
             loggedUser  : state => state.app.loggedUser,
             events      : state => state.objects.events
-        }),
-
-        isConfigured() {
-            if (this.currentEvent) {
-                return isEventConfigured(this.currentEvent);
-            }
-
-            return false;
-        }
+        })
     }
 };
 </script>

@@ -9,7 +9,7 @@ import pathToRoute from '../../../lib/pathToRoute';
 
 export function updateDeepestFocusedElement({ state, dispatch }, payload) {
     const depth = state.app.focusedElements.length - 1;
-    dispatch('updateFocusedElement', {
+    return dispatch('updateFocusedElement', {
         ...payload,
         depth
     });
@@ -40,7 +40,7 @@ export function updateFocusedElement({ state, dispatch }, payload) {
         lodset(focusedElement, payload.field, payload.value);
     }
 
-    dispatch('saveFocusedElement', {
+    return dispatch('saveFocusedElement', {
         depth: payload.depth,
         value: focusedElement
     });
@@ -88,6 +88,8 @@ export function saveFocusedElement({ state, commit, dispatch }, payload) {
             });
         }
     }
+
+    return Promise.resolve();
 }
 
 export function clearFocusedElements({ commit }) {

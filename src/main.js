@@ -26,7 +26,6 @@ import Navbar         from './components/Navbar.vue';
 import PaginatedTable from './components/PaginatedTable.vue';
 
 import './lib/textfield.js';
-import { isEventConfigured } from './lib/isEventConfigured';
 
 moment.locale('fr');
 
@@ -57,10 +56,6 @@ router.beforeEach((route, from, next) => {
                 // The administrator isn't logged, redirection to the login
                 store.dispatch('clearFocusedElements');
                 next('/');
-            } else if (!isEventConfigured(store.state.app.currentEvent)
-                && withoutEventRoutes.indexOf(path) === -1) {
-                // The event isn't configured, redirection to the configurator
-                next(`/events/${store.state.app.currentEvent.id}/config`);
             } else if (Object.keys(route.params).length > 0) {
                 store
                     .dispatch('loadFocusedElements', route.params)

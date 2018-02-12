@@ -1,7 +1,7 @@
 <template>
     <div class="b-topbar" v-show="logged">
         <nav class="b-topbar__menu mdl-navigation">
-            <template v-if="isConfigured">
+            <template>
                 <router-link to="/devices" class="mdl-navigation__link">
                     <i class="material-icons">devices</i><br />
                     Équipements
@@ -52,24 +52,16 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
-import { isEventConfigured }    from '../lib/isEventConfigured';
 
 export default {
     computed: {
         ...mapState({
-            loggedUser  : state => state.app.loggedUser,
-            currentEvent: state => state.app.currentEvent
+            loggedUser: state => state.app.loggedUser
         }),
 
         ...mapGetters([
             'logged'
-        ]),
-
-        isConfigured() {
-            return (this.currentEvent)
-                ? isEventConfigured(this.currentEvent)
-                : false;
-        }
+        ])
     }
 };
 </script>

@@ -17,7 +17,7 @@
                 </li>
             </ul>
             <transition name="fade">
-                <ul v-if="isConfigured">
+                <ul v-if="currentEvent">
                     <li class="b-sidebar__separator"></li>
                     <li class="b-sidebar__eventDisplayer">
                         <i class="material-icons">cake</i>
@@ -83,7 +83,6 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
-import { isEventConfigured }    from '../lib/isEventConfigured';
 
 export default {
     computed: {
@@ -94,10 +93,6 @@ export default {
         ...mapGetters([
             'logged'
         ]),
-
-        isConfigured() {
-            return (this.currentEvent) ? isEventConfigured(this.currentEvent) : false;
-        },
 
         barName() {
             return config.name;
