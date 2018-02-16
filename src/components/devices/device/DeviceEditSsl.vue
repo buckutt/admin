@@ -1,7 +1,7 @@
 <template>
     <div>
         <h5>Génération du certificat SSL</h5>
-        <form @submit.prevent="generateCert(modObject, password)">
+        <form @submit.prevent="generateCert(focusedDevice, password)">
             <mdl-textfield type="password" floating-label="Mot de passe souhaité" v-model="password"></mdl-textfield>
             <mdl-button colored raised>Générer</mdl-button>
         </form>
@@ -41,7 +41,7 @@ export default {
 
     computed: {
         ...mapState({
-            modObject: state => state.app.modObject
+            focusedDevice: state => state.app.focusedElements[0]
         })
     }
 };
