@@ -33,11 +33,16 @@ export default {
 
     computed: {
         ...mapGetters([
-            'pointsWikets',
             'pointOptions'
         ]),
 
+        pointsWikets() {
+            return this.$parent.pointsWikets;
+        },
+
         remainingPoints() {
+            console.log(this.pointOptions);
+
             return this.pointOptions
                 .filter(pointOption =>
                     !(this.pointsWikets || []).some(point => point.id === pointOption.value.id));
