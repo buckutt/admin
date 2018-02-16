@@ -101,6 +101,10 @@ export default {
         },
 
         changeInput(content) {
+            if (!this.suggestions[0]) {
+                return;
+            }
+
             const firstName = this.suggestions[0].original.name.toLowerCase();
 
             if (this.suggestions.length === 1 && firstName === content.toLowerCase()) {
