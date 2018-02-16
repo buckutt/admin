@@ -40,7 +40,7 @@ export default {
         remainingPoints() {
             return this.pointOptions
                 .filter(pointOption =>
-                    !this.pointsWikets.some(point => point.id === pointOption.value.id));
+                    !(this.pointsWikets || []).some(point => point.id === pointOption.value.id));
         }
     }
 };
