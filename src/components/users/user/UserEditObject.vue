@@ -69,7 +69,7 @@ export default {
             let existingMol = null;
 
             user.meansOfLogin.forEach((meanOfLogin) => {
-                if (meanOfLogin.type === 'etuMail') {
+                if (meanOfLogin.type === config.mainMol) {
                     existingMol = meanOfLogin;
                 }
             });
@@ -77,7 +77,7 @@ export default {
             if (!existingMol) {
                 this.createObject({
                     route: 'meansOfLogin',
-                    value: { type: 'etuMail', data: user.mail, user_id: user.id }
+                    value: { type: config.mainMol, data: user.mail, user_id: user.id }
                 });
             } else {
                 existingMol.data = user.mail;

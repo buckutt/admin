@@ -10,7 +10,7 @@ export function createUserWithMol({ dispatch, state }, user) {
     return post('users', user)
         .then((result) => {
             if (result.mail) {
-                post('meansoflogin', { type: 'etuMail', data: result.mail, user_id: result.id });
+                post('meansoflogin', { type: config.mainMol, data: result.mail, user_id: result.id });
             }
 
             dispatch('checkAndAddObjects', { route: 'users', objects: [result] });
