@@ -5,7 +5,8 @@
 export function refundUser({ state, dispatch }, refundData) {
     let refundedUser = refundData.user;
 
-    return dispatch('expandObject', {
+    return dispatch('syncFocusedElement', {
+        depth: 0,
         route: 'users',
         value: { id: refundedUser.id }
     })
