@@ -95,7 +95,9 @@ export default {
             return translateTable[type];
         },
         translateMop(mop) {
-            return this.meansofpayment.find(m => m.slug === mop).name;
+            const translation = this.meansofpayment.find(m => m.slug === mop);
+
+            return translation ? translation.name : mop;
         },
         cancel(transaction) {
             this.cancelTransaction({
