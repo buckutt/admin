@@ -10,7 +10,7 @@ export function createUserWithMol({ dispatch, state }, user) {
     return post('users', user)
         .then((result) => {
             if (result.mail) {
-                post('meansoflogin', { type: 'etuMail', data: result.mail, user_id: result.id });
+                post('meansoflogin', { type: config.mainMol, data: result.mail, user_id: result.id });
             }
 
             dispatch('checkAndAddObjects', { route: 'users', objects: [result] });
@@ -70,7 +70,7 @@ export function cancelTransaction({ state, dispatch }, payload) {
     const transaction = payload.transaction;
     const user        = payload.user;
 
-    return post('services/cancelTransaction?addPendingCardUpdates', transaction)
+    return post('services/cancelTransaction?addPendingCardUpdates=1', transaction)
         .then(() => {
             const currentTransaction = state.objects.history
                 .find(h => h.id === transaction.id);

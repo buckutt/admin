@@ -4,7 +4,7 @@
         <form @submit.prevent="updatePeriod(focusedPeriod)">
             <mdl-textfield floating-label="Nom" :value="focusedPeriod.name" @input="updateDeepestFocusedElement({ field: 'name', value: $event })" required="required" error="Le nom doit contenir au moins un caractère"></mdl-textfield>
             <br />
-            <span v-if="isPeriodProtected">Il n'est pas possible de modifier le début ainsi que la fin de la période par défaut de l'événement.</span>
+            <span v-if="isPeriodProtected">Les dates de début et de fin de la période par défaut sont à modifier dans la configuration de l'événement.</span>
             <b-datetime-picker
                 :value="new Date(focusedPeriod.start)"
                 @input="updateDeepestFocusedElement({ field: 'start', value: $event })"
@@ -16,9 +16,8 @@
                 pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
                 error="Le début n'est pas une date"
                 label="Début"
-                class="b--limitsize"
+                class="b--limitsize b--inline"
                 v-if="!isPeriodProtected"></b-datetime-picker>
-            <br />
             <b-datetime-picker
                 :value="new Date(focusedPeriod.end)"
                 @input="updateDeepestFocusedElement({ field: 'end', value: $event })"
@@ -30,7 +29,7 @@
                 pattern="\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}"
                 error="La fin n'est pas une date"
                 label="Fin"
-                class="b--limitsize"
+                class="b--limitsize b--inline"
                 v-if="!isPeriodProtected"></b-datetime-picker>
             <br />
             <mdl-button colored raised>Modifier</mdl-button>

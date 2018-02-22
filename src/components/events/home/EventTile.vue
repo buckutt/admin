@@ -5,6 +5,10 @@
                 {{ event.name }}
             </h4>
         </div>
+        <div class="mdl-card__supporting-text" v-if="defaultPeriod">
+            {{ defaultPeriod.startString }} —<br />
+            {{ defaultPeriod.endString }}
+        </div>
         <div class="mdl-card__actions mdl-card--border">
             <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" @click="editEvent(event)">
                 Paramétrer
@@ -20,6 +24,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
     props: {
         event: {
@@ -32,6 +38,27 @@ export default {
         return {
             active: false
         };
+    },
+
+    computed: {
+        ...mapState({
+            periods: state => state.objects.periods
+        }),
+
+        defaultPeriod() {
+            const defaultPeriod = this.periods
+                .find(period => period.id === this.event.defaultPeriod_id);
+
+            if (!defaultPeriod) {
+                return;
+            }
+
+            return {
+                ...defaultPeriod,
+                startString: moment(defaultPeriod.start).format('DD MMMM YYYY, HH:mm'),
+                endString  : moment(defaultPeriod.end).format('DD MMMM YYYY, HH:mm')
+            };
+        }
     },
 
     methods: {
@@ -79,6 +106,7 @@ export default {
     }
 
     .tile-card-event > .mdl-card__title,
+    .tile-card-event > .mdl-card__supporting-text,
     .tile-card-event > .mdl-card__actions,
     .tile-card-event > .mdl-card__actions > .mdl-button {
         color: #fff;

@@ -84,7 +84,7 @@ export default {
                     title: this.currentEvent.usePeriods
                         ? `Période ${membership.period.name}`
                         : undefined,
-                    content: membership.group.name
+                    content: (membership.group || {}).name
                 }));
         },
 

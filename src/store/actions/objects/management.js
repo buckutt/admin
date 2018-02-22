@@ -54,17 +54,11 @@ export function checkAndUpdateObjects({ commit, state }, data) {
     }
 }
 
-export function checkAndDeleteObjects({ commit, dispatch, state }, data) {
+export function checkAndDeleteObjects({ commit, state }, data) {
     if (state.objects[data.route]) {
         const objects = data.objects
             .filter(object =>
                 state.objects[data.route].find(o => (o.id === object.id)));
-
-        if (data.route === 'events' && state.app.currentEvent) {
-            if (objects.find(o => state.app.currentEvent.id === o.id)) {
-                dispatch('unselectCurrentEvent');
-            }
-        }
 
         if (objects.length > 0) {
             commit('DELETEOBJECTS', { route: data.route, objects });
@@ -111,6 +105,10 @@ export function updateObject({ dispatch, state }, object) {
         .then((result) => {
             dispatch('checkAndUpdateObjects', { route: object.route, objects: [result] });
 
+            if (object.route === 'events' && result.id === state.app.currentEvent.id) {
+                dispatch('changeCurrentEvent', result);
+            }
+
             state.app.focusedElements
                 .forEach((element, depth) => {
                     if (element[object.route]) {
@@ -127,6 +125,10 @@ export function updateObject({ dispatch, state }, object) {
 }
 
 export function removeObject({ dispatch, state }, object) {
+    if (object.route === 'events' && state.app.currentEvent.id === object.value.id) {
+        dispatch('unselectCurrentEvent');
+    }
+
     return del(`${object.route.toLowerCase()}/${object.value.id}`)
         .then(() => {
             dispatch('checkAndDeleteObjects', { route: object.route, objects: [object.value] });
